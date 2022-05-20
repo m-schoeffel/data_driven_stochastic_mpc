@@ -1,4 +1,3 @@
-import os
 from setuptools import setup
 
 
@@ -13,4 +12,9 @@ setup(
     keywords="data driven disturbance estimator",
     url="https://github.com/ratherbeflyin2080/data_driven_disturbance_estimator",
     packages=['DD_DE', 'tests'],
+    entry_points={
+        'console_scripts': [
+            'dd_de = DD_DE.main:main',
+        ],
+    },
 )
