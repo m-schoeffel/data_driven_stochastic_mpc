@@ -10,4 +10,6 @@ class LTISystem:
 
     def next_step(self, u):
         self.u = np.array(u)
-        self.x = self.A @ self.x + self.B @ self.u
+
+        # Todo: When matrix multidimensional: * -> @
+        self.x = self.A * self.x + self.B * self.u

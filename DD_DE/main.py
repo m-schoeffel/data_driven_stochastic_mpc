@@ -5,11 +5,11 @@ from DD_DE import data_driven_predictor
 
 def main():
     print("Hello World!")
-    my_system = lti_system.LTISystem([1,0], [[2,0],[1,1]], [[1,0],[0,1]])
+    my_system = lti_system.LTISystem(0,1,2)
     print(my_system.x)
-    my_system.next_step([2,2])
+    my_system.next_step(1)
     print(my_system.x)
-    my_system.next_step([3,3])
+    my_system.next_step(2)
     print(my_system.x)
 
 
