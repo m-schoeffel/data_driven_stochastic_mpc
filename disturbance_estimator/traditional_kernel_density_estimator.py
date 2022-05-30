@@ -1,14 +1,23 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.neighbors import KernelDensity
+
+
 class TraditionalKDE:
     def __init__(self):
 
-        # Store tuples of index k and delta x (difference between prediction and actual state)
-        self.list_delta_x = list()
+        # Store index k and delta x (difference between prediction and actual state)
+        self.array_delta_x = np.ones((100, 2))
+        self.numbr_measurements = 0
 
-    def add_delta_x(self,index_k,delta_x):
-        self.list_delta_x.append((index_k,delta_x))
+    def add_delta_x(self, index_k, delta_x):
+        self.array_delta_x[self.numbr_measurements, :] = ([index_k, delta_x])
+        self.numbr_measurements += 1
 
     def plot_distribution(self):
-        # Todo: Distribution should be plottet here
-        # Right now self.delta will be displayed
 
-        print(self.list_delta_x)
+        X = self.array_delta_x
+
+        kde = KernelDensity(kernel='gaussian',bandwidth=0.2).fit(X)
+        kde.score_samples(X)
