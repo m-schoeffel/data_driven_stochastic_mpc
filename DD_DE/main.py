@@ -1,8 +1,9 @@
 from random import random
 
 from DD_DE import lti_system
-from DD_DE import disturbance_estimator
 from DD_DE import data_driven_predictor
+from disturbance_estimator import gaussian_process
+
 
 
 def get_dist() -> float:
@@ -20,13 +21,13 @@ def main():
 
     print(f"actual state: {my_system.x}")
 
-    print("\n\n1:")
+    print(f"\n\n{my_system.k}:")
 
     print(f"Predicted state:  {my_predictor.predict_state(my_system.x,1)}")
     my_system.next_step(1)
     print(f"actual state: {my_system.x}")
 
-    print("\n\n2:")
+    print(f"\n\n{my_system.k}:")
 
     print(f"Predicted state:  {my_predictor.predict_state(my_system.x,2)}")
     my_system.next_step(2)
