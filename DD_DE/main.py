@@ -21,17 +21,12 @@ def main():
 
     print(f"actual state: {my_system.x}")
 
-    print(f"\n\n{my_system.k}:")
+    for u in [1,0,-3,4,-5,6]:
+        print(f"\n\n{my_system.k}:")
 
-    print(f"Predicted state:  {my_predictor.predict_state(my_system.x,1)}")
-    my_system.next_step(1)
-    print(f"actual state: {my_system.x}")
-
-    print(f"\n\n{my_system.k}:")
-
-    print(f"Predicted state:  {my_predictor.predict_state(my_system.x,2)}")
-    my_system.next_step(2)
-    print(f"actual state: {my_system.x}")
+        print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
+        my_system.next_step(u)
+        print(f"actual state: {my_system.x}")
 
 
 if __name__ == "__main__":
