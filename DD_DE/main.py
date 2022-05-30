@@ -20,7 +20,7 @@ def main():
 
     print(f"actual state: {my_system.x}")
 
-    for u in [1,0,-3,4,-5,6]:
+    for u in range(1,50):
         print(f"\n\nk = {my_system.k}:")
 
         predicted_state = my_predictor.predict_state(my_system.x,u)
