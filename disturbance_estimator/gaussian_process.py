@@ -17,17 +17,10 @@ class GaussianProcess:
         self.numbr_measurements += 1
 
     def plot_distribution(self):
-        # Todo: Distribution should be plottet here
-        # Right now self.delta will be displayed
 
-        # print(self.list_delta_x)
-        print(self.array_delta_x[0:self.numbr_measurements, 0])
-
-        X = self.array_delta_x[0:self.numbr_measurements, 0].reshape(-1, 1)
-        y = self.array_delta_x[0:self.numbr_measurements, 1]
-
-        X_train = X[0:-1]
-        y_train = y[0:-1]
+        X_train = self.array_delta_x[0:self.numbr_measurements,
+                                     0].reshape(-1, 1)
+        y_train = self.array_delta_x[0:self.numbr_measurements, 1]
 
         kernel = 1 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e2))
         gaussian_process = GaussianProcessRegressor(
@@ -35,16 +28,15 @@ class GaussianProcess:
         gaussian_process.fit(X_train, y_train)
         print(gaussian_process.kernel_)
 
-        X_predict = np.linspace(1,len(X),1000)
+        X_predict = np.linspace(1, len(X_train)+1, 100).reshape(-1, 1)
 
         mean_prediction, std_prediction = gaussian_process.predict(
-            X, return_std=True)
+            X_predict, return_std=True)
 
-        plt.plot(X, y, label=r"$f(x) = x \sin(x)$", linestyle="dotted")
-        plt.scatter(X, y, label="Observations")
-        plt.plot(X, mean_prediction, label="Mean prediction")
+        plt.scatter(X_train, y_train, label="Observations")
+        plt.plot(X_predict, mean_prediction, label="Mean prediction")
         plt.fill_between(
-            X.ravel(),
+            X_predict.ravel(),
             mean_prediction - 1.96 * std_prediction,
             mean_prediction + 1.96 * std_prediction,
             alpha=0.5,
@@ -56,5 +48,5 @@ class GaussianProcess:
         _ = plt.title("Gaussian process regression on noise-free dataset")
         plt.show()
 
-        x=1
+        x = 1
         # plt.plot(1,1)
