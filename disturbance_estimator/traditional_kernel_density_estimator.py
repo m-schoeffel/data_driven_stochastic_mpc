@@ -20,10 +20,12 @@ class TraditionalKDE:
         X = self.array_delta_x[0:self.numbr_measurements,
                                1].reshape(-1, 1)
 
-        kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(X)
+        kde = KernelDensity(kernel='gaussian', bandwidth=0.02).fit(X)
 
-        x_visuell = np.linspace(-1.5, 1.5, 100).reshape(-1, 1)
+        x_visuell = np.linspace(-0.2, 0.2, 100).reshape(-1, 1)
         logprob = kde.score_samples(x_visuell)
 
         plt.plot(x_visuell, np.exp(logprob))
+        plt.scatter(self.array_delta_x[0:self.numbr_measurements, 1], np.ones(self.numbr_measurements),linewidths=0.005)
+        print(self.array_delta_x[0:self.numbr_measurements, 1])
         plt.show()
