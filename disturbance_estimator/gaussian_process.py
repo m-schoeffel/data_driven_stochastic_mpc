@@ -9,7 +9,7 @@ class GaussianProcess:
     def __init__(self):
 
         # Store index k and delta x (difference between prediction and actual state)
-        self.array_delta_x = np.ones((100, 2))
+        self.array_delta_x = np.ones((1000, 2))
         self.numbr_measurements = 0
 
     def add_delta_x(self, index_k, delta_x):
