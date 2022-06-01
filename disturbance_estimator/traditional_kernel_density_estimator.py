@@ -17,11 +17,13 @@ class TraditionalKDE:
 
     def plot_distribution(self):
 
-        X = self.array_delta_x
+        X = self.array_delta_x[0:self.numbr_measurements,
+                               1].reshape(-1, 1)
 
         kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(X)
 
-        x_visuell = np.linspace(-2, 2, 300).reshape(-1,1)
-        y_likelihood = kde.score_samples(x_visuell)
+        x_visuell = np.linspace(-1.5, 1.5, 100).reshape(-1, 1)
+        logprob = kde.score_samples(x_visuell)
 
-        plt.plot(x_visuell,y_likelihood)
+        plt.plot(x_visuell, np.exp(logprob))
+        plt.show()
