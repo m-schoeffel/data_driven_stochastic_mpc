@@ -2,7 +2,7 @@ from random import random
 
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
-from disturbance_estimator import gaussian_process
+from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator
 
 
 
@@ -16,7 +16,8 @@ def main():
     h_matrix = [[1, -1, 0, -1], [0, 1, 1, 0], [0, 0, 1, 1], [1, -1, 1, 0]]
     my_predictor = data_driven_predictor.DDPredictor(h_matrix)
 
-    disturbance_estimator = gaussian_process.GaussianProcess()
+    # disturbance_estimator = gaussian_process.GaussianProcess()
+    disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE()
 
     print(f"actual state: {my_system.x}")
 

@@ -19,5 +19,9 @@ class TraditionalKDE:
 
         X = self.array_delta_x
 
-        kde = KernelDensity(kernel='gaussian',bandwidth=0.2).fit(X)
-        kde.score_samples(X)
+        kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(X)
+
+        x_visuell = np.linspace(-2, 2, 300).reshape(-1,1)
+        y_likelihood = kde.score_samples(x_visuell)
+
+        plt.plot(x_visuell,y_likelihood)
