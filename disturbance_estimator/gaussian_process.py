@@ -28,7 +28,7 @@ class GaussianProcess:
         gaussian_process.fit(X_train, y_train)
         print(gaussian_process.kernel_)
 
-        X_predict = np.linspace(1, len(X_train)+1, 100).reshape(-1, 1)
+        X_predict = np.linspace(1, len(X_train)+1, self.numbr_measurements*2).reshape(-1, 1)
 
         mean_prediction, std_prediction = gaussian_process.predict(
             X_predict, return_std=True)
