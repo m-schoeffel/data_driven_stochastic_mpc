@@ -1,7 +1,6 @@
 import warnings
 
 import numpy as np
-from numpy import random
 
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
@@ -12,7 +11,7 @@ NUMBER_OF_MEASUREMENTS = 100
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
 
-TYPE_OF_DISTURBANCE = "lognormal"  # gaussian/uniform/triangular/lognormal
+TYPE_OF_DISTURBANCE = "gaussian"  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = 1
 B_INPUT_MATRIX = 1
@@ -27,13 +26,13 @@ H_MATRIX = [[1, -1, 0, -1],
 
 def get_dist() -> float:
     if TYPE_OF_DISTURBANCE == "gaussian":
-        return random.RandomState.normal(loc=0, scale=1.0,size=None)
+        return np.random.RandomState.normal(loc=0, scale=1.0)
     elif TYPE_OF_DISTURBANCE == "uniform":
-        return random.uniform(low=-0.5, high=0.5,size=None)
+        return np.random.uniform(low=-0.5, high=0.5)
     elif TYPE_OF_DISTURBANCE == "triangular":
-        return random.RandomState.triangular(left=-2, mode=0.5, right=1,size=None)
+        return np.random.RandomState.triangular(left=-2, mode=0.5, right=1)
     elif TYPE_OF_DISTURBANCE == "lognormal":
-        return random.RandomState.lognormal(mean=0.0,sigma=1.0,size=None)
+        return np.random.RandomState.lognormal(mean=0.0,sigma=1.0)
 
     warnings.warn(
         "No proper disturbance specified, check global variable TYPE_OF_DISTURBANCE")
@@ -57,13 +56,13 @@ def main():
     print(f"actual state: {my_system.x}")
 
     for u in range(1, NUMBER_OF_MEASUREMENTS):
-        print(f"\n\nk = {my_system.k}:")
+        # print(f"\n\nk = {my_system.k}:")
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 
-        print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
+        # print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
         my_system.next_step(u)
-        print(f"actual state: {my_system.x}")
+        # print(f"actual state: {my_system.x}")
 
         delta_x = my_system.x - predicted_state
 
