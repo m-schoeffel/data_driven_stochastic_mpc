@@ -47,4 +47,5 @@ class GaussianProcess:
         ax.set(xlabel='x', ylabel='f(x)')
         ax.set_title("Gaussian process regression on noise-free dataset")
 
-        return fig, ax
+        plot_real_density = False
+        return plot_real_density, fig, ax

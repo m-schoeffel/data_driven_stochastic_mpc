@@ -12,7 +12,7 @@ NUMBER_OF_MEASUREMENTS = 500
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
 
-TYPE_OF_DISTURBANCE = "gaussian"  # gaussian/uniform/triangular/lognormal
+TYPE_OF_DISTURBANCE = "triangular"  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = 1
 B_INPUT_MATRIX = 1
@@ -40,6 +40,40 @@ def get_dist() -> float:
     return 0
 
 
+def plot_real_disturbance(ax) -> None:
+    number_samples = 1000
+    x = np.linspace(-5, 5, number_samples).reshape(-1, 1)
+
+    if TYPE_OF_DISTURBANCE == "gaussian":
+        mu = 0
+        sigma = 1.0
+        pdf = 1/(sigma * np.sqrt(2 * np.pi)) * \
+            np.exp(- (x - mu)**2 / (2 * sigma**2))
+        ax.plot(x, pdf, linewidth=2, color='r')
+    elif TYPE_OF_DISTURBANCE == "uniform":
+        lower_bound = -0.5
+        upper_bound = 0.5
+        x_uniform = np.linspace(lower_bound, upper_bound, number_samples)
+        pdf = [1/(upper_bound-lower_bound) for _ in x_uniform]
+        ax.plot(x_uniform, pdf, linewidth=2, color='r')
+    elif TYPE_OF_DISTURBANCE == "triangular":
+        left = -2
+        mode = 0.5
+        right = 1
+        x_triangular = np.linspace(left, right, number_samples)
+        left_side = lambda x : 2*(x-left)/((right-left)*(mode-left))
+        right_side = lambda x : 2*(right-x)/((right-left)*(right-mode))
+        pdf = [left_side(x) for x in x_triangular if x>=left and x<=mode]
+        pdf = pdf + [right_side(x) for x in x_triangular if x>mode and x<=right]
+        ax.plot(x_triangular, pdf, linewidth=2, color='r')
+    elif TYPE_OF_DISTURBANCE == "lognormal":
+        mu = 0
+        sigma = 1.0
+        pdf = (np.exp(-(np.log(x) - mu)**2 / (2 * sigma**2)) /
+               (x * sigma * np.sqrt(2 * np.pi)))
+        plt.plot(x, pdf, linewidth=2, color='r')
+
+
 def main():
     my_system = lti_system.LTISystem(
         x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, get_dist=get_dist)
@@ -54,7 +88,7 @@ def main():
         # Todo: Change to discounted KDE
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE()
 
-    print(f"actual state: {my_system.x}")
+    # print(f"initial state: {my_system.x}")
 
     for u in range(1, NUMBER_OF_MEASUREMENTS):
         # print(f"\n\nk = {my_system.k}:")
@@ -69,9 +103,14 @@ def main():
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
 
-    fig, ax = disturbance_estimator.plot_distribution()
-    ax.plot([-1, 0.5, 0, 0.5, 1], [-1, 0.5, 0, 0.5, 1])
+    plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
+
+    # Only put real density in plot when it makes sense (not for gaussian process)
+    if plot_real_density:
+        plot_real_disturbance(ax)
+
     plt.show()
+
 
 if __name__ == "__main__":
     main()
