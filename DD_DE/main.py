@@ -26,13 +26,13 @@ H_MATRIX = [[1, -1, 0, -1],
 
 def get_dist() -> float:
     if TYPE_OF_DISTURBANCE == "gaussian":
-        return np.random.RandomState.normal(loc=0, scale=1.0)
+        return np.random.normal(loc=0, scale=1.0)
     elif TYPE_OF_DISTURBANCE == "uniform":
         return np.random.uniform(low=-0.5, high=0.5)
     elif TYPE_OF_DISTURBANCE == "triangular":
-        return np.random.RandomState.triangular(left=-2, mode=0.5, right=1)
+        return np.random.triangular(left=-2, mode=0.5, right=1)
     elif TYPE_OF_DISTURBANCE == "lognormal":
-        return np.random.RandomState.lognormal(mean=0.0,sigma=1.0)
+        return np.random.lognormal(mean=0.0,sigma=1.0)
 
     warnings.warn(
         "No proper disturbance specified, check global variable TYPE_OF_DISTURBANCE")
