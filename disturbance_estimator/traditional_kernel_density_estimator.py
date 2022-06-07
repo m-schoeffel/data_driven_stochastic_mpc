@@ -20,9 +20,9 @@ class TraditionalKDE:
         X = self.array_delta_x[0:self.numbr_measurements,
                                1].reshape(-1, 1)
 
-        kde = KernelDensity(kernel='gaussian', bandwidth=0.02).fit(X)
+        kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X)
 
-        x_visuell = np.linspace(-0.2, 0.2, 100).reshape(-1, 1)
+        x_visuell = np.linspace(-5, 5, 3000).reshape(-1, 1)
         logprob = kde.score_samples(x_visuell)
 
         plt.plot(x_visuell, np.exp(logprob))

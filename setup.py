@@ -14,7 +14,7 @@ setup(
     packages=['DD_DE', 'tests','disturbance_estimator'],
     entry_points={
         'console_scripts': [
-            'dd_de = DD_DE.main:main',
+            'dsa = DD_DE.main:main',
         ],
     },
 )

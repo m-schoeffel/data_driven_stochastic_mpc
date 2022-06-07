@@ -6,7 +6,7 @@ from DD_DE import lti_system
 from DD_DE import data_driven_predictor
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator
 
-NUMBER_OF_MEASUREMENTS = 100
+NUMBER_OF_MEASUREMENTS = 500
 
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
