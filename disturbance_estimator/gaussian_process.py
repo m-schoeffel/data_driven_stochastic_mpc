@@ -33,20 +33,18 @@ class GaussianProcess:
         mean_prediction, std_prediction = gaussian_process.predict(
             X_predict, return_std=True)
 
-        plt.scatter(X_train, y_train, label="Observations")
-        plt.plot(X_predict, mean_prediction, label="Mean prediction")
-        plt.fill_between(
+        fig, ax = plt.subplots()
+        ax.scatter(X_train, y_train, label="Observations")
+        ax.plot(X_predict, mean_prediction, label="Mean prediction")
+        ax.fill_between(
             X_predict.ravel(),
             mean_prediction - 1.96 * std_prediction,
             mean_prediction + 1.96 * std_prediction,
             alpha=0.5,
             label=r"95% confidence interval",
         )
-        plt.legend()
-        plt.xlabel("$x$")
-        plt.ylabel("$f(x)$")
-        _ = plt.title("Gaussian process regression on noise-free dataset")
-        plt.show()
+        ax.legend()
+        ax.set(xlabel='x', ylabel='f(x)')
+        ax.set_title("Gaussian process regression on noise-free dataset")
 
-        x = 1
-        # plt.plot(1,1)
+        return fig, ax

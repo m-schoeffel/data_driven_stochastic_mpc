@@ -1,6 +1,7 @@
 import warnings
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
@@ -32,7 +33,7 @@ def get_dist() -> float:
     elif TYPE_OF_DISTURBANCE == "triangular":
         return np.random.triangular(left=-2, mode=0.5, right=1)
     elif TYPE_OF_DISTURBANCE == "lognormal":
-        return np.random.lognormal(mean=0.0,sigma=1.0)
+        return np.random.lognormal(mean=0.0, sigma=1.0)
 
     warnings.warn(
         "No proper disturbance specified, check global variable TYPE_OF_DISTURBANCE")
@@ -68,8 +69,9 @@ def main():
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
 
-    disturbance_estimator.plot_distribution()
-
+    fig, ax = disturbance_estimator.plot_distribution()
+    ax.plot([-1, 0.5, 0, 0.5, 1], [-1, 0.5, 0, 0.5, 1])
+    plt.show()
 
 if __name__ == "__main__":
     main()

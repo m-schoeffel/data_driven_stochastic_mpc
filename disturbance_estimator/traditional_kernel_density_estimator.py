@@ -25,7 +25,9 @@ class TraditionalKDE:
         x_visuell = np.linspace(-5, 5, 3000).reshape(-1, 1)
         logprob = kde.score_samples(x_visuell)
 
-        plt.plot(x_visuell, np.exp(logprob))
-        plt.scatter(self.array_delta_x[0:self.numbr_measurements, 1], np.ones(self.numbr_measurements),linewidths=0.005)
+        fig, ax = plt.subplots()
+        ax.plot(x_visuell, np.exp(logprob))
+        ax.scatter(self.array_delta_x[0:self.numbr_measurements, 1], np.ones(self.numbr_measurements),linewidths=0.005)
         print(self.array_delta_x[0:self.numbr_measurements, 1])
-        plt.show()
+
+        return fig, ax
