@@ -11,7 +11,7 @@ NUMBER_OF_MEASUREMENTS = 500
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
 
-TYPE_OF_DISTURBANCE = "triangular"  # gaussian/uniform/triangular/lognormal
+TYPE_OF_DISTURBANCE = "gaussian"  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = 1
 B_INPUT_MATRIX = 1

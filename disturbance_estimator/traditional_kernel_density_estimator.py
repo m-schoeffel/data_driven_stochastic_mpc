@@ -27,8 +27,6 @@ class TraditionalKDE:
 
         fig, ax = plt.subplots()
         ax.plot(x_visuell, np.exp(logprob))
-        ax.scatter(self.array_delta_x[0:self.numbr_measurements, 1], np.ones(
-            self.numbr_measurements), linewidths=0.005)
         # print(self.array_delta_x[0:self.numbr_measurements, 1])
 
         plot_real_density = True
