@@ -23,12 +23,21 @@ H_MATRIX = [[1, -1, 0, -1],
             [0, 0, 1, 1],
             [1, -1, 1, 0]]
 
+INPUT_SEQUENCE = [1, -1, 0, 2, 3, -4, 0, -6, 2]
+
 
 def main():
     my_disturbance = disturbance.Disturbance(TYPE_OF_DISTURBANCE)
 
     my_system = lti_system.LTISystem(
         x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbance=my_disturbance)
+
+    state_sequence = [X_INITIAL_STATE]
+    # Record input-state sequence
+    for u in INPUT_SEQUENCE:
+        state_sequence.append(my_system.next_step(u,add_disturbance=False))
+
+    print(state_sequence)
 
     my_predictor = data_driven_predictor.DDPredictor(H_MATRIX)
 
