@@ -39,7 +39,8 @@ def main():
 
     print(state_sequence)
 
-    my_predictor = data_driven_predictor.DDPredictor(H_MATRIX)
+    # my_predictor = data_driven_predictor.DDPredictor(H_MATRIX)
+    my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = gaussian_process.GaussianProcess()
