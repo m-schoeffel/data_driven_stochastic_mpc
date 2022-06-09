@@ -18,11 +18,6 @@ B_INPUT_MATRIX = 1
 
 X_INITIAL_STATE = 0
 
-H_MATRIX = [[1, -1, 0, -1],
-            [0, 1, 1, 0],
-            [0, 0, 1, 1],
-            [1, -1, 1, 0]]
-
 INPUT_SEQUENCE = [1, -1, 0, 2, 3, -4, 0, -6, 2]
 
 
@@ -39,7 +34,6 @@ def main():
 
     print(state_sequence)
 
-    # my_predictor = data_driven_predictor.DDPredictor(H_MATRIX)
     my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":

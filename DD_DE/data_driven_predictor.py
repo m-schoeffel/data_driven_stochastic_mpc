@@ -11,15 +11,12 @@ class DDPredictor:
         for i in range(0, len(input_sequence)-1):
             hankel_u.append([input_sequence[i], input_sequence[i+1]])
             hankel_x.append([state_sequence[i], state_sequence[i+1]])
-        print(hankel_u)
-        print(hankel_x)
+
         hankel_u = np.transpose(np.array(hankel_u))
         hankel_x = np.transpose(np.array(hankel_x))
-        print(hankel_u)
-        print(hankel_x)
 
-        print(np.concatenate((hankel_u,hankel_x)))
-        self.h_matrix = np.concatenate((hankel_u,hankel_x))
+        print(np.concatenate((hankel_u, hankel_x)))
+        self.h_matrix = np.concatenate((hankel_u, hankel_x))
 
         h_input_state = self.h_matrix[[0, 2], :]
         # print(f"h_input_state (numpy) \n {h_input_state}")
