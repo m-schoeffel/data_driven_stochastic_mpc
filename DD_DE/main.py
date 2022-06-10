@@ -13,12 +13,13 @@ DISTURBANCE_ESTIMATION = "traditional_kde"
 
 TYPE_OF_DISTURBANCE = "lognormal"  # gaussian/uniform/triangular/lognormal
 
-A_SYSTEM_MATRIX = 1
-B_INPUT_MATRIX = 1
+A_SYSTEM_MATRIX = np.array([[1,1],[0,1]])
+B_INPUT_MATRIX = np.array([[0],[1]])
 
-X_INITIAL_STATE = 0
+X_INITIAL_STATE = np.array([[0],[1]])
 
-INPUT_SEQUENCE = [1, -1, 0, 2, 3, -4, 0, -6, 2]
+INPUT_SEQUENCE = np.zeros((1,9))
+INPUT_SEQUENCE[:] = np.array([1, -1, 0, 2, 3, -4, 0, -6, 2])
 
 
 def main():
@@ -27,22 +28,21 @@ def main():
     my_system = lti_system.LTISystem(
         x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbance=my_disturbance)
 
-    state_sequence = [X_INITIAL_STATE]
+    state_sequence = np.zeros((X_INITIAL_STATE.shape[0],INPUT_SEQUENCE.shape[1]+1))
+    state_sequence[:,0] = X_INITIAL_STATE[:,0]
     # Record input-state sequence
-    for u in INPUT_SEQUENCE:
-        state_sequence.append(my_system.next_step(u,add_disturbance=False))
-
-    print(state_sequence)
+    for i in range(INPUT_SEQUENCE.shape[1]):
+        state_sequence[:,i+1] = my_system.next_step(INPUT_SEQUENCE[:,i],add_disturbance=False)[:,0]
 
     my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
-        disturbance_estimator = gaussian_process.GaussianProcess()
+        disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0])
     elif DISTURBANCE_ESTIMATION == "traditional_kde":
-        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE()
+        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
         # Todo: Change to discounted KDE
-        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE()
+        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
 
     # print(f"initial state: {my_system.x}")
 
