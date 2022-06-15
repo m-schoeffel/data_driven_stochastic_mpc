@@ -3,6 +3,9 @@ import numpy as np
 
 class DDPredictor:
     def __init__(self, input_sequence, state_sequence):
+
+        self.dim_u = input_sequence.shape(0)
+        self.dim_x = state_sequence.shape(0)
         # self.h_matrix = np.array(h_matrix)
         # print(f"h_matrix (numpy) \n {self.h_matrix}")
         hankel_u_shape = (input_sequence.shape[0]*2,input_sequence.shape[1]-1)
@@ -26,6 +29,12 @@ class DDPredictor:
 
         self.h_matrix = np.concatenate((hankel_u, hankel_x))
         print(f"self.h_matrix:\n{self.h_matrix}")
+
+        # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
+        u_rows_idx = range(0,self.dim_u)
+        x_rows_idx = range(self.dim_u*2,self.dim_u*2+self.dim_x)
+        print(f"u_rows_idx: \n {u_rows_idx}")
+        print(f"x_rows_idx: \n {x_rows_idx}")
 
         h_input_state = self.h_matrix[[0, 2], :]
         # print(f"h_input_state (numpy) \n {h_input_state}")

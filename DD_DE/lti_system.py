@@ -23,6 +23,6 @@ class LTISystem:
         else:
             self.x = self.A @ self.x + self.B * self.u
 
-        print(self.x)
+        # print(self.x)
         self.k += 1
         return self.x
