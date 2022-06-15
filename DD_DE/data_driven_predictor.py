@@ -53,8 +53,9 @@ class DDPredictor:
         goal_vector = np.vstack([u.reshape(-1,1), current_x.reshape(-1,1)])
         # print(goal_vector)
         alpha = self.h_matrix_inv @ goal_vector
-        # Todo: Change name prediction (bad name)
-        prediction = self.h_matrix @ alpha
-        print(prediction)
-        next_x = prediction[5]
+        trajectory = self.h_matrix @ alpha
+        # print(prediction)
+        indices_of_prediction = list(range(self.dim_u*2+self.dim_x,self.dim_u*2+self.dim_x*2))
+        # print(f"indices_of_prediction: {indices_of_prediction}")
+        next_x = trajectory[indices_of_prediction]
         return next_x
