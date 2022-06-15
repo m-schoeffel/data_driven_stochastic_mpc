@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import pairwise_distances_chunked
 
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
@@ -44,14 +45,14 @@ def main():
         # Todo: Change to discounted KDE
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
 
-    # print(f"initial state: {my_system.x}")
+    print(f"initial state: {my_system.x}")
 
     for u in range(1, NUMBER_OF_MEASUREMENTS):
         print(f"\n\nk = {my_system.k}:")
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 
-        print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
+        print(f"Predicted state:  {predicted_state}")
         my_system.next_step(u)
         print(f"actual state: {my_system.x}")
 

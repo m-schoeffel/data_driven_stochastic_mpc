@@ -40,16 +40,21 @@ class DDPredictor:
         relevant_rows = u_rows_idx + x_rows_idx
         print(relevant_rows)
 
-        h_input_state = self.h_matrix[[1,2,3],:]
+        h_input_state = self.h_matrix[relevant_rows,:]
         print(f"h_input_state (numpy) \n {h_input_state}")
         self.h_matrix_inv = np.linalg.pinv(h_input_state)
 
     # Todo: Currently for one dimensional state space, has to be changed for multidimensional state space
 
     def predict_state(self, current_x, u):
-        goal_vector = np.transpose(np.array([u, current_x]))
+        current_x = np.array(current_x)
+        u = np.array(u)
+
+        goal_vector = np.vstack([u.reshape(-1,1), current_x.reshape(-1,1)])
+        # print(goal_vector)
         alpha = self.h_matrix_inv @ goal_vector
         # Todo: Change name prediction (bad name)
         prediction = self.h_matrix @ alpha
-        next_x = prediction[3]
+        print(prediction)
+        next_x = prediction[5]
         return next_x
