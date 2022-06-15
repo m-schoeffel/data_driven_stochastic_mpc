@@ -5,22 +5,27 @@ import matplotlib.pyplot as plt
 
 
 class Disturbance:
-    def __init__(self, type_of_disturbance):
-        self.type_of_disturbance = type_of_disturbance
+    def __init__(self, types_of_disturbances:list()):
+        self.types_of_disturbances = types_of_disturbances
 
-    def get_dist(self) -> float:
-        if self.type_of_disturbance == "gaussian":
+    def get_specific_dist(self,type_of_disturbance) -> float:
+        if type_of_disturbance == "gaussian":
             return np.random.normal(loc=0, scale=1.0)
-        elif self.type_of_disturbance == "uniform":
+        elif type_of_disturbance == "uniform":
             return np.random.uniform(low=-0.5, high=0.5)
-        elif self.type_of_disturbance == "triangular":
+        elif type_of_disturbance == "triangular":
             return np.random.triangular(left=-2, mode=0.5, right=1)
-        elif self.type_of_disturbance == "lognormal":
+        elif type_of_disturbance == "lognormal":
             return np.random.lognormal(mean=0.0, sigma=1.0)
 
         warnings.warn(
             "No proper disturbance specified, check global variable TYPE_OF_DISTURBANCE")
         return 0
+
+    def get_dist_vector(self) -> list():
+        dist_list = [self.get_specific_dist(dist_type) for dist_type in self.types_of_disturbances]
+        dist_vector = np.array(dist_list).reshape(-1,1)
+        return dist_vector
 
     def plot_real_disturbance(self, ax) -> None:
         number_samples = 1000

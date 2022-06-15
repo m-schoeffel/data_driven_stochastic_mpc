@@ -12,7 +12,8 @@ NUMBER_OF_MEASUREMENTS = 5
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
 
-TYPE_OF_DISTURBANCE = "lognormal"  # gaussian/uniform/triangular/lognormal
+# Specify the type of disturbance for each state
+TYPES_OF_DISTURBANCES = ["lognormal","gaussian"]  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = np.array([[1,1],[0,1]])
 B_INPUT_MATRIX = np.array([[0],[1]])
@@ -24,10 +25,10 @@ INPUT_SEQUENCE[:] = np.array([1, -1, 0, 2, 3, -4, 0, -6, 2])
 
 
 def main():
-    my_disturbance = disturbance.Disturbance(TYPE_OF_DISTURBANCE)
+    my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
     my_system = lti_system.LTISystem(
-        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbance=my_disturbance)
+        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=my_disturbance)
 
     state_sequence = np.zeros((X_INITIAL_STATE.shape[0],INPUT_SEQUENCE.shape[1]+1))
     state_sequence[:,0] = X_INITIAL_STATE[:,0]
