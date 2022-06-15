@@ -8,8 +8,8 @@ class DDPredictor:
         self.dim_x = state_sequence.shape[0]
         # self.h_matrix = np.array(h_matrix)
         # print(f"h_matrix (numpy) \n {self.h_matrix}")
-        hankel_u_shape = (input_sequence.shape[0]*2,input_sequence.shape[1]-1)
-        hankel_x_shape = (state_sequence.shape[0]*2,input_sequence.shape[1]-1)
+        hankel_u_shape = (input_sequence.shape[0]*2, input_sequence.shape[1]-1)
+        hankel_x_shape = (state_sequence.shape[0]*2, input_sequence.shape[1]-1)
 
         hankel_u = np.zeros(hankel_u_shape)
         hankel_x = np.zeros(hankel_x_shape)
@@ -18,8 +18,10 @@ class DDPredictor:
         print(f"state_sequence:\n {state_sequence}")
 
         for i in range(0, input_sequence.shape[1]-1):
-            hankel_u[:,i]=np.concatenate((input_sequence[:,i], input_sequence[:,i+1]))
-            hankel_x[:,i]=np.concatenate((state_sequence[:,i], state_sequence[:,i+1]))
+            hankel_u[:, i] = np.concatenate(
+                (input_sequence[:, i], input_sequence[:, i+1]))
+            hankel_x[:, i] = np.concatenate(
+                (state_sequence[:, i], state_sequence[:, i+1]))
 
         # hankel_u = np.transpose(np.array(hankel_u))
         # hankel_x = np.transpose(np.array(hankel_x))
@@ -31,13 +33,15 @@ class DDPredictor:
         print(f"self.h_matrix:\n{self.h_matrix}")
 
         # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
-        u_rows_idx = range(0,self.dim_u)
-        x_rows_idx = range(self.dim_u*2,self.dim_u*2+self.dim_x)
+        u_rows_idx = list(range(0, self.dim_u))
+        x_rows_idx = list(range(self.dim_u*2, self.dim_u*2+self.dim_x))
         print(f"u_rows_idx: \n {u_rows_idx}")
         print(f"x_rows_idx: \n {x_rows_idx}")
+        relevant_rows = u_rows_idx + x_rows_idx
+        print(relevant_rows)
 
-        h_input_state = self.h_matrix[[0, 2], :]
-        # print(f"h_input_state (numpy) \n {h_input_state}")
+        h_input_state = self.h_matrix[[1,2,3],:]
+        print(f"h_input_state (numpy) \n {h_input_state}")
         self.h_matrix_inv = np.linalg.pinv(h_input_state)
 
     # Todo: Currently for one dimensional state space, has to be changed for multidimensional state space

@@ -14,7 +14,7 @@ class LTISystem:
 
         self.k = 0
 
-    def next_step(self, u, add_disturbance = True):
+    def next_step(self, u, add_disturbance = False):
         self.u = np.array(u)
 
         # Todo: When matrix multidimensional: * -> @

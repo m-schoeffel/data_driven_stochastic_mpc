@@ -44,28 +44,28 @@ def main():
         # Todo: Change to discounted KDE
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
 
-    print(f"initial state: {my_system.x}")
+    # print(f"initial state: {my_system.x}")
 
     for u in range(1, NUMBER_OF_MEASUREMENTS):
         print(f"\n\nk = {my_system.k}:")
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 
-        # print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
+        print(f"Predicted state:  {my_predictor.predict_state(my_system.x,u)}")
         my_system.next_step(u)
         print(f"actual state: {my_system.x}")
 
-        delta_x = my_system.x - predicted_state
+        # delta_x = my_system.x - predicted_state
 
-        disturbance_estimator.add_delta_x(my_system.k, delta_x)
+        # disturbance_estimator.add_delta_x(my_system.k, delta_x)
 
-    plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
+    # plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
 
-    # Only put real density in plot when it makes sense (not for gaussian process)
-    if plot_real_density:
-        my_disturbance.plot_real_disturbance(ax)
+    # # Only put real density in plot when it makes sense (not for gaussian process)
+    # if plot_real_density:
+    #     my_disturbance.plot_real_disturbance(ax)
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == "__main__":
