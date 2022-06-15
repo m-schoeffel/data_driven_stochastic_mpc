@@ -4,8 +4,8 @@ import numpy as np
 class DDPredictor:
     def __init__(self, input_sequence, state_sequence):
 
-        self.dim_u = input_sequence.shape(0)
-        self.dim_x = state_sequence.shape(0)
+        self.dim_u = input_sequence.shape[0]
+        self.dim_x = state_sequence.shape[0]
         # self.h_matrix = np.array(h_matrix)
         # print(f"h_matrix (numpy) \n {self.h_matrix}")
         hankel_u_shape = (input_sequence.shape[0]*2,input_sequence.shape[1]-1)
