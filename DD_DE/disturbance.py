@@ -27,21 +27,21 @@ class Disturbance:
         dist_vector = np.array(dist_list).reshape(-1,1)
         return dist_vector
 
-    def plot_real_disturbance(self, ax) -> None:
+    def plot_real_disturbance(self, ax,type_of_disturbance) -> None:
         number_samples = 1000
         x = np.linspace(-5, 5, number_samples).reshape(-1, 1)
 
-        if self.type_of_disturbance == "gaussian":
+        if type_of_disturbance == "gaussian":
             mu = 0
             sigma = 1.0
             pdf = 1/(sigma * np.sqrt(2 * np.pi)) * \
                 np.exp(- (x - mu)**2 / (2 * sigma**2))
-        elif self.type_of_disturbance == "uniform":
+        elif type_of_disturbance == "uniform":
             lower_bound = -0.5
             upper_bound = 0.5
             x = np.linspace(lower_bound, upper_bound, number_samples)
             pdf = [1/(upper_bound-lower_bound) for _ in x]
-        elif self.type_of_disturbance == "triangular":
+        elif type_of_disturbance == "triangular":
             left = -2
             mode = 0.5
             right = 1
@@ -52,11 +52,11 @@ class Disturbance:
                    for x in x if x >= left and x <= mode]
             pdf = pdf + [right_side(x)
                          for x in x if x > mode and x <= right]
-        elif self.type_of_disturbance == "lognormal":
+        elif type_of_disturbance == "lognormal":
             mu = 0
             sigma = 1.0
             pdf = (np.exp(-(np.log(x) - mu)**2 / (2 * sigma**2)) /
                    (x * sigma * np.sqrt(2 * np.pi)))
         else:
             return
-        plt.plot(x, pdf, linewidth=2, color='r')
+        ax.plot(x, pdf, linewidth=2, color='r')
