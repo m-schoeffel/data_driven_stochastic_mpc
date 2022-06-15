@@ -22,6 +22,8 @@ class TraditionalKDE:
     def plot_distribution(self):
         fig, ax = plt.subplots(self.number_of_states)
 
+        fig.suptitle("Distribution of disturbance on each state")
+
         for i in range(0, self.number_of_states):
             # A disturbance distribution has to be plotted for every state
             X = self.delta_x_array[i, 0:self.numbr_measurements].reshape(-1, 1)
@@ -32,6 +34,7 @@ class TraditionalKDE:
             logprob = kde.score_samples(x_visuell)
 
             ax[i].plot(x_visuell, np.exp(logprob))
+            ax[i].set_title(f"State {i+1}")
             # print(self.delta_x[0:self.numbr_measurements, 1])
 
         plot_real_density = True
