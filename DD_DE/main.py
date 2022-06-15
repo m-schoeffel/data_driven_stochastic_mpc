@@ -7,7 +7,7 @@ from DD_DE import data_driven_predictor
 from DD_DE import disturbance
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator
 
-NUMBER_OF_MEASUREMENTS = 5
+NUMBER_OF_MEASUREMENTS = 500
 
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "traditional_kde"
@@ -63,13 +63,13 @@ def main():
 
     print(disturbance_estimator.delta_x_array)
 
-    # plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
+    plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
 
     # # Only put real density in plot when it makes sense (not for gaussian process)
     # if plot_real_density:
     #     my_disturbance.plot_real_disturbance(ax)
 
-    # plt.show()
+    plt.show()
 
 
 if __name__ == "__main__":
