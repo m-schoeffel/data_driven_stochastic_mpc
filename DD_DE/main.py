@@ -13,7 +13,7 @@ NUMBER_OF_MEASUREMENTS = 500
 DISTURBANCE_ESTIMATION = "traditional_kde"
 
 # Specify the type of disturbance for each state
-TYPES_OF_DISTURBANCES = ["lognormal","gaussian"]  # gaussian/uniform/triangular/lognormal
+TYPES_OF_DISTURBANCES = ["gaussian","gaussian"]  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = np.array([[1,1],[0,1]])
 B_INPUT_MATRIX = np.array([[0],[1]])
@@ -46,22 +46,22 @@ def main():
         # Todo: Change to discounted KDE
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
 
-    print(f"initial state: {my_system.x}")
+    # print(f"initial sdsatate: {my_system.x}")
 
     for u in range(1, NUMBER_OF_MEASUREMENTS):
-        print(f"\n\nk = {my_system.k}:")
+        # print(f"\n\nk = {my_system.k}:")
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 
-        print(f"Predicted state:  {predicted_state}")
+        # print(f"Predicted state:  {predicted_state}")
         my_system.next_step(u)
-        print(f"actual state: {my_system.x}")
+        # print(f"actual state: {my_system.x}")
 
         delta_x = my_system.x - predicted_state
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
 
-    print(disturbance_estimator.delta_x_array)
+    print(disturbance_estimator.delta_x_array.shape)
 
     plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
 
