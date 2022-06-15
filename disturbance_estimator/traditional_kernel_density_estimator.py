@@ -5,21 +5,21 @@ from sklearn.neighbors import KernelDensity
 
 
 class TraditionalKDE:
-    def __init__(self,number_of_states):
+    def __init__(self,number_of_states,max_timesteps):
 
         # Store index k and delta x of every state (difference between prediction and actual state)
-        self.k_array=np.zeros((1,1000),dtype=int)
-        self.delta_x = np.zeros((number_of_states,1000))
+        self.k_array=np.zeros((1,max_timesteps),dtype=int)
+        self.delta_x_array = np.zeros((number_of_states,max_timesteps))
         self.numbr_measurements = 0
 
     def add_delta_x(self, index_k, delta_x):
         self.k_array[0,self.numbr_measurements] = index_k
-        self.delta_x[:,self.numbr_measurements] = delta_x.reshape(-1)
+        self.delta_x_array[:,self.numbr_measurements] = delta_x.reshape(-1)
         self.numbr_measurements += 1
 
     def plot_distribution(self):
         # A disturbance distribution has to be plotted for every state
-        X = self.delta_x[0:self.numbr_measurements,
+        X = self.delta_x_array[0:self.numbr_measurements,
                                1].reshape(-1, 1)
 
         kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X)

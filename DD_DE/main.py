@@ -40,7 +40,7 @@ def main():
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0])
     elif DISTURBANCE_ESTIMATION == "traditional_kde":
-        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
+        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
         # Todo: Change to discounted KDE
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
@@ -56,9 +56,11 @@ def main():
         my_system.next_step(u)
         print(f"actual state: {my_system.x}")
 
-        # delta_x = my_system.x - predicted_state
+        delta_x = my_system.x - predicted_state
 
-        # disturbance_estimator.add_delta_x(my_system.k, delta_x)
+        disturbance_estimator.add_delta_x(my_system.k, delta_x)
+
+    print(disturbance_estimator.delta_x_array)
 
     # plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
 
