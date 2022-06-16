@@ -5,15 +5,15 @@ from sklearn.metrics import pairwise_distances_chunked
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
 from DD_DE import disturbance
-from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator
+from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
-NUMBER_OF_MEASUREMENTS = 500
+NUMBER_OF_MEASUREMENTS = 40
 
 # gaussian_process/traditional_kde/discounted_kde
-DISTURBANCE_ESTIMATION = "traditional_kde"
+DISTURBANCE_ESTIMATION = "discounted_kde"
 
 # Specify the type of disturbance for each state
-TYPES_OF_DISTURBANCES = ["gaussian","gaussian"]  # gaussian/uniform/triangular/lognormal
+TYPES_OF_DISTURBANCES = ["lognormal","gaussian"]  # gaussian/uniform/triangular/lognormal
 
 A_SYSTEM_MATRIX = np.array([[1,1],[0,1]])
 B_INPUT_MATRIX = np.array([[0],[1]])
@@ -44,7 +44,7 @@ def main():
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
         # Todo: Change to discounted KDE
-        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0])
+        disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
 
     # print(f"initial sdsatate: {my_system.x}")
 
