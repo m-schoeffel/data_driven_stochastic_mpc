@@ -22,7 +22,7 @@ class DiscountedKDE:
         self.numbr_measurements = 0
 
         # Create exponential weight array for discounted kde
-        self.weights = np.power(1.01,np.arange(NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE))
+        self.weights = np.power(BASE_OF_EXPONENTIAL_WEIGHTS,np.arange(NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE))
         self.weights = self.weights/np.sum(self.weights)
 
     def add_delta_x(self, index_k, delta_x):
@@ -33,7 +33,7 @@ class DiscountedKDE:
     def plot_distribution(self):
         fig, ax = plt.subplots(self.number_of_states)
 
-        fig.suptitle("Distribution of disturbance on each state")
+        fig.suptitle("Distribution of disturbance on each state (discounted kde)")
 
         for i in range(0, self.number_of_states):
             # A disturbance distribution has to be plotted for every state

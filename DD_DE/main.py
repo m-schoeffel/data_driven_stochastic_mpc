@@ -7,7 +7,7 @@ from DD_DE import data_driven_predictor
 from DD_DE import disturbance
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
-NUMBER_OF_MEASUREMENTS = 100
+NUMBER_OF_MEASUREMENTS = 300
 
 # gaussian_process/traditional_kde/discounted_kde
 DISTURBANCE_ESTIMATION = "discounted_kde"
