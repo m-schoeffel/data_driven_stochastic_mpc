@@ -5,6 +5,7 @@ from sklearn.metrics import pairwise_distances_chunked
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
 from DD_DE import disturbance
+from DD_DE import helpers
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
 NUMBER_OF_MEASUREMENTS = 300
@@ -25,6 +26,8 @@ INPUT_SEQUENCE[:] = np.array([1, -1, 0, 2, 3, -4, 0, -6, 2])
 
 
 def main():
+    helpers.load_parameters()
+
     my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
     my_system = lti_system.LTISystem(
