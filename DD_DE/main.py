@@ -8,25 +8,27 @@ from DD_DE import disturbance
 from DD_DE import helpers
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
-NUMBER_OF_MEASUREMENTS = 300
+
+[main_param, lti_system_param, disc_kde_param] = helpers.load_parameters()
+
+NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 
 # gaussian_process/traditional_kde/discounted_kde
-DISTURBANCE_ESTIMATION = "discounted_kde"
+DISTURBANCE_ESTIMATION = main_param["dist_est"]
 
 # Specify the type of disturbance for each state
-TYPES_OF_DISTURBANCES = ["lognormal","gaussian"]  # gaussian/uniform/triangular/lognormal
+TYPES_OF_DISTURBANCES = lti_system_param["dist"]  # gaussian/uniform/triangular/lognormal
 
-A_SYSTEM_MATRIX = np.array([[1,1],[0,1]])
-B_INPUT_MATRIX = np.array([[0],[1]])
 
-X_INITIAL_STATE = np.array([[0],[1]])
+A_SYSTEM_MATRIX = lti_system_param["A"]
+B_INPUT_MATRIX = lti_system_param["B"]
 
-INPUT_SEQUENCE = np.zeros((1,9))
-INPUT_SEQUENCE[:] = np.array([1, -1, 0, 2, 3, -4, 0, -6, 2])
+X_INITIAL_STATE = lti_system_param["x_0"]
 
+INPUT_SEQUENCE = main_param["input_seq"]
 
 def main():
-    helpers.load_parameters()
+
 
     my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
