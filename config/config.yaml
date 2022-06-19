@@ -24,16 +24,8 @@ number_of_measurements: 300
 
 disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/discounted_kde
 
+discounted_kde:
+ base_of_exponential_weights: 1.01
 
-dict:
-
- hallo:
- - 3
- - 4
-
- ballo: [5,6]
-
- kallo:
- - [5,6]
- - [7,8]
+ number_of_past_samples_considered: 200
 
