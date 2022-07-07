@@ -31,8 +31,12 @@ class DataDrivenMPC:
             hankel_x[:, i] = np.concatenate(
                 tuple(state_sequence_splitted[idx] for idx in range(i, i+n+1)))[:,0]
         
-        print(f"\nhankel_u: \n{hankel_u}")
-        print(f"\nhankel_x: \n{hankel_x}")
+        # print(f"\nhankel_u: \n{hankel_u}")
+        # print(f"\nhankel_x: \n{hankel_x}")
+
+        self.h_matrix = np.concatenate((hankel_u, hankel_x))
+
+        print(self.h_matrix.shape)
 
 
 input = np.array([[1, -1, 0, 2, 3, -4, 0, -6, 2],
