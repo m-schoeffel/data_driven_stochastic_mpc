@@ -12,7 +12,10 @@ def load_parameters():
     main_param = dict()
 
     # Two steps necessary, so that input_seq is two dimensional array
-    main_param["input_seq"] = np.zeros((1, len(param["input_sequence"])))
+    # If dimension of input would be one, input sequence would be one dimensional array otherwise (breaks system)
+    input_seq_len = len(param["input_sequence"])
+    input_seq_dim = len(param["input_sequence"][0])
+    main_param["input_seq"] = np.zeros((input_seq_len,input_seq_dim))
     main_param["input_seq"][:] = np.array(param["input_sequence"])
 
     main_param["number_of_measurements"] = param["number_of_measurements"]

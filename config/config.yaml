@@ -6,8 +6,8 @@ lti_system:
   - [0,1]
     
   b_input_matrix:
-  - [0]
-  - [1]
+  - [0,1]
+  - [1,0]
 
   x_initial_state:
   - [0]
@@ -15,17 +15,19 @@ lti_system:
 
   # Specify the type of disturbance for each state
   types_of_disturbances: # gaussian/uniform/triangular/lognormal
-  - "lognormal"
+  - "uniform"
   - "gaussian"
 
-input_sequence: [1,-1,0,2,3,-4,0,-6,2]
+input_sequence: 
+- [1,-1,0,2,3,-4,0,-6,2]
+- [-1,0,2,3,-4,0,-6,2,4]
 
 number_of_measurements: 300
 
 disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/discounted_kde
 
 discounted_kde:
- base_of_exponential_weights: 1.01
+ base_of_exponential_weights: 1.00
 
  number_of_past_samples_considered: 200
 
