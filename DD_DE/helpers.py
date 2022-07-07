@@ -46,7 +46,7 @@ def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
         dim_u*(n+1), length_hankel_matrix)
     hankel_x_shape = (
         dim_x*(n+1), length_hankel_matrix)
-        
+
     hankel_u = np.zeros(hankel_u_shape)
     hankel_x = np.zeros(hankel_x_shape)
 
@@ -62,5 +62,6 @@ def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
         hankel_x[:, i] = np.concatenate(
             tuple(state_sequence_splitted[idx] for idx in range(i, i+n+1)))[:, 0]
 
-        h_matrix = np.concatenate((hankel_u, hankel_x))
-        return h_matrix
+    h_matrix = np.concatenate((hankel_u, hankel_x))
+
+    return h_matrix
