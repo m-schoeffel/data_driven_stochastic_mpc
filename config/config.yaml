@@ -1,21 +1,25 @@
 # Specify the system matrices and the disturbances of the lti system
-# It will be used to record the input state trajectory for the hankel matrix
+# It will be used to record the input state trajectory for the hankel matrix and to simulate the "real" system
 lti_system:
   a_system_matrix:
-  - [1,1]
-  - [0,1]
+  - [1,1,0]
+  - [0,1,1]
+  - [0,0,1]
     
   b_input_matrix:
   - [0,1]
   - [1,0]
+  - [2,3]
 
   x_initial_state:
   - [0]
   - [1]
+  - [5]
 
   # Specify the type of disturbance for each state
   types_of_disturbances: # gaussian/uniform/triangular/lognormal
   - "uniform"
+  - "triangular"
   - "gaussian"
 
 input_sequence: 
