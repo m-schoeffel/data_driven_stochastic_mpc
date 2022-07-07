@@ -53,8 +53,10 @@ def main():
 
     # print(f"initial sdsatate: {my_system.x}")
 
-    for u in range(1, NUMBER_OF_MEASUREMENTS):
+    for _ in range(1, NUMBER_OF_MEASUREMENTS):
         # print(f"\n\nk = {my_system.k}:")
+
+        u = np.random.randint(-5,5,size=(1,2))
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 

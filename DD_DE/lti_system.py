@@ -19,9 +19,9 @@ class LTISystem:
 
         # Todo: When matrix multidimensional: * -> @
         if add_disturbance:
-            self.x = self.A @ self.x + self.B * self.u + self.disturbances.get_dist_vector()
+            self.x = self.A @ self.x + self.B @ self.u + self.disturbances.get_dist_vector()
         else:
-            self.x = self.A @ self.x + self.B * self.u
+            self.x = self.A @ self.x + self.B @ self.u
 
         # print(self.x)
         self.k += 1
