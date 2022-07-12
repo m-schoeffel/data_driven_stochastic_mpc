@@ -65,3 +65,25 @@ def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
     h_matrix = np.concatenate((hankel_u, hankel_x))
 
     return h_matrix
+
+
+def create_hankel_pseudo_inverse(h_matrix, dim_u, dim_x):
+
+    # Determine prediction horizon of hankel matrix:
+    predict_horizon = int(h_matrix.shape[0]/(dim_u+dim_x)-1)
+
+    print(f"\n\npredict_horizon: {predict_horizon}\n")
+
+    # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
+    u_rows_idx = list(range(0, dim_u*predict_horizon))
+    x_rows_idx = list(range(dim_u*(predict_horizon+1), dim_u*(predict_horizon+1)+dim_x))
+    # print(f"u_rows_idx: \n {u_rows_idx}")
+    # print(f"x_rows_idx: \n {x_rows_idx}")
+    relevant_rows = u_rows_idx + x_rows_idx
+    print(relevant_rows)
+
+    h_input_state = h_matrix[relevant_rows, :]
+    # print(f"h_input_state (numpy) \n {h_input_state}")
+    h_matrix_inv = np.linalg.pinv(h_input_state)
+
+    return h_matrix_inv

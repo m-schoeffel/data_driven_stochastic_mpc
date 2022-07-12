@@ -28,6 +28,7 @@ class DataDrivenMPC:
 
         self.h_matrix = helpers.create_hankel_matrix(
             input_sequence, state_sequence, prediction_horizon)
+        self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(self.h_matrix,self.dim_u,self.dim_x)
 
     def get_new_u():
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
@@ -80,7 +81,7 @@ for i in range(INPUT_SEQUENCE.shape[1]):
         INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
 
 my_mpc = DataDrivenMPC(INPUT_SEQUENCE,state_sequence,3)
-print(my_mpc.h_matrix)
+print(my_mpc.h_matrix.shape)
 
 
 # Create LTI-System and read sequence
