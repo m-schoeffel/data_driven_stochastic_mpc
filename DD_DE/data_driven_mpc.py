@@ -30,6 +30,11 @@ class DataDrivenMPC:
             input_sequence, state_sequence, prediction_horizon)
         self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(self.h_matrix,self.dim_u,self.dim_x)
 
+        u_sequence = np.array([1,2,-1,-2,3,5])
+        current_x = np.array([0,1])
+        self.predict_state_sequence(current_x,u_sequence)
+        
+
     def get_new_u():
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
         x = 1
@@ -45,6 +50,23 @@ class DataDrivenMPC:
         # 1. Funktion, die Us annimmt, und x_1, x_2, usw. zurückgibt
         # 2. Funktion, die quadrierte Variablen aufspannt für Optimierungsfunktion
         # 3. Funktion, die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
+
+    def predict_state_sequence(self, current_x, u_sequence):
+        current_x = np.array(current_x)
+        u = np.array(u_sequence)
+
+        goal_vector = np.vstack([u.reshape(-1, 1), current_x.reshape(-1, 1)])
+        # print(goal_vector)
+        alpha = self.h_matrix_inv @ goal_vector
+        trajectory = self.h_matrix @ alpha
+        # # print(prediction)
+        # indices_of_prediction = list(
+        #     range(self.dim_u*2+self.dim_x, self.dim_u*2+self.dim_x*2))
+        # # print(f"indices_of_prediction: {indices_of_prediction}")
+        # next_x = trajectory[indices_of_prediction]
+        # return next_x
+        print(f"\n\ntrajectory: {np.round(trajectory).astype(np.int)}\n\n")
+        # print(f"\n\ntrajectory: {trajectory}\n\n")
 
 
 # Testbench:

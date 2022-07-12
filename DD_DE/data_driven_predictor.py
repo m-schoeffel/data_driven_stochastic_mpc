@@ -26,8 +26,6 @@ class DDPredictor:
         print(f"h_input_state (numpy) \n {h_input_state}")
         self.h_matrix_inv = np.linalg.pinv(h_input_state)
 
-    # Todo: Currently for one dimensional state space, has to be changed for multidimensional state space
-
     def predict_state(self, current_x, u):
         current_x = np.array(current_x)
         u = np.array(u)
