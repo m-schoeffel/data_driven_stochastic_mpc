@@ -12,7 +12,6 @@ class DDPredictor:
         self.h_matrix = helpers.create_hankel_matrix(
             input_sequence, state_sequence, prediction_horizon=1)
 
-
         print(f"self.h_matrix:\n{self.h_matrix}")
 
         # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
