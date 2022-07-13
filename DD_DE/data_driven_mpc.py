@@ -46,6 +46,8 @@ class DataDrivenMPC:
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
         
         # Scale constraints to cover full input and state sequence
+        # Todo: Implement for loop
+
         # Todo: Ich hardcode jetzt das System mit festen Dimensionen, muss später variabel gemacht werden
 
         # Hier muss das OR Modell geladen werden
