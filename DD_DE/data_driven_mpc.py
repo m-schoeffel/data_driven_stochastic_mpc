@@ -1,5 +1,7 @@
 import numpy as np
 
+from ortools.sat.python import cp_model
+
 from DD_DE import helpers
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
@@ -28,16 +30,18 @@ class DataDrivenMPC:
 
         self.h_matrix = helpers.create_hankel_matrix(
             input_sequence, state_sequence, prediction_horizon)
-        self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(self.h_matrix,self.dim_u,self.dim_x)
+        self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(
+            self.h_matrix, self.dim_u, self.dim_x)
 
-        u_sequence = np.array([1,2,-1,-2,3,5])
-        current_x = np.array([0,1])
-        self.predict_state_sequence(current_x,u_sequence)
-        
+        u_sequence = np.array([1, 2, -1, -2, 3, 5])
+        current_x = np.array([0, 1])
+        self.predict_state_sequence(current_x, u_sequence)
 
-    def get_new_u():
+    def get_new_u(self):
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
         x = 1
+
+        # Todo: Ich hardcode jetzt das System mit festen Dimensionen, muss später variabel gemacht werden
 
         # Hier muss das OR Modell geladen werden
 
@@ -49,8 +53,41 @@ class DataDrivenMPC:
         # Nötige Hilfsfunktionen:
         # 1. Funktion, die Us annimmt, und x_1, x_2, usw. zurückgibt
         # 2. Funktion, die quadrierte Variablen aufspannt für Optimierungsfunktion
-        # 3. Funktion, die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
+        # 3. Funktion, die die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
 
+        model = cp_model.CpModel()
+
+        u_input = list()
+        # u_squared = list()
+        for i in range(0,6):
+            u_input.append(model.NewIntVar(-5,5,"Entscheider "+str(i)))
+            # u_squared.append(model.NewIntVar(-5,5,"Squared "+str(i)))
+
+        # for i,u in u_input:
+            # model.AddMultiplicationEquality(u_squared[i], [u, u])
+
+        # Mach erstmal mit Einsernorm
+        # self.get_state_sum()+
+        model.Minimize(self.get_sum_states(u_input)+sum(u_input))
+
+        solver = cp_model.CpSolver()
+        status = solver.Solve(model)
+
+        
+        print("Funktioniert bis hier")
+
+        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+            print(f'Maximum of objective function: {solver.ObjectiveValue()}\n')
+            # print(f'x = {solver.Value(x)}')
+            # print(f'y = {solver.Value(y)}')
+        else:
+            print('No solution found.')
+
+
+    def get_sum_states(self,u_sequence):
+        print(f"\nget_sum_states:\n {u_sequence[0]}\n")
+        return sum(u_sequence)
+    
     def predict_state_sequence(self, current_x, u_sequence):
         current_x = np.array(current_x)
         u = np.array(u_sequence)
@@ -102,8 +139,10 @@ for i in range(INPUT_SEQUENCE.shape[1]):
     state_sequence[:, i+1] = my_system.next_step(
         INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
 
-my_mpc = DataDrivenMPC(INPUT_SEQUENCE,state_sequence,3)
+my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence, 3)
 print(my_mpc.h_matrix.shape)
+
+my_mpc.get_new_u()
 
 
 # Create LTI-System and read sequence
