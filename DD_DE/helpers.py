@@ -33,6 +33,36 @@ def load_parameters():
 
     return main_param, lti_system_param, disc_kde_param
 
+def load_cost_matrices():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
+    cost_matrices = dict()
+    cost_matrices["R"] = np.array(param["mpc_cost_matrices"]["R"])
+    cost_matrices["Q"] = np.array(param["mpc_cost_matrices"]["Q"])
+
+    return cost_matrices
+
+def load_constraints():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
+    constraints = dict()
+    constraints["G_u"] = np.array(param["constraints"]["G_u"])
+    constraints["g_u"] = np.array(param["constraints"]["g_u"])
+    constraints["G_x"] = np.array(param["constraints"]["G_x"])
+    constraints["g_x"] = np.array(param["constraints"]["g_x"])
+
+    return constraints
+
+def load_prediction_horizon():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+    
+    prediction_horizon = np.array(param["prediction_horizon"])
+
+    return prediction_horizon
+
 
 def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
     n = prediction_horizon
@@ -76,7 +106,8 @@ def create_hankel_pseudo_inverse(h_matrix, dim_u, dim_x):
 
     # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
     u_rows_idx = list(range(0, dim_u*predict_horizon))
-    x_rows_idx = list(range(dim_u*(predict_horizon+1), dim_u*(predict_horizon+1)+dim_x))
+    x_rows_idx = list(range(dim_u*(predict_horizon+1),
+                      dim_u*(predict_horizon+1)+dim_x))
     # print(f"u_rows_idx: \n {u_rows_idx}")
     # print(f"x_rows_idx: \n {x_rows_idx}")
     relevant_rows = u_rows_idx + x_rows_idx

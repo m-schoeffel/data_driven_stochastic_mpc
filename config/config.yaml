@@ -31,3 +31,31 @@ discounted_kde:
 
  number_of_past_samples_considered: 200
 
+mpc_cost_matrices:
+  R:
+  - [1,0]
+  - [0,1]
+
+  Q:
+  - [1,0]
+  - [0,1]
+
+constraints:
+  G_u:
+  - [1,0]
+  - [0,1]
+
+  g_u:
+  - [20]
+  - [20]
+
+  G_x:
+  - [1,0]
+  - [0,1]
+
+  g_x:
+  - [30]
+  - [30]
+
+prediction_horizon: 3
+

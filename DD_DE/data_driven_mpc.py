@@ -9,26 +9,30 @@ from DD_DE import disturbance
 
 
 class DataDrivenMPC:
-    def __init__(self, input_sequence, state_sequence, prediction_horizon):
+    def __init__(self, input_sequence, state_sequence):
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
+
+        self.prediction_horizon = helpers.load_prediction_horizon()
 
         # Todo: Make system flexibel
 
         # Todo: Load constraints from config.yaml
         # Hardcode constraints (for system with 2 inputs) for now
-        self.G_u = np.diag(np.ones(6))
-        self.g_u = np.array([30, 30, 30, 30, 30, 30])
+        constraints = helpers.load_constraints()
+        self.G_u = np.array(constraints["G_u"])
+        self.g_u = np.array(constraints["g_u"])
 
         # Todo: Add constraints for states
         # Left out for now, because they have to be formulated in relation to u (extensive)
 
         # Matrices for input and state cost
-        self.R = np.diag(np.ones(2))
-        self.Q = np.diag(np.ones(2))
+        cost_matrices = helpers.load_cost_matrices()
+        self.R = np.array(cost_matrices["R"])
+        self.Q = np.array(cost_matrices["Q"])
 
         self.h_matrix = helpers.create_hankel_matrix(
-            input_sequence, state_sequence, prediction_horizon)
+            input_sequence, state_sequence, self.prediction_horizon)
         self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
@@ -40,8 +44,8 @@ class DataDrivenMPC:
 
     def get_new_u(self):
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
-        x = 1
-
+        
+        # Scale constraints to cover full input and state sequence
         # Todo: Ich hardcode jetzt das System mit festen Dimensionen, muss später variabel gemacht werden
 
         # Hier muss das OR Modell geladen werden
@@ -130,7 +134,7 @@ for i in range(INPUT_SEQUENCE.shape[1]):
     state_sequence[:, i+1] = my_system.next_step(
         INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
 
-my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence, 3)
+my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
 print(my_mpc.h_matrix.shape)
 
 my_mpc.get_new_u()
