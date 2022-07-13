@@ -1,7 +1,5 @@
 import numpy as np
 
-from ortools.sat.python import cp_model
-
 from DD_DE import helpers
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
@@ -55,39 +53,10 @@ class DataDrivenMPC:
         # 2. Funktion, die quadrierte Variablen aufspannt für Optimierungsfunktion
         # 3. Funktion, die die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
 
-        model = cp_model.CpModel()
-
-        u_input = list()
-        # u_squared = list()
-        for i in range(0,6):
-            u_input.append(model.NewIntVar(-5,5,"Entscheider "+str(i)))
-            # u_squared.append(model.NewIntVar(-5,5,"Squared "+str(i)))
-
-        # for i,u in u_input:
-            # model.AddMultiplicationEquality(u_squared[i], [u, u])
-
-        # Mach erstmal mit Einsernorm
-        # self.get_state_sum()+
-        model.Minimize(self.get_sum_states(u_input)+sum(u_input))
-
-        solver = cp_model.CpSolver()
-        status = solver.Solve(model)
-
-        
-        print("Funktioniert bis hier")
-
-        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-            print(f'Maximum of objective function: {solver.ObjectiveValue()}\n')
-            # print(f'x = {solver.Value(x)}')
-            # print(f'y = {solver.Value(y)}')
-        else:
-            print('No solution found.')
-
-
-    def get_sum_states(self,u_sequence):
+    def get_sum_states(self, u_sequence):
         print(f"\nget_sum_states:\n {u_sequence[0]}\n")
         return sum(u_sequence)
-    
+
     def predict_state_sequence(self, current_x, u_sequence):
         current_x = np.array(current_x)
         u = np.array(u_sequence)
