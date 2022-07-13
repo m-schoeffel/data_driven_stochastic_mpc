@@ -18,7 +18,7 @@ class DataDrivenMPC:
         # Todo: Load constraints from config.yaml
         # Hardcode constraints (for system with 2 inputs) for now
         self.G_u = np.diag(np.ones(6))
-        self.g_u = np.array([1, 1, 1, 1, 1, 1])
+        self.g_u = np.array([30, 30, 30, 30, 30, 30])
 
         # Todo: Add constraints for states
         # Left out for now, because they have to be formulated in relation to u (extensive)
@@ -59,6 +59,10 @@ class DataDrivenMPC:
         # Create U Constraints
         constraint = LinearConstraint(
             self.G_u, lb=-self.g_u, ub=self.g_u)
+        
+        res = minimize(self.get_sequence_cost,[0,0,0,0,0,0],args=(np.array([10,13])),constraints=constraint)
+        print(res)
+        print(self.predict_state_sequence(np.array([10,13]),res.x))
 
     def get_sequence_cost(self, u_seq, current_x):
         trajectory = self.predict_state_sequence(current_x, u_seq)
