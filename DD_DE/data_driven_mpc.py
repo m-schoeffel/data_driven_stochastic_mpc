@@ -67,11 +67,9 @@ class DataDrivenMPC:
 
         # Get constraint matrices to cover full sequence (fs) of input and state
         G_u_fs = self.determine_full_seq_constr_matrix(self.G_u,self.prediction_horizon-1)
-        print(f"G_u_fs:\n{G_u_fs}")
-        # g_u_fs = 
+        g_u_fs = self.determine_full_seq_constr_ub(self.g_u,self.prediction_horizon-1)
         G_x_fs = self.determine_full_seq_constr_matrix(self.G_x,self.prediction_horizon)
-        print(f"G_x_fs:\n{G_x_fs}")
-        # g_x_fs = 
+        g_x_fs = self.determine_full_seq_constr_ub(self.g_x,self.prediction_horizon)
 
         # # Create U Constraints
         # constraint = LinearConstraint(
@@ -108,9 +106,12 @@ class DataDrivenMPC:
         return full_constrainted_matrix
 
 
-    def determine_full_seq_constr_ub(self,upper_bound):
+    def determine_full_seq_constr_ub(self,upper_bound,steps):
         """Scale up constraint upper bound vectors to cover full sequence"""
-        x=1
+        
+        ub_fs = np.tile(upper_bound,[steps+1,1])
+        
+        return ub_fs
 
     def get_sequence_cost(self, u_seq, current_x):
         trajectory = self.predict_state_sequence(current_x, u_seq)
