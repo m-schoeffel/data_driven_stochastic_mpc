@@ -22,6 +22,9 @@ class DataDrivenMPC:
         constraints = helpers.load_constraints()
         self.G_u = np.array(constraints["G_u"])
         self.g_u = np.array(constraints["g_u"])
+        self.G_x = np.array(constraints["G_x"])
+        self.g_x = np.array(constraints["g_x"])
+        
 
         # Todo: Add constraints for states
         # Left out for now, because they have to be formulated in relation to u (extensive)
@@ -62,13 +65,52 @@ class DataDrivenMPC:
         # 2. Funktion, die quadrierte Variablen aufspannt für Optimierungsfunktion
         # 3. Funktion, die die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
 
-        # Create U Constraints
-        constraint = LinearConstraint(
-            self.G_u, lb=-self.g_u, ub=self.g_u)
+        # Get constraint matrices to cover full sequence (fs) of input and state
+        G_u_fs = self.determine_full_seq_constr_matrix(self.G_u,self.prediction_horizon-1)
+        print(f"G_u_fs:\n{G_u_fs}")
+        # g_u_fs = 
+        G_x_fs = self.determine_full_seq_constr_matrix(self.G_x,self.prediction_horizon)
+        print(f"G_x_fs:\n{G_x_fs}")
+        # g_x_fs = 
+
+        # # Create U Constraints
+        # constraint = LinearConstraint(
+            # self.G_u, lb=-self.g_u, ub=self.g_u)
         
-        res = minimize(self.get_sequence_cost,[0,0,0,0,0,0],args=(np.array([10,13])),constraints=constraint)
-        print(res)
-        print(self.predict_state_sequence(np.array([10,13]),res.x))
+        # res = minimize(self.get_sequence_cost,[0,0,0,0,0,0],args=(np.array([10,13])),constraints=constraint)
+        # print(res)
+        # print(self.predict_state_sequence(np.array([10,13]),res.x))
+
+    def transform_state_constraints(self,G_x,g_x,current_x):
+        """Transform state constraints to depend on u"""
+        # This function is used to express the state constraints in dependance on u
+        # So the control inputs can be the only decision variable and state constraints can still be used
+        x=1
+        # G_x_u
+        # g_x_u
+
+    def determine_full_seq_constr_matrix(self,matrix,steps):
+        """Scale up constraint matrices to cover full sequence"""
+
+        full_constrainted_matrix = np.array([0,0])
+
+        full_constrainted_matrix = np.hstack([matrix,np.tile(np.zeros(matrix.shape),steps)])
+        
+        for i in range(1,steps):
+            left_side_row = np.tile(np.zeros(matrix.shape),i)
+            right_side_row = np.tile(np.zeros(matrix.shape),steps-i)
+            row = np.hstack([left_side_row,matrix,right_side_row])
+            full_constrainted_matrix = np.vstack([full_constrainted_matrix,row])
+        
+        row = np.hstack([np.tile(np.zeros(matrix.shape),steps),matrix])
+        full_constrainted_matrix = np.vstack([full_constrainted_matrix,row])
+
+        return full_constrainted_matrix
+
+
+    def determine_full_seq_constr_ub(self,upper_bound):
+        """Scale up constraint upper bound vectors to cover full sequence"""
+        x=1
 
     def get_sequence_cost(self, u_seq, current_x):
         trajectory = self.predict_state_sequence(current_x, u_seq)
