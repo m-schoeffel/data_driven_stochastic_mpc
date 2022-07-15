@@ -71,6 +71,7 @@ class DataDrivenMPC:
         g_x_fs = self.determine_full_seq_constr_ub(self.g_x)
         G_compl = self.determine_complete_constraint_matrix(G_u_fs, G_x_fs)
         g_compl = np.vstack([g_u_fs, g_x_fs])
+        g_compl = g_compl.reshape(-1,)
 
         # Create Constraintmatrix, which is depending on alpha (decision variable)
         G_alpha = G_compl @ self.h_matrix
@@ -78,6 +79,7 @@ class DataDrivenMPC:
         # Create Alpha Constraints
         constr_input_state = LinearConstraint(
             G_alpha, lb=-g_compl*np.inf, ub=g_compl)
+        # print(type(G_alpha),type(g_compl),sep="------------\n")
 
         # Make sure trajectory starts at current_x
         C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
@@ -85,10 +87,12 @@ class DataDrivenMPC:
             C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
         C_x_0 = C_x_0 @ self.h_matrix
 
-        constr_x_0 = LinearConstraint(
-            C_x_0, lb=current_x.reshape(-1,1), ub=current_x.reshape(-1,1))
+        print( current_x.reshape(-1,1).shape)
 
-        res = minimize(self.get_sequence_cost,np.ones([1,self.h_matrix.shape[1]]),constraints=[constr_input_state,constr_x_0])
+        constr_x_0 = LinearConstraint(
+            C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
+        # constr_input_state,constr_x_0
+        res = minimize(self.get_sequence_cost,np.zeros(self.h_matrix.shape[1]),args=(),constraints=[constr_input_state,constr_x_0])
         print(res)
         # print(self.predict_state_sequence(np.array([10,13]),res.x))
 
@@ -140,7 +144,7 @@ class DataDrivenMPC:
         return ub_fs
 
     def get_sequence_cost(self, alpha):
-        trajectory = self.h_matrix * alpha
+        trajectory = self.h_matrix @ alpha
         cost = 0
         for i in [0, 2, 4]:
             cost += trajectory[i:i+2].transpose()@self.Q@trajectory[i:i+2]
