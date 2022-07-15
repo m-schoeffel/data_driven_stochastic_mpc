@@ -47,23 +47,6 @@ class DataDrivenMPC:
     def get_new_u(self, current_x):
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
 
-        # Scale constraints to cover full input and state sequence
-        # Todo: Implement for loop
-
-        # Todo: Ich hardcode jetzt das System mit festen Dimensionen, muss später variabel gemacht werden
-
-        # Hier muss das OR Modell geladen werden
-
-        # Dazu gehören...
-        # 1. Deklarierung der Entscheidungsvariablen (In deinem Fall die Us)
-        # 2. Festlegung der Constraints (Anhand der derzeitigen Constraintmatrizen aka G_u und G_x)
-        # 3. Festlegung der Optimierungsfunktion
-
-        # Nötige Hilfsfunktionen:
-        # 1. Funktion, die Us annimmt, und x_1, x_2, usw. zurückgibt
-        # 2. Funktion, die quadrierte Variablen aufspannt für Optimierungsfunktion
-        # 3. Funktion, die die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
-
         # Get constraint matrices to cover full sequence (fs) of input and state
         G_u_fs = self.determine_full_seq_constr_matrix(self.G_u)
         g_u_fs = self.determine_full_seq_constr_ub(self.g_u)
@@ -87,14 +70,15 @@ class DataDrivenMPC:
             C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
         C_x_0 = C_x_0 @ self.h_matrix
 
-        print( current_x.reshape(-1,1).shape)
+        print(current_x.reshape(-1, 1).shape)
 
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
         # constr_input_state,constr_x_0
-        res = minimize(self.get_sequence_cost,np.zeros(self.h_matrix.shape[1]),args=(),constraints=[constr_input_state,constr_x_0])
+        res = minimize(self.get_sequence_cost, np.zeros(
+            self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
         print(res)
-        # print(self.predict_state_sequence(np.array([10,13]),res.x))
+        print((self.h_matrix @ res.x).reshape(-1, 1))
 
     def transform_state_constraints(self, G_x, g_x, current_x):
         """Transform state constraints to depend on u"""
