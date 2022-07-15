@@ -40,7 +40,7 @@ class DataDrivenMPC:
 
         u_sequence = np.array([1, 2, -1, -2, 3, 5])
         current_x = np.array([0, 1])
-        trajectory = self.predict_state_sequence(current_x, u_sequence)
+        # trajectory = self.predict_state_sequence(current_x, u_sequence)
         # cost = self.get_sequence_cost(u_sequence, current_x)
         # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
@@ -130,11 +130,11 @@ class DataDrivenMPC:
     def get_sequence_cost(self, alpha):
         trajectory = self.h_matrix @ alpha
         cost = 0
-        for i in [0, 2, 4]:
-            cost += trajectory[i:i+2].transpose()@self.Q@trajectory[i:i+2]
+        for i in range(0,self.dim_u*self.prediction_horizon,self.dim_u):
+            cost += trajectory[i:i+self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
-        for i in [8, 10, 12, 14]:
-            cost += trajectory[i:i+2].transpose()@self.R@trajectory[i:i+2]
+        for i in range(self.dim_u*(self.prediction_horizon+1),self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
+            cost += trajectory[i:i+self.dim_x].transpose()@self.R@trajectory[i:i+self.dim_x]
         return cost
 
     def get_sum_states(self, u_sequence):
@@ -196,7 +196,7 @@ for i in range(INPUT_SEQUENCE.shape[1]):
 my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
 print(my_mpc.h_matrix.shape)
 
-my_mpc.get_new_u(np.array([10, 13]))
+my_mpc.get_new_u(np.array([10, 13,10]))
 
 
 # Create LTI-System and read sequence
