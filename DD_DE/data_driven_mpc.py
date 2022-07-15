@@ -24,7 +24,6 @@ class DataDrivenMPC:
         self.g_u = np.array(constraints["g_u"])
         self.G_x = np.array(constraints["G_x"])
         self.g_x = np.array(constraints["g_x"])
-        
 
         # Todo: Add constraints for states
         # Left out for now, because they have to be formulated in relation to u (extensive)
@@ -41,13 +40,13 @@ class DataDrivenMPC:
 
         u_sequence = np.array([1, 2, -1, -2, 3, 5])
         current_x = np.array([0, 1])
-        trajectory=self.predict_state_sequence(current_x, u_sequence)
-        cost = self.get_sequence_cost(u_sequence,current_x)
-        print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
+        trajectory = self.predict_state_sequence(current_x, u_sequence)
+        cost = self.get_sequence_cost(u_sequence, current_x)
+        # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
     def get_new_u(self):
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
-        
+
         # Scale constraints to cover full input and state sequence
         # Todo: Implement for loop
 
@@ -66,55 +65,73 @@ class DataDrivenMPC:
         # 3. Funktion, die die Optimierungsfunktion anhand der Matrizen als Einzeiler zurückgibt
 
         # Get constraint matrices to cover full sequence (fs) of input and state
-        G_u_fs = self.determine_full_seq_constr_matrix(self.G_u,self.prediction_horizon-1)
-        g_u_fs = self.determine_full_seq_constr_ub(self.g_u,self.prediction_horizon-1)
-        G_x_fs = self.determine_full_seq_constr_matrix(self.G_x,self.prediction_horizon)
-        g_x_fs = self.determine_full_seq_constr_ub(self.g_x,self.prediction_horizon)
+        G_u_fs = self.determine_full_seq_constr_matrix(self.G_u)
+        g_u_fs = self.determine_full_seq_constr_ub(self.g_u)
+        G_x_fs = self.determine_full_seq_constr_matrix(self.G_x)
+        g_x_fs = self.determine_full_seq_constr_ub(self.g_x)
+        G_compl = self.determine_complete_constraint_matrix(G_u_fs, G_x_fs)
+        g_compl = np.vstack([g_u_fs, g_x_fs])
 
-        # # Create U Constraints
-        # constraint = LinearConstraint(
-            # self.G_u, lb=-self.g_u, ub=self.g_u)
-        
-        # res = minimize(self.get_sequence_cost,[0,0,0,0,0,0],args=(np.array([10,13])),constraints=constraint)
+        # Create Constraintmatrix, which is depending on alpha (decision variable)
+        G_alpha = G_compl @ self.h_matrix
+
+        # Create Alpha Constraints
+        constraint = LinearConstraint(
+            G_alpha, lb=-g_compl*np.inf, ub=g_compl)
+
+        res = minimize(self.get_sequence_cost,np.ones([1,self.h_matrix.shape[1]]),constraints=constraint)
         # print(res)
         # print(self.predict_state_sequence(np.array([10,13]),res.x))
 
-    def transform_state_constraints(self,G_x,g_x,current_x):
+    def transform_state_constraints(self, G_x, g_x, current_x):
         """Transform state constraints to depend on u"""
         # This function is used to express the state constraints in dependance on u
         # So the control inputs can be the only decision variable and state constraints can still be used
-        x=1
+        x = 1
         # G_x_u
         # g_x_u
 
-    def determine_full_seq_constr_matrix(self,matrix,steps):
+    def determine_complete_constraint_matrix(self, G_u_fs, G_x_fs):
+        u_block = np.hstack(
+            [G_u_fs, np.zeros([G_u_fs.shape[0], G_x_fs.shape[1]])])
+        x_block = np.hstack(
+            [np.zeros([G_x_fs.shape[0], G_u_fs.shape[1]]), G_x_fs])
+        G_compl = np.vstack([u_block, x_block])
+        return G_compl
+
+    def determine_full_seq_constr_matrix(self, matrix):
         """Scale up constraint matrices to cover full sequence"""
 
-        full_constrainted_matrix = np.array([0,0])
+        steps = self.prediction_horizon
 
-        full_constrainted_matrix = np.hstack([matrix,np.tile(np.zeros(matrix.shape),steps)])
-        
-        for i in range(1,steps):
-            left_side_row = np.tile(np.zeros(matrix.shape),i)
-            right_side_row = np.tile(np.zeros(matrix.shape),steps-i)
-            row = np.hstack([left_side_row,matrix,right_side_row])
-            full_constrainted_matrix = np.vstack([full_constrainted_matrix,row])
-        
-        row = np.hstack([np.tile(np.zeros(matrix.shape),steps),matrix])
-        full_constrainted_matrix = np.vstack([full_constrainted_matrix,row])
+        full_constrainted_matrix = np.array([0, 0])
+
+        full_constrainted_matrix = np.hstack(
+            [matrix, np.tile(np.zeros(matrix.shape), steps)])
+
+        for i in range(1, steps):
+            left_side_row = np.tile(np.zeros(matrix.shape), i)
+            right_side_row = np.tile(np.zeros(matrix.shape), steps-i)
+            row = np.hstack([left_side_row, matrix, right_side_row])
+            full_constrainted_matrix = np.vstack(
+                [full_constrainted_matrix, row])
+
+        row = np.hstack([np.tile(np.zeros(matrix.shape), steps), matrix])
+        full_constrainted_matrix = np.vstack([full_constrainted_matrix, row])
 
         return full_constrainted_matrix
 
-
-    def determine_full_seq_constr_ub(self,upper_bound,steps):
+    def determine_full_seq_constr_ub(self, upper_bound):
         """Scale up constraint upper bound vectors to cover full sequence"""
-        
-        ub_fs = np.tile(upper_bound,[steps+1,1])
-        
+
+        steps = self.prediction_horizon
+
+        ub_fs = np.tile(upper_bound, [steps+1, 1])
+
         return ub_fs
 
-    def get_sequence_cost(self, u_seq, current_x):
-        trajectory = self.predict_state_sequence(current_x, u_seq)
+    def get_sequence_cost(self, alpha):
+        trajectory = self.h_matrix * alpha
         cost = 0
         for i in [0, 2, 4]:
             cost += trajectory[i:i+2].transpose()@self.Q@trajectory[i:i+2]
@@ -141,7 +158,7 @@ class DataDrivenMPC:
         # # print(f"indices_of_prediction: {indices_of_prediction}")
         # next_x = trajectory[indices_of_prediction]
         # return next_x
-        print(f"\n\ntrajectory: {np.round(trajectory).astype(np.int)}\n\n")
+        # print(f"\n\ntrajectory: {np.round(trajectory).astype(np.int)}\n\n")
         # print(f"\n\ntrajectory: {trajectory}\n\n")
         return trajectory
 
