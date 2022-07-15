@@ -41,10 +41,10 @@ class DataDrivenMPC:
         u_sequence = np.array([1, 2, -1, -2, 3, 5])
         current_x = np.array([0, 1])
         trajectory = self.predict_state_sequence(current_x, u_sequence)
-        cost = self.get_sequence_cost(u_sequence, current_x)
+        # cost = self.get_sequence_cost(u_sequence, current_x)
         # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
-    def get_new_u(self):
+    def get_new_u(self, current_x):
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
 
         # Scale constraints to cover full input and state sequence
@@ -76,11 +76,20 @@ class DataDrivenMPC:
         G_alpha = G_compl @ self.h_matrix
 
         # Create Alpha Constraints
-        constraint = LinearConstraint(
+        constr_input_state = LinearConstraint(
             G_alpha, lb=-g_compl*np.inf, ub=g_compl)
 
-        res = minimize(self.get_sequence_cost,np.ones([1,self.h_matrix.shape[1]]),constraints=constraint)
-        # print(res)
+        # Make sure trajectory starts at current_x
+        C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
+        for i in range(0, len(current_x.reshape(-1, 1))):
+            C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
+        C_x_0 = C_x_0 @ self.h_matrix
+
+        constr_x_0 = LinearConstraint(
+            C_x_0, lb=current_x.reshape(-1,1), ub=current_x.reshape(-1,1))
+
+        res = minimize(self.get_sequence_cost,np.ones([1,self.h_matrix.shape[1]]),constraints=[constr_input_state,constr_x_0])
+        print(res)
         # print(self.predict_state_sequence(np.array([10,13]),res.x))
 
     def transform_state_constraints(self, G_x, g_x, current_x):
@@ -199,7 +208,7 @@ for i in range(INPUT_SEQUENCE.shape[1]):
 my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
 print(my_mpc.h_matrix.shape)
 
-my_mpc.get_new_u()
+my_mpc.get_new_u(np.array([10, 13]))
 
 
 # Create LTI-System and read sequence
