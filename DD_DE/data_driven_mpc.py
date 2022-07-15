@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 from scipy.optimize import minimize, LinearConstraint
 
@@ -45,6 +46,7 @@ class DataDrivenMPC:
         # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
     def get_new_u(self, current_x):
+        start_time = time.time()
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
 
         # Get constraint matrices to cover full sequence (fs) of input and state
@@ -79,6 +81,7 @@ class DataDrivenMPC:
             self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
         print(res)
         print((self.h_matrix @ res.x).reshape(-1, 1))
+        print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
 
     def transform_state_constraints(self, G_x, g_x, current_x):
         """Transform state constraints to depend on u"""
