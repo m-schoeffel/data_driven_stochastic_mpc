@@ -20,6 +20,7 @@ lti_system:
   types_of_disturbances: # gaussian/uniform/triangular/lognormal
   - "uniform"
   - "triangular"
+  - "triangular"
 
 input_sequence: 
 - [1,-1,0,2,3,-4,0,-6,2,2,3,-4,0,-6,2,4,7,6,-3,-2,4,-3,8,-5,3,2,4,5,3]
@@ -32,7 +33,7 @@ disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/disc
 discounted_kde:
  base_of_exponential_weights: 1.00
 
- number_of_past_samples_considered: 200
+density_number_of_past_samples_considered: 200
 
 mpc_cost_matrices:
   R:

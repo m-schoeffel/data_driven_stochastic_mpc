@@ -9,7 +9,7 @@ from DD_DE import helpers
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
 
-[main_param, lti_system_param, disc_kde_param] = helpers.load_parameters()
+[main_param, lti_system_param] = helpers.load_parameters()
 
 NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 

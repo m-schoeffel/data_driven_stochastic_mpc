@@ -27,11 +27,8 @@ def load_parameters():
     lti_system_param["x_0"] = np.array(param["lti_system"]["x_initial_state"])
     lti_system_param["dist"] = param["lti_system"]["types_of_disturbances"]
 
-    disc_kde_param = dict()
-    disc_kde_param["base_exp_weights"] = param["discounted_kde"]["base_of_exponential_weights"]
-    disc_kde_param["samples_considered"] = param["discounted_kde"]["number_of_past_samples_considered"]
+    return main_param, lti_system_param
 
-    return main_param, lti_system_param, disc_kde_param
 
 def load_cost_matrices():
     with open('config/config.yaml') as file:
@@ -42,6 +39,7 @@ def load_cost_matrices():
     cost_matrices["Q"] = np.array(param["mpc_cost_matrices"]["Q"])
 
     return cost_matrices
+
 
 def load_constraints():
     with open('config/config.yaml') as file:
@@ -55,13 +53,28 @@ def load_constraints():
 
     return constraints
 
+
 def load_prediction_horizon():
     with open('config/config.yaml') as file:
         param = yaml.load(file, Loader=yaml.FullLoader)
-    
+
     prediction_horizon = np.array(param["prediction_horizon"])
 
     return prediction_horizon
+
+
+def load_number_of_samples_considered():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
+    return param["density_number_of_past_samples_considered"]
+
+
+def load_base_of_exponential_weights():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
+    return param["discounted_kde"]["base_of_exponential_weights"]
 
 
 def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):

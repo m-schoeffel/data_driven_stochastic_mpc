@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 
+NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE = 200
 
 class GaussianProcess:
     def __init__(self):

@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import KernelDensity
 from scipy import stats
 
-NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE = 200
-BASE_OF_EXPONENTIAL_WEIGHTS = 1.01
+from DD_DE import helpers
+
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
     def __init__(self, number_of_states, number_timesteps):
-        global NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE
         # Limit number of consideres samples if not enough samples available
-        NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE = min(number_timesteps,NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE)
+        self.number_of_past_samples_considered_for_kde = min(number_timesteps,helpers.load_number_of_samples_considered())
 
         self.number_of_states = number_of_states
 
@@ -22,7 +21,7 @@ class DiscountedKDE:
         self.numbr_measurements = 0
 
         # Create exponential weight array for discounted kde
-        self.weights = np.power(BASE_OF_EXPONENTIAL_WEIGHTS,np.arange(NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE))
+        self.weights = np.power(helpers.load_base_of_exponential_weights(),np.arange(self.number_of_past_samples_considered_for_kde))
         self.weights = self.weights/np.sum(self.weights)
 
     def add_delta_x(self, index_k, delta_x):
@@ -37,7 +36,7 @@ class DiscountedKDE:
 
         for i in range(0, self.number_of_states):
             # A disturbance distribution has to be plotted for every state
-            indices_considered_samples = list(range(self.numbr_measurements-NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE,self.numbr_measurements))
+            indices_considered_samples = list(range(self.numbr_measurements-self.number_of_past_samples_considered_for_kde,self.numbr_measurements))
             state_deviations = self.delta_x_array[i, indices_considered_samples]
 
             print(f"Length weights \n{self.weights.shape}")
