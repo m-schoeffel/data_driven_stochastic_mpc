@@ -10,8 +10,10 @@ from DD_DE import helpers
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
     def __init__(self, number_of_states, number_timesteps):
+        [base_of_exponential_weights,default_number_past_samples] = helpers.load_param_discounted_kde()
+
         # Limit number of consideres samples if not enough samples available
-        self.number_of_past_samples_considered_for_kde = min(number_timesteps,helpers.load_number_of_samples_considered())
+        self.number_of_past_samples_considered_for_kde = min(number_timesteps,default_number_past_samples)
 
         self.number_of_states = number_of_states
 
@@ -21,7 +23,7 @@ class DiscountedKDE:
         self.numbr_measurements = 0
 
         # Create exponential weight array for discounted kde
-        self.weights = np.power(helpers.load_base_of_exponential_weights(),np.arange(self.number_of_past_samples_considered_for_kde))
+        self.weights = np.power(base_of_exponential_weights,np.arange(self.number_of_past_samples_considered_for_kde))
         self.weights = self.weights/np.sum(self.weights)
 
     def add_delta_x(self, index_k, delta_x):

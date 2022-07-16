@@ -63,18 +63,22 @@ def load_prediction_horizon():
     return prediction_horizon
 
 
-def load_number_of_samples_considered():
+def load_param_gaussian_process():
     with open('config/config.yaml') as file:
         param = yaml.load(file, Loader=yaml.FullLoader)
 
-    return param["density_number_of_past_samples_considered"]
+    return param["gaussian_process"]["density_number_of_past_samples_considered"]
 
 
-def load_base_of_exponential_weights():
+def load_param_discounted_kde():
     with open('config/config.yaml') as file:
         param = yaml.load(file, Loader=yaml.FullLoader)
 
-    return param["discounted_kde"]["base_of_exponential_weights"]
+    base_of_exponential_weights = param["discounted_kde"]["base_of_exponential_weights"]
+    number_of_past_samples_considered = param["discounted_kde"]["density_number_of_past_samples_considered"]
+
+    
+    return base_of_exponential_weights, number_of_past_samples_considered
 
 
 def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):

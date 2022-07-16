@@ -11,7 +11,7 @@ class GaussianProcess:
     def __init__(self, number_of_states, number_timesteps):
 
         self.number_of_past_samples_considered_for_kde = min(
-            number_timesteps, helpers.load_number_of_samples_considered())
+            number_timesteps, helpers.load_param_gaussian_process())
 
         self.number_of_states = number_of_states
 
