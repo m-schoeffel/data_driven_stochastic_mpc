@@ -44,7 +44,7 @@ def main():
     my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
-        disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0])
+        disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "traditional_kde":
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":

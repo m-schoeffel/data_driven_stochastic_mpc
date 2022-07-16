@@ -4,50 +4,61 @@ import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 
-NUMBER_OF_PAST_SAMPLES_CONSIDERED_FOR_KDE = 200
+from DD_DE import helpers
+
 
 class GaussianProcess:
-    def __init__(self):
+    def __init__(self, number_of_states, number_timesteps):
 
-        # Store index k and delta x (difference between prediction and actual state)
-        self.array_delta_x = np.ones((1000, 2))
+        self.number_of_past_samples_considered_for_kde = min(
+            number_timesteps, helpers.load_number_of_samples_considered())
+
+        self.number_of_states = number_of_states
+
+        # Store index k and delta x of every state (difference between prediction and actual state)
+        self.k_array = np.zeros((1, number_timesteps), dtype=int)
+        self.delta_x_array = np.zeros((number_of_states, number_timesteps))
         self.numbr_measurements = 0
 
     def add_delta_x(self, index_k, delta_x):
-        self.array_delta_x[self.numbr_measurements, :] = ([index_k, delta_x])
+        self.k_array[0, self.numbr_measurements] = index_k
+        self.delta_x_array[:, self.numbr_measurements] = delta_x.reshape(-1)
         self.numbr_measurements += 1
 
     def plot_distribution(self):
+        fig, ax = plt.subplots(self.number_of_states)
 
-        X_train = self.array_delta_x[0:self.numbr_measurements,
-                                     0].reshape(-1, 1)
-        y_train = self.array_delta_x[0:self.numbr_measurements, 1]
+        fig.suptitle("Gaussian process of each state")
 
-        kernel = 1 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e2))
-        gaussian_process = GaussianProcessRegressor(
-            kernel=kernel, n_restarts_optimizer=9)
-        gaussian_process.fit(X_train, y_train)
-        print(gaussian_process.kernel_)
+        for i in range(0, self.number_of_states):
+            # A gaussian process has to be plotted for every state
+            X_train = self.delta_x_array[i,0:self.numbr_measurements].reshape(-1, 1)
+            y_train = self.k_array[0,0:self.numbr_measurements]
 
-        X_predict = np.linspace(
-            1, len(X_train)+1, self.numbr_measurements*2).reshape(-1, 1)
+            kernel = 1 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e2))
+            gaussian_process = GaussianProcessRegressor(
+                kernel=kernel, n_restarts_optimizer=9)
+            gaussian_process.fit(X_train, y_train)
+            print(gaussian_process.kernel_)
 
-        mean_prediction, std_prediction = gaussian_process.predict(
-            X_predict, return_std=True)
+            X_predict = np.linspace(
+                1, len(X_train)+1, self.numbr_measurements*2).reshape(-1, 1)
 
-        fig, ax = plt.subplots()
-        ax.scatter(X_train, y_train, label="Observations")
-        ax.plot(X_predict, mean_prediction, label="Mean prediction")
-        ax.fill_between(
-            X_predict.ravel(),
-            mean_prediction - 1.96 * std_prediction,
-            mean_prediction + 1.96 * std_prediction,
-            alpha=0.5,
-            label=r"95% confidence interval",
-        )
-        ax.legend()
-        ax.set(xlabel='x', ylabel='f(x)')
-        ax.set_title("Gaussian process regression on noise-free dataset")
+            mean_prediction, std_prediction = gaussian_process.predict(
+                X_predict, return_std=True)
+
+            ax[i].scatter(X_train, y_train, label="Observations")
+            ax[i].plot(X_predict, mean_prediction, label="Mean prediction")
+            ax[i].fill_between(
+                X_predict.ravel(),
+                mean_prediction - 1.96 * std_prediction,
+                mean_prediction + 1.96 * std_prediction,
+                alpha=0.5,
+                label=r"95% confidence interval",
+            )
+            ax[i].legend()
+            ax[i].set(xlabel='x', ylabel='f(x)')
+            ax[i].set_title("Gaussian process regression on noise-free dataset")
 
         plot_real_density = False
         return plot_real_density, fig, ax
