@@ -3,7 +3,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-from scipy.optimize import minimize, LinearConstraint
+from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
 from DD_DE import helpers
 from DD_DE import lti_system
@@ -47,7 +47,7 @@ class DataDrivenMPC:
 
     def get_new_u(self, current_x,goal_state=0):
         start_time = time.time()
-        # Todo: Später wirst du hier einen Zielstate als Input übergeben
+
         # Specify goal_state
         if goal_state == 0:
             self.goal_state = np.zeros([self.dim_x])
@@ -77,10 +77,13 @@ class DataDrivenMPC:
             C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
         C_x_0 = C_x_0 @ self.h_matrix
 
-        # print(current_x.reshape(-1, 1).shape)
-
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
+        
+        # Specify non-linear constraints
+        # Todo: The non-linear constrains should be read in from the config file and not hardcoded for the current system on hand
+        constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon),np.ones(self.prediction_horizon)*np.inf)
+        
         # constr_input_state,constr_x_0
         res = minimize(self.get_sequence_cost, np.zeros(
             self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
@@ -127,8 +130,22 @@ class DataDrivenMPC:
         # print(trajectory[0:2])
         next_u = trajectory[0:2]
         return next_u
-        
-
+    
+    def check_circle_constraint(self,alpha):
+        """This function specifies a non-linear, circular constraint"""
+        # All state should be located outside of the circle (except x_0)
+        trajectory = self.h_matrix @ alpha
+        radius_of_predictions = np.zeros(self.prediction_horizon)
+        m = 0
+        for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x,self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
+            # x*x+y*y
+            radius = trajectory[i:i+2].transpose()*trajectory[i:i+2]
+            radius = np.dot(trajectory[i:i+2],trajectory[i:i+2])
+            radius_of_predictions[m]=radius
+            if radius <=1:
+                print(f"radius:\n{radius}")
+            m+=1
+        return radius_of_predictions
 
     def transform_state_constraints(self, G_x, g_x, current_x):
         """Transform state constraints to depend on u"""

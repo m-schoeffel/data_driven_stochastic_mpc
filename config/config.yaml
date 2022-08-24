@@ -30,7 +30,7 @@ input_sequence:
 - [1,-1,0,2,3,-4,0,-6,2,-2,3,-4,0,-6,2,-4,7,6,-3,-2,4,-3,8,-5,3,2,4,5,3]
 - [-1,0,-2,3,-4,0,-6,2,4,2,3,-4,0,-6,2,5,8,-3,4,5,2,9,-2,-1,4,-6,-8,4,-2]
 
-number_of_measurements: 100
+number_of_measurements: 30
 
 disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/discounted_kde
 

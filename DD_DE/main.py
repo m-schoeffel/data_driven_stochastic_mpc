@@ -67,7 +67,7 @@ def main():
 
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
-        next_u = my_mpc.get_new_u(my_system.x,goal_state=[5,5,0,0])
+        next_u = my_mpc.get_new_u(my_system.x,goal_state=[4,4,0,0])
         # print(next_u)
 
         predicted_state = my_predictor.predict_state(my_system.x, next_u)
@@ -90,6 +90,10 @@ def main():
     axs[0,1].plot(x_values,state_storage[1,:],label="x_1")
     axs[1,0].plot(x_values,state_storage[2,:],label="x_2")
     axs[1,1].plot(x_values,state_storage[3,:],label="x_3")
+
+    plt.figure()
+    plt.plot(state_storage[0,:],state_storage[1,:])
+
     plt.show()
 
     # ------------------ Plot disturbance ------------------
