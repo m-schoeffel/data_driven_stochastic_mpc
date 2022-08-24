@@ -72,19 +72,19 @@ class DataDrivenMPC:
             C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
         C_x_0 = C_x_0 @ self.h_matrix
 
-        print(current_x.reshape(-1, 1).shape)
+        # print(current_x.reshape(-1, 1).shape)
 
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
         # constr_input_state,constr_x_0
         res = minimize(self.get_sequence_cost, np.zeros(
             self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
-        print(res)
+        # print(res)
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
-        print(trajectory)
-        print(trajectory.shape)
-        print(trajectory[-15])
-        print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
+        # print(trajectory)
+        # print(trajectory.shape)
+        # print(trajectory[-15])
+        # print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
 
         # # Plot for debugging
         # fig, axs = plt.subplots(3, 2)
@@ -119,7 +119,7 @@ class DataDrivenMPC:
 
         # return next input (MPC Ouput)
         # Todo: replace hardcoded indices by flexible selection
-        print(trajectory[0:2])
+        # print(trajectory[0:2])
         next_u = trajectory[0:2]
         return next_u
         

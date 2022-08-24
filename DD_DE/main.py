@@ -4,6 +4,7 @@ from sklearn.metrics import pairwise_distances_chunked
 
 from DD_DE import lti_system
 from DD_DE import data_driven_predictor
+from DD_DE import data_driven_mpc
 from DD_DE import disturbance
 from DD_DE import helpers
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
@@ -42,6 +43,8 @@ def main():
         state_sequence[:,i+1] = my_system.next_step(INPUT_SEQUENCE[:,i],add_disturbance=False)[:,0]
 
     my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
+    my_mpc = data_driven_mpc.DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
+
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
@@ -50,13 +53,17 @@ def main():
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
         disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
 
-    # print(f"initial sdsatate: {my_system.x}")
+    # Set initial state
+    my_system.x = X_INITIAL_STATE
+    print(f"initial state: {my_system.x}")
 
     for _ in range(1, NUMBER_OF_MEASUREMENTS):
         # print(f"\n\nk = {my_system.k}:")
 
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
+        next_u = my_mpc.get_new_u(my_system.x)
+        print(next_u)
 
         predicted_state = my_predictor.predict_state(my_system.x, u)
 
