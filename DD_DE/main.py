@@ -58,7 +58,10 @@ def main():
     my_system.x = X_INITIAL_STATE
     print(f"initial state: \n{my_system.x}")
 
-    for _ in range(1, NUMBER_OF_MEASUREMENTS):
+    state_storage = np.zeros([X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS])
+    
+
+    for i in range(0, NUMBER_OF_MEASUREMENTS):
         start_time = time.time()
         # print(f"\n\nk = {my_system.k}:")
 
@@ -71,14 +74,25 @@ def main():
 
         # print(f"Predicted state:  {predicted_state}")
         my_system.next_step(next_u,add_disturbance=False)
-        print(f"actual state: \n{my_system.x}")
+        # print(f"actual state: \n{my_system.x}")
 
         delta_x = my_system.x - predicted_state
 
+        state_storage[:,i]=my_system.x.reshape(-1)
+
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
-        print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
+        # print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
+    
+    # ------------------ Plot state sequence ------------------
+    fig,axs = plt.subplots(2,2)    
+    x_values = list(range(0,NUMBER_OF_MEASUREMENTS))
+    axs[0,0].plot(x_values,state_storage[0,:],label="x_0")
+    axs[0,1].plot(x_values,state_storage[1,:],label="x_1")
+    axs[1,0].plot(x_values,state_storage[2,:],label="x_2")
+    axs[1,1].plot(x_values,state_storage[3,:],label="x_3")
+    plt.show()
 
-
+    # ------------------ Plot disturbance ------------------
     # print(disturbance_estimator.delta_x_array.shape)
 
     # plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
