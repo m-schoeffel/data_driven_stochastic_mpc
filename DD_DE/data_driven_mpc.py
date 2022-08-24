@@ -45,9 +45,14 @@ class DataDrivenMPC:
         # cost = self.get_sequence_cost(u_sequence, current_x)
         # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
-    def get_new_u(self, current_x):
+    def get_new_u(self, current_x,goal_state=0):
         start_time = time.time()
         # Todo: Später wirst du hier einen Zielstate als Input übergeben
+        # Specify goal_state
+        if goal_state == 0:
+            self.goal_state = np.zeros([self.dim_x])
+        else:
+            self.goal_state = np.array(goal_state)
 
         # Get constraint matrices to cover full sequence (fs) of input and state
         G_u_fs = self.determine_full_seq_constr_matrix(self.G_u)
@@ -172,13 +177,7 @@ class DataDrivenMPC:
 
         return ub_fs
 
-    def get_sequence_cost(self, alpha,goal_state=0):
-        
-        if goal_state == 0:
-            goal_state = np.zeros([self.dim_x])
-        else:
-            goal_state = np.array(goal_state)
-            
+    def get_sequence_cost(self, alpha):
 
         trajectory = self.h_matrix @ alpha
         cost = 0
@@ -186,7 +185,7 @@ class DataDrivenMPC:
             cost += trajectory[i:i+self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
         for i in range(self.dim_u*(self.prediction_horizon+1),self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
-            state_diff = trajectory[i:i+self.dim_x] - goal_state
+            state_diff = trajectory[i:i+self.dim_x] - self.goal_state
             cost += state_diff.transpose()@self.R@state_diff
         return cost
 
