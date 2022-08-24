@@ -55,7 +55,7 @@ def main():
 
     # Set initial state
     my_system.x = X_INITIAL_STATE
-    print(f"initial state: {my_system.x}")
+    print(f"initial state: \n{my_system.x}")
 
     for _ in range(1, NUMBER_OF_MEASUREMENTS):
         # print(f"\n\nk = {my_system.k}:")
@@ -63,29 +63,29 @@ def main():
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
         next_u = my_mpc.get_new_u(my_system.x)
-        print(next_u)
+        # print(next_u)
 
-        predicted_state = my_predictor.predict_state(my_system.x, u)
+        predicted_state = my_predictor.predict_state(my_system.x, next_u)
 
         # print(f"Predicted state:  {predicted_state}")
-        my_system.next_step(u)
-        # print(f"actual state: {my_system.x}")
+        my_system.next_step(next_u,add_disturbance=False)
+        print(f"actual state: \n{my_system.x}")
 
         delta_x = my_system.x - predicted_state
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
 
-    print(disturbance_estimator.delta_x_array.shape)
+    # print(disturbance_estimator.delta_x_array.shape)
 
-    plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
+    # plot_real_density, fig, ax = disturbance_estimator.plot_distribution()
 
-    # Only put real density in plot when it makes sense (not for gaussian process)
-    if plot_real_density:
-        for i, dist_type in enumerate(TYPES_OF_DISTURBANCES):
-            print(dist_type)
-            my_disturbance.plot_real_disturbance(ax[i],dist_type)
+    # # Only put real density in plot when it makes sense (not for gaussian process)
+    # if plot_real_density:
+    #     for i, dist_type in enumerate(TYPES_OF_DISTURBANCES):
+    #         print(dist_type)
+    #         my_disturbance.plot_real_disturbance(ax[i],dist_type)
 
-    plt.show()
+    # plt.show()
 
 
 if __name__ == "__main__":
