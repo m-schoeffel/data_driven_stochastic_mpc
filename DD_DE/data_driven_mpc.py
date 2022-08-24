@@ -205,46 +205,47 @@ class DataDrivenMPC:
         return trajectory
 
 
-# Testbench:
-[main_param, lti_system_param] = helpers.load_parameters()
+def testbench():
+    [main_param, lti_system_param] = helpers.load_parameters()
 
-NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
+    # gaussian_process/traditional_kde/discounted_kde
+    DISTURBANCE_ESTIMATION = main_param["dist_est"]
 
-# gaussian_process/traditional_kde/discounted_kde
-DISTURBANCE_ESTIMATION = main_param["dist_est"]
-
-# Specify the type of disturbance for each state
-# gaussian/uniform/triangular/lognormal
-TYPES_OF_DISTURBANCES = lti_system_param["dist"]
+    # Specify the type of disturbance for each state
+    # gaussian/uniform/triangular/lognormal
+    TYPES_OF_DISTURBANCES = lti_system_param["dist"]
 
 
-A_SYSTEM_MATRIX = lti_system_param["A"]
-B_INPUT_MATRIX = lti_system_param["B"]
+    A_SYSTEM_MATRIX = lti_system_param["A"]
+    B_INPUT_MATRIX = lti_system_param["B"]
 
-X_INITIAL_STATE = lti_system_param["x_0"]
+    X_INITIAL_STATE = lti_system_param["x_0"]
 
-INPUT_SEQUENCE = main_param["input_seq"]
+    INPUT_SEQUENCE = main_param["input_seq"]
 
-my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
+    my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
-my_system = lti_system.LTISystem(
-    x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=my_disturbance)
+    my_system = lti_system.LTISystem(
+        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=my_disturbance)
 
-state_sequence = np.zeros(
-    (X_INITIAL_STATE.shape[0], INPUT_SEQUENCE.shape[1]+1))
-state_sequence[:, 0] = X_INITIAL_STATE[:, 0]
-# Record input-state sequence
-for i in range(INPUT_SEQUENCE.shape[1]):
-    state_sequence[:, i+1] = my_system.next_step(
-        INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
+    state_sequence = np.zeros(
+        (X_INITIAL_STATE.shape[0], INPUT_SEQUENCE.shape[1]+1))
+    state_sequence[:, 0] = X_INITIAL_STATE[:, 0]
+    # Record input-state sequence
+    for i in range(INPUT_SEQUENCE.shape[1]):
+        state_sequence[:, i+1] = my_system.next_step(
+            INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
 
-my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
-print(my_mpc.h_matrix.shape)
+    my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
+    print(my_mpc.h_matrix.shape)
 
-my_mpc.get_new_u(np.array([2, 2,-2,-2]))
-
-
-# Create LTI-System and read sequence
+    my_mpc.get_new_u(np.array([2, 2,-2,-2]))
 
 
-# my_first_mpc = DataDrivenMPC(input, state, 3)
+    # Create LTI-System and read sequence
+
+
+    # my_first_mpc = DataDrivenMPC(input, state, 3)
+
+if __name__ == "__main__":
+    testbench()
