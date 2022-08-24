@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import pairwise_distances_chunked
@@ -58,6 +59,7 @@ def main():
     print(f"initial state: \n{my_system.x}")
 
     for _ in range(1, NUMBER_OF_MEASUREMENTS):
+        start_time = time.time()
         # print(f"\n\nk = {my_system.k}:")
 
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
@@ -74,6 +76,8 @@ def main():
         delta_x = my_system.x - predicted_state
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
+        print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
+
 
     # print(disturbance_estimator.delta_x_array.shape)
 
