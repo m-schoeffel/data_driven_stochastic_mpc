@@ -1,5 +1,7 @@
+from re import U
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 from scipy.optimize import minimize, LinearConstraint
 
@@ -26,8 +28,6 @@ class DataDrivenMPC:
         self.G_x = np.array(constraints["G_x"])
         self.g_x = np.array(constraints["g_x"])
 
-        # Todo: Add constraints for states
-        # Left out for now, because they have to be formulated in relation to u (extensive)
 
         # Matrices for input and state cost
         cost_matrices = helpers.load_cost_matrices()
@@ -81,7 +81,40 @@ class DataDrivenMPC:
             self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
         print(res)
         print((self.h_matrix @ res.x).reshape(-1, 1))
+        print((self.h_matrix @ res.x).reshape(-1, 1).shape)
+        print((self.h_matrix @ res.x).reshape(-1, 1)[-15])
         print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
+
+        # Plot for debugging
+        fig, axs = plt.subplots(3, 2)
+
+        x_coord = list(range(0,4))
+        u_1 = [u for i,u in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[0:8]) if i%2==0]
+        print(len(u_1))
+        axs[0,0].plot(x_coord,u_1,label="u_1")
+
+        u_2 = [u for i,u in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[0:8]) if i%2==1]
+        print(len(u_1))
+        axs[0,1].plot(x_coord,u_2,label="u_2")
+
+        x_1 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==0]
+        print(len(x_1))
+        axs[1,0].plot(x_coord,x_1,label="x_1")
+
+        x_2 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==1]
+        print(len(x_2))
+        axs[1,1].plot(x_coord,x_2,label="x_2")
+
+        x_3 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==2]
+        print(len(x_3))
+        axs[2,0].plot(x_coord,x_3,label="x_3")
+
+        x_4 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==3]
+        print(len(x_4))
+        axs[2,1].plot(x_coord,x_4,label="x_4")
+
+        plt.show()
+
 
     def transform_state_constraints(self, G_x, g_x, current_x):
         """Transform state constraints to depend on u"""
@@ -164,7 +197,7 @@ class DataDrivenMPC:
 
 
 # Testbench:
-[main_param, lti_system_param, disc_kde_param] = helpers.load_parameters()
+[main_param, lti_system_param] = helpers.load_parameters()
 
 NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 

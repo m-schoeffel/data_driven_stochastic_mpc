@@ -2,22 +2,26 @@
 # It will be used to record the input state trajectory for the hankel matrix and to simulate the "real" system
 lti_system:
   a_system_matrix:
-  - [1,1,0]
-  - [0,1,1]
-  - [0,0,1]
+  - [1,0,0.1,0]
+  - [0,1,0,0.1]
+  - [0,0,1,0]
+  - [0,0,0,1]
     
   b_input_matrix:
-  - [0,1]
-  - [1,0]
-  - [1,0]
+  - [0,0]
+  - [0,0]
+  - [0.1,0]
+  - [0,0.1]
 
   x_initial_state:
-  - [0]
-  - [1]
   - [2]
+  - [2]
+  - [0]
+  - [0]
 
   # Specify the type of disturbance for each state
   types_of_disturbances: # gaussian/uniform/triangular/lognormal
+  - "gaussian"
   - "gaussian"
   - "uniform"
   - "uniform"
@@ -41,9 +45,10 @@ gaussian_process:
 
 mpc_cost_matrices:
   R:
-  - [1,0,0]
-  - [0,1,0]
-  - [0,0,1]
+  - [10,0,0,0]
+  - [0,10,0,0]
+  - [0,0,1,0]
+  - [0,0,0,1]
 
   Q:
   - [1,0]
@@ -59,11 +64,13 @@ constraints:
   - [20]
 
   G_x:
-  - [1,0,0]
-  - [1,1,0]
-  - [0,0,1]
+  - [1,0,0,0]
+  - [0,1,0,0]
+  - [0,0,1,0]
+  - [0,0,0,1]
 
   g_x:
+  - [30]
   - [30]
   - [30]
   - [30]
