@@ -117,7 +117,7 @@ class DataDrivenMPC:
 
         # plt.show()
 
-        # return next u (MPC Ouput)
+        # return next input (MPC Ouput)
         # Todo: replace hardcoded indices by flexible selection
         print(trajectory[0:2])
         next_u = trajectory[0:2]
