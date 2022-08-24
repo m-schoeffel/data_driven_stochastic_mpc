@@ -86,37 +86,43 @@ class DataDrivenMPC:
         print(trajectory[-15])
         print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
 
-        # Plot for debugging
-        fig, axs = plt.subplots(3, 2)
+        # # Plot for debugging
+        # fig, axs = plt.subplots(3, 2)
 
-        x_coord = list(range(0,6))
-        x_u = list(range(0,5))
-        u_1 = [u for i,u in enumerate(trajectory[0:10]) if i%2==0]
-        print(len(u_1))
-        axs[0,0].plot(x_u,u_1,label="u_1")
+        # x_coord = list(range(0,6))
+        # x_u = list(range(0,5))
+        # u_1 = [u for i,u in enumerate(trajectory[0:10]) if i%2==0]
+        # print(len(u_1))
+        # axs[0,0].plot(x_u,u_1,label="u_1")
 
-        u_2 = [u for i,u in enumerate(trajectory[0:10]) if i%2==1]
-        print(len(u_1))
-        axs[0,1].plot(x_u,u_2,label="u_2")
+        # u_2 = [u for i,u in enumerate(trajectory[0:10]) if i%2==1]
+        # print(len(u_1))
+        # axs[0,1].plot(x_u,u_2,label="u_2")
 
-        x_1 = [x for i,x in enumerate(trajectory[12:36]) if i%4==0]
-        print(len(x_1))
-        axs[1,0].plot(x_coord,x_1,label="x_1")
+        # x_1 = [x for i,x in enumerate(trajectory[12:36]) if i%4==0]
+        # print(len(x_1))
+        # axs[1,0].plot(x_coord,x_1,label="x_1")
 
-        x_2 = [x for i,x in enumerate(trajectory[12:36]) if i%4==1]
-        print(len(x_2))
-        axs[1,1].plot(x_coord,x_2,label="x_2")
+        # x_2 = [x for i,x in enumerate(trajectory[12:36]) if i%4==1]
+        # print(len(x_2))
+        # axs[1,1].plot(x_coord,x_2,label="x_2")
 
-        x_3 = [x for i,x in enumerate(trajectory[12:36]) if i%4==2]
-        print(len(x_3))
-        axs[2,0].plot(x_coord,x_3,label="x_3")
+        # x_3 = [x for i,x in enumerate(trajectory[12:36]) if i%4==2]
+        # print(len(x_3))
+        # axs[2,0].plot(x_coord,x_3,label="x_3")
 
-        x_4 = [x for i,x in enumerate(trajectory[12:36]) if i%4==3]
-        print(len(x_4))
-        axs[2,1].plot(x_coord,x_4,label="x_4")
+        # x_4 = [x for i,x in enumerate(trajectory[12:36]) if i%4==3]
+        # print(len(x_4))
+        # axs[2,1].plot(x_coord,x_4,label="x_4")
 
-        plt.show()
-        print()
+        # plt.show()
+
+        # return next u (MPC Ouput)
+        # Todo: replace hardcoded indices by flexible selection
+        print(trajectory[0:2])
+        next_u = trajectory[0:2]
+        return next_u
+        
 
 
     def transform_state_constraints(self, G_x, g_x, current_x):
