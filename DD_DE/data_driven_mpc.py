@@ -172,14 +172,23 @@ class DataDrivenMPC:
 
         return ub_fs
 
-    def get_sequence_cost(self, alpha):
+    def get_sequence_cost(self, alpha,goal_state=0):
+        
+        if goal_state == 0:
+            goal_state = np.zeros([1,self.dim_x])
+
         trajectory = self.h_matrix @ alpha
         cost = 0
         for i in range(0,self.dim_u*self.prediction_horizon,self.dim_u):
             cost += trajectory[i:i+self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
         for i in range(self.dim_u*(self.prediction_horizon+1),self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
-            cost += trajectory[i:i+self.dim_x].transpose()@self.R@trajectory[i:i+self.dim_x]
+            state_diff = trajectory[i:i+self.dim_x] - goal_state
+            print(f"goal_state:\n{goal_state}")
+            print(f"trajectory[i:i+self.dim_x]:\n{trajectory[i:i+self.dim_x]}")
+            print(f"state_diff:\n{state_diff}")
+            cost += state_diff.transpose()@self.R@state_diff
+            print(f"Cost:\n{cost}")
         return cost
 
     def get_sum_states(self, u_sequence):
