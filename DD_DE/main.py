@@ -48,7 +48,6 @@ def main():
     elif DISTURBANCE_ESTIMATION == "traditional_kde":
         disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
-        # Todo: Change to discounted KDE
         disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
 
     # print(f"initial sdsatate: {my_system.x}")
@@ -56,6 +55,7 @@ def main():
     for _ in range(1, NUMBER_OF_MEASUREMENTS):
         # print(f"\n\nk = {my_system.k}:")
 
+        # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
 
         predicted_state = my_predictor.predict_state(my_system.x, u)

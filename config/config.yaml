@@ -18,7 +18,7 @@ lti_system:
 
   # Specify the type of disturbance for each state
   types_of_disturbances: # gaussian/uniform/triangular/lognormal
-  - "uniform"
+  - "gaussian"
   - "uniform"
   - "uniform"
 
@@ -28,7 +28,7 @@ input_sequence:
 
 number_of_measurements: 300
 
-disturbance_estimation: "gaussian_process" # gaussian_process/traditional_kde/discounted_kde
+disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/discounted_kde
 
 discounted_kde:
  base_of_exponential_weights: 1.00
