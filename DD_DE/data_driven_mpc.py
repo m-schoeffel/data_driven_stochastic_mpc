@@ -80,40 +80,43 @@ class DataDrivenMPC:
         res = minimize(self.get_sequence_cost, np.zeros(
             self.h_matrix.shape[1]), args=(), constraints=[constr_input_state, constr_x_0])
         print(res)
-        print((self.h_matrix @ res.x).reshape(-1, 1))
-        print((self.h_matrix @ res.x).reshape(-1, 1).shape)
-        print((self.h_matrix @ res.x).reshape(-1, 1)[-15])
+        trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
+        print(trajectory)
+        print(trajectory.shape)
+        print(trajectory[-15])
         print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
 
         # Plot for debugging
         fig, axs = plt.subplots(3, 2)
 
-        x_coord = list(range(0,4))
-        u_1 = [u for i,u in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[0:8]) if i%2==0]
+        x_coord = list(range(0,6))
+        x_u = list(range(0,5))
+        u_1 = [u for i,u in enumerate(trajectory[0:10]) if i%2==0]
         print(len(u_1))
-        axs[0,0].plot(x_coord,u_1,label="u_1")
+        axs[0,0].plot(x_u,u_1,label="u_1")
 
-        u_2 = [u for i,u in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[0:8]) if i%2==1]
+        u_2 = [u for i,u in enumerate(trajectory[0:10]) if i%2==1]
         print(len(u_1))
-        axs[0,1].plot(x_coord,u_2,label="u_2")
+        axs[0,1].plot(x_u,u_2,label="u_2")
 
-        x_1 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==0]
+        x_1 = [x for i,x in enumerate(trajectory[12:36]) if i%4==0]
         print(len(x_1))
         axs[1,0].plot(x_coord,x_1,label="x_1")
 
-        x_2 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==1]
+        x_2 = [x for i,x in enumerate(trajectory[12:36]) if i%4==1]
         print(len(x_2))
         axs[1,1].plot(x_coord,x_2,label="x_2")
 
-        x_3 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==2]
+        x_3 = [x for i,x in enumerate(trajectory[12:36]) if i%4==2]
         print(len(x_3))
         axs[2,0].plot(x_coord,x_3,label="x_3")
 
-        x_4 = [x for i,x in enumerate((self.h_matrix @ res.x).reshape(-1, 1)[8:24]) if i%4==3]
+        x_4 = [x for i,x in enumerate(trajectory[12:36]) if i%4==3]
         print(len(x_4))
         axs[2,1].plot(x_coord,x_4,label="x_4")
 
         plt.show()
+        print()
 
 
     def transform_state_constraints(self, G_x, g_x, current_x):
@@ -232,7 +235,7 @@ for i in range(INPUT_SEQUENCE.shape[1]):
 my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
 print(my_mpc.h_matrix.shape)
 
-my_mpc.get_new_u(np.array([10, 13,10]))
+my_mpc.get_new_u(np.array([2, 2,-2,-2]))
 
 
 # Create LTI-System and read sequence
