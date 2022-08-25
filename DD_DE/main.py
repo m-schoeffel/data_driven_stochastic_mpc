@@ -67,7 +67,7 @@ def main():
 
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
-        next_u = my_mpc.get_new_u(my_system.x,goal_state=[4,4,0,0])
+        next_u = my_mpc.get_new_u(my_system.x,goal_state=[-2,-2,0,0])
         # print(next_u)
 
         predicted_state = my_predictor.predict_state(my_system.x, next_u)

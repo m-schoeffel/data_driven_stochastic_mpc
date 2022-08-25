@@ -83,11 +83,11 @@ class DataDrivenMPC:
         # Specify non-linear constraints
         # Todo: The non-linear constrains should be read in from the config file and not hardcoded for the current system on hand
         # constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*(0.01),np.ones(self.prediction_horizon)*(5))
-        constr_circle = NonlinearConstraint(self.check_circle_constraint,2,40)
+        constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*0.5,np.ones(self.prediction_horizon)*40)
 
         # Calculate feasible starting point for optimization
         # Needed, because scipy.minimize() produces faulty result otherwise
-        alpha_0=self.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,2,2,0,0]).transpose()
+        alpha_0=self.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,current_x[0],current_x[1],current_x[2],current_x[3]]).transpose()
         
         # constr_input_state,constr_x_0
         res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP',constraints=[constr_input_state,constr_x_0,constr_circle])
@@ -143,21 +143,21 @@ class DataDrivenMPC:
         #     print(f"trajectory:\n{trajectory[12:16]}")
 
         # ____________ Comment out for debugging ____________
-        # radius_of_predictions = np.zeros(self.prediction_horizon)
-        # m = 0
-        # for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x,self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
-        #     # x*x+y*y
-        #     radius = trajectory[i]*trajectory[i]+trajectory[i+1]*trajectory[i+1]
-        #     radius_of_predictions[m]=radius
-        #     m+=1
-        # return radius_of_predictions
+        radius_of_predictions = np.zeros(self.prediction_horizon)
+        m = 0
+        for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x,self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
+            # x*x+y*y
+            radius = trajectory[i]*trajectory[i]+trajectory[i+1]*trajectory[i+1]
+            radius_of_predictions[m]=radius
+            m+=1
+        return radius_of_predictions
         # ____________ Comment out for debugging ____________
 
-        radius = np.zeros(2)
-        radius[0] = trajectory[28]*trajectory[28]+trajectory[29]*trajectory[29]
-        radius[1] = trajectory[32]*trajectory[32]+trajectory[33]*trajectory[33]
-        # return radius
-        return trajectory[16]*trajectory[16]+trajectory[17]*trajectory[17]
+        # radius = np.zeros(2)
+        # radius[0] = trajectory[28]*trajectory[28]+trajectory[29]*trajectory[29]
+        # radius[1] = trajectory[32]*trajectory[32]+trajectory[33]*trajectory[33]
+        # # return radius
+        # return trajectory[16]*trajectory[16]+trajectory[17]*trajectory[17]
 
 
 
