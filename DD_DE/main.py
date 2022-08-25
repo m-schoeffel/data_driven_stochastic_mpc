@@ -60,7 +60,7 @@ def main():
 
     state_storage = np.zeros([X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS])
     
-
+    print(f"ms1: {NUMBER_OF_MEASUREMENTS}")
     for i in range(0, NUMBER_OF_MEASUREMENTS):
         start_time = time.time()
         # print(f"\n\nk = {my_system.k}:")
@@ -81,7 +81,7 @@ def main():
         state_storage[:,i]=my_system.x.reshape(-1)
 
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
-        # print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
+        print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
     
     # ------------------ Plot state sequence ------------------
     fig,axs = plt.subplots(2,2)    
