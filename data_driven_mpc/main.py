@@ -10,7 +10,7 @@ from data_driven_mpc import data_driven_predictor
 from data_driven_mpc import data_driven_mpc
 from data_driven_mpc import disturbance
 from data_driven_mpc import helpers
-from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
+from disturbance_estimation import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
 
 [main_param, lti_system_param] = helpers.load_parameters()
