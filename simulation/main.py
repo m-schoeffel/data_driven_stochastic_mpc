@@ -12,77 +12,48 @@ from lti_system import disturbance
 from config import load_parameters
 from disturbance_estimation import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
+from . import create_modules
+
 
 [main_param, lti_system_param] = load_parameters.load_parameters()
 
 NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 
-# gaussian_process/traditional_kde/discounted_kde
-DISTURBANCE_ESTIMATION = main_param["dist_est"]
-
-# Specify the type of disturbance for each state
-TYPES_OF_DISTURBANCES = lti_system_param["dist"]  # gaussian/uniform/triangular/lognormal
-
-
-A_SYSTEM_MATRIX = lti_system_param["A"]
-B_INPUT_MATRIX = lti_system_param["B"]
-
 X_INITIAL_STATE = lti_system_param["x_0"]
-
-INPUT_SEQUENCE = main_param["input_seq"]
 
 def main():
 
+    real_system = create_modules.create_system()
 
-    my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
-
-    my_system = lti_system.LTISystem(
-        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=my_disturbance)
-
-    state_sequence = np.zeros((X_INITIAL_STATE.shape[0],INPUT_SEQUENCE.shape[1]+1))
-    state_sequence[:,0] = X_INITIAL_STATE[:,0]
-    # Record input-state sequence
-    for i in range(INPUT_SEQUENCE.shape[1]):
-        state_sequence[:,i+1] = my_system.next_step(INPUT_SEQUENCE[:,i],add_disturbance=False)[:,0]
-
-    my_predictor = data_driven_predictor.DDPredictor(INPUT_SEQUENCE,state_sequence)
-    my_mpc = data_driven_mpc.DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
-
-
-    if DISTURBANCE_ESTIMATION == "gaussian_process":
-        disturbance_estimator = gaussian_process.GaussianProcess(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
-    elif DISTURBANCE_ESTIMATION == "traditional_kde":
-        disturbance_estimator = traditional_kernel_density_estimator.TraditionalKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
-    elif DISTURBANCE_ESTIMATION == "discounted_kde":
-        disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS)
+    [dd_mpc, dd_predictor, disturbance_estimator] = create_modules.create_controller_modules(real_system)
 
     # Set initial state
-    my_system.x = X_INITIAL_STATE
-    print(f"initial state: \n{my_system.x}")
+    real_system.x = X_INITIAL_STATE
+    print(f"initial state: \n{real_system.x}")
 
     state_storage = np.zeros([X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS])
     
     print(f"ms1: {NUMBER_OF_MEASUREMENTS}")
     for i in range(0, NUMBER_OF_MEASUREMENTS):
         start_time = time.time()
-        # print(f"\n\nk = {my_system.k}:")
+        # print(f"\n\nk = {real_system.k}:")
 
         # Todo: Nächste Zeile muss mit MPC ausgetauscht werden
         u = np.random.randint(-5,5,size=(1,2))
-        next_u = my_mpc.get_new_u(my_system.x,goal_state=[-2,-2,0,0])
+        next_u = dd_mpc.get_new_u(real_system.x,goal_state=[-2,-2,0,0])
         # print(next_u)
 
-        predicted_state = my_predictor.predict_state(my_system.x, next_u)
+        predicted_state = dd_predictor.predict_state(real_system.x, next_u)
 
         # print(f"Predicted state:  {predicted_state}")
-        my_system.next_step(next_u,add_disturbance=False)
-        # print(f"actual state: \n{my_system.x}")
+        real_system.next_step(next_u,add_disturbance=False)
+        # print(f"actual state: \n{real_system.x}")
 
-        delta_x = my_system.x - predicted_state
+        delta_x = real_system.x - predicted_state
 
-        state_storage[:,i]=my_system.x.reshape(-1)
+        state_storage[:,i]=real_system.x.reshape(-1)
 
-        disturbance_estimator.add_delta_x(my_system.k, delta_x)
+        disturbance_estimator.add_delta_x(real_system.k, delta_x)
         print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
     
     # # ------------------ Plot state sequence ------------------
