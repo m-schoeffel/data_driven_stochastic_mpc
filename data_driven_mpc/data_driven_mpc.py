@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
-from data_driven_mpc import hankel_helpers
+from . import hankel_helpers
 from config import load_parameters
 from lti_system import lti_system
 from lti_system import disturbance

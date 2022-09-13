@@ -1,6 +1,6 @@
 import numpy as np
 
-from data_driven_mpc import hankel_helpers
+from . import hankel_helpers
 
 
 class DDPredictor:
