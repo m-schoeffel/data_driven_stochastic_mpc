@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import KernelDensity
 from scipy import stats
 
-from data_driven_mpc import helpers
+from config import load_parameters
 
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
     def __init__(self, number_of_states, number_timesteps):
-        [base_of_exponential_weights,default_number_past_samples] = helpers.load_param_discounted_kde()
+        [base_of_exponential_weights,default_number_past_samples] = load_parameters.load_param_discounted_kde()
 
         # Limit number of consideres samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(number_timesteps,default_number_past_samples)

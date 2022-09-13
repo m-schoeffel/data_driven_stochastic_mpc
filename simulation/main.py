@@ -9,11 +9,11 @@ from lti_system import lti_system
 from data_driven_mpc import data_driven_predictor
 from data_driven_mpc import data_driven_mpc
 from lti_system import disturbance
-from data_driven_mpc import helpers
+from config import load_parameters
 from disturbance_estimation import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
 
-[main_param, lti_system_param] = helpers.load_parameters()
+[main_param, lti_system_param] = load_parameters.load_parameters()
 
 NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 
@@ -107,7 +107,7 @@ def main():
 
     # prepare plots for joint constraints for x1 and x2
     # Todo: Make plottet constraints truly flexible
-    constraints = helpers.load_constraints()
+    constraints = load_parameters.load_constraints()
     G_x = np.array(constraints["G_x"])
     g_x = np.array(constraints["g_x"])
     x1_constr=np.ones(100)*g_x[0]

@@ -1,6 +1,6 @@
 import numpy as np
 
-from data_driven_mpc import helpers
+from data_driven_mpc import hankel_helpers
 
 
 class DDPredictor:
@@ -9,7 +9,7 @@ class DDPredictor:
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
 
-        self.h_matrix = helpers.create_hankel_matrix(
+        self.h_matrix = hankel_helpers.create_hankel_matrix(
             input_sequence, state_sequence, prediction_horizon=1)
 
         print(f"self.h_matrix:\n{self.h_matrix}")

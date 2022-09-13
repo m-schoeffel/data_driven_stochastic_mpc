@@ -1,13 +1,12 @@
-from re import U
 import numpy as np
 import time
 import matplotlib.pyplot as plt
 
 from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
-from data_driven_mpc import helpers
+from data_driven_mpc import hankel_helpers
+from config import load_parameters
 from lti_system import lti_system
-from data_driven_mpc import data_driven_predictor
 from lti_system import disturbance
 
 
@@ -16,13 +15,13 @@ class DataDrivenMPC:
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
 
-        self.prediction_horizon = helpers.load_prediction_horizon()
+        self.prediction_horizon = load_parameters.load_prediction_horizon()
 
         # Todo: Make system flexibel
 
         # Todo: Load constraints from config.yaml
         # Hardcode constraints (for system with 2 inputs) for now
-        constraints = helpers.load_constraints()
+        constraints = load_parameters.load_constraints()
         self.G_u = np.array(constraints["G_u"])
         self.g_u = np.array(constraints["g_u"])
         self.G_x = np.array(constraints["G_x"])
@@ -30,13 +29,13 @@ class DataDrivenMPC:
 
 
         # Matrices for input and state cost
-        cost_matrices = helpers.load_cost_matrices()
+        cost_matrices = load_parameters.load_cost_matrices()
         self.R = np.array(cost_matrices["R"])
         self.Q = np.array(cost_matrices["Q"])
 
-        self.h_matrix = helpers.create_hankel_matrix(
+        self.h_matrix = hankel_helpers.create_hankel_matrix(
             input_sequence, state_sequence, self.prediction_horizon)
-        self.h_matrix_inv = helpers.create_hankel_pseudo_inverse(
+        self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
         u_sequence = np.array([1, 2, -1, -2, 3, 5])
@@ -245,7 +244,7 @@ class DataDrivenMPC:
 
 
 def testbench():
-    [main_param, lti_system_param] = helpers.load_parameters()
+    [main_param, lti_system_param] = load_parameters.load_parameters()
 
     # gaussian_process/traditional_kde/discounted_kde
     DISTURBANCE_ESTIMATION = main_param["dist_est"]
