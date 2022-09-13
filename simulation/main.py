@@ -7,14 +7,14 @@ from graphics import animate_state_sequence, plot_state_sequence, plot_disturban
 from . import create_modules
 
 
-lti_system_param = load_parameters.load_lti_system_params()
-main_param = load_parameters.load_main_params()
 
-NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
-
-X_INITIAL_STATE = lti_system_param["x_0"]
 
 def main():
+    main_param = load_parameters.load_main_params()
+    NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
+
+    lti_system_param = load_parameters.load_lti_system_params()
+    X_INITIAL_STATE = lti_system_param["x_0"]
 
     real_system = create_modules.create_system()
 
