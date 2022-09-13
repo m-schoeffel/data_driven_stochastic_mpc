@@ -11,10 +11,10 @@ setup(
     license="BSD",
     keywords="data driven disturbance estimator",
     url="https://github.com/ratherbeflyin2080/data_driven_disturbance_estimator",
-    packages=['data_driven_mpc', 'tests','disturbance_estimation','lti_system'],
+    packages=['data_driven_mpc', 'tests','disturbance_estimation','lti_system','simulation'],
     entry_points={
         'console_scripts': [
-            'dsa = data_driven_mpc.main:main',
+            'dsa = simulation.main:main',
         ],
     },
 )
