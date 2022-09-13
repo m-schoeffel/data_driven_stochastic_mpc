@@ -11,23 +11,23 @@ from . import create_modules
 
 def main():
     main_param = load_parameters.load_main_params()
-    NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
+    number_of_measurements = main_param["number_of_measurements"]
 
     lti_system_param = load_parameters.load_lti_system_params()
-    X_INITIAL_STATE = lti_system_param["x_0"]
+    x_initial_state = lti_system_param["x_0"]
 
     real_system = create_modules.create_system()
 
     [dd_mpc, dd_predictor, disturbance_estimator] = create_modules.create_controller_modules(real_system)
 
     # Set initial state
-    real_system.x = X_INITIAL_STATE
+    real_system.x = x_initial_state
     print(f"initial state: \n{real_system.x}")
 
-    state_storage = np.zeros([X_INITIAL_STATE.shape[0],NUMBER_OF_MEASUREMENTS])
+    state_storage = np.zeros([x_initial_state.shape[0],number_of_measurements])
     
-    print(f"ms1: {NUMBER_OF_MEASUREMENTS}")
-    for i in range(0, NUMBER_OF_MEASUREMENTS):
+    print(f"ms1: {number_of_measurements}")
+    for i in range(0, number_of_measurements):
         start_time = time.time()
         # print(f"\n\nk = {real_system.k}:")
 
@@ -54,7 +54,7 @@ def main():
 
 
     animate_state_sequence.animate_state_sequence(state_storage)
-    # plot_state_sequence.plot_state_sequence(state_storage,NUMBER_OF_MEASUREMENTS)
+    # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
     # plot_disturbance.plot_disturbance_estimation(disturbance_estimator)
 
 if __name__ == "__main__":
