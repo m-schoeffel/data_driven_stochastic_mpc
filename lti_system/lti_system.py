@@ -7,11 +7,7 @@ class LTISystem:
         self.B = np.array(B, dtype=float)
         self.x = np.array(x, dtype=float)
         self.disturbances = disturbances
-
-        print(f"self.A: \n{self.A}")
-        print(f"self.B: \n{self.B}")
-        print(f"self.x: \n{self.x}")
-
+        
         self.k = 0
 
     def next_step(self, u, add_disturbance = True):

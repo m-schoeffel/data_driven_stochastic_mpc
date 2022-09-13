@@ -61,7 +61,6 @@ class DataDrivenMPC:
         # Create Alpha Constraints
         constr_input_state = LinearConstraint(
             G_alpha, lb=-g_compl*np.inf, ub=g_compl)
-        # print(type(G_alpha),type(g_compl),sep="------------\n")
 
         # Make sure trajectory starts at current_x
         C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
@@ -129,7 +128,6 @@ class DataDrivenMPC:
     def get_sequence_cost(self, alpha):
 
         trajectory = self.h_matrix @ alpha
-        # print(f"trajectory in cost function:\n{trajectory[12:16]}")
         cost = 0
         for i in range(0,self.dim_u*self.prediction_horizon,self.dim_u):
             cost += trajectory[i:i+self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
@@ -148,15 +146,6 @@ class DataDrivenMPC:
         u = np.array(u_sequence)
 
         goal_vector = np.vstack([u.reshape(-1, 1), current_x.reshape(-1, 1)])
-        # print(goal_vector)
         alpha = self.h_matrix_inv @ goal_vector
         trajectory = self.h_matrix @ alpha
-        # # print(prediction)
-        # indices_of_prediction = list(
-        #     range(self.dim_u*2+self.dim_x, self.dim_u*2+self.dim_x*2))
-        # # print(f"indices_of_prediction: {indices_of_prediction}")
-        # next_x = trajectory[indices_of_prediction]
-        # return next_x
-        # print(f"\n\ntrajectory: {np.round(trajectory).astype(np.int)}\n\n")
-        # print(f"\n\ntrajectory: {trajectory}\n\n")
         return trajectory

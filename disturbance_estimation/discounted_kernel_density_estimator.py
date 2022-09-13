@@ -51,7 +51,6 @@ class DiscountedKDE:
 
             ax[i].plot(x_visuell, prob_distribution)
             ax[i].set_title(f"State {i+1}")
-            # print(self.delta_x[0:self.numbr_measurements, 1])
 
         plot_real_density = True
         return plot_real_density, fig, ax
