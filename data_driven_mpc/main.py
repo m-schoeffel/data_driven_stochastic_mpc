@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from sklearn.metrics import pairwise_distances_chunked
 
-from DD_DE import lti_system
-from DD_DE import data_driven_predictor
-from DD_DE import data_driven_mpc
-from DD_DE import disturbance
-from DD_DE import helpers
+from data_driven_mpc import lti_system
+from data_driven_mpc import data_driven_predictor
+from data_driven_mpc import data_driven_mpc
+from data_driven_mpc import disturbance
+from data_driven_mpc import helpers
 from disturbance_estimator import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 
 

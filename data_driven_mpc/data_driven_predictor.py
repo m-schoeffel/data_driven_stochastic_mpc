@@ -1,6 +1,6 @@
 import numpy as np
 
-from DD_DE import helpers
+from data_driven_mpc import helpers
 
 
 class DDPredictor:

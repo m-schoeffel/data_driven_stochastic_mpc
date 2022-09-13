@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 
-from DD_DE import helpers
+from data_driven_mpc import helpers
 
 
 class GaussianProcess:

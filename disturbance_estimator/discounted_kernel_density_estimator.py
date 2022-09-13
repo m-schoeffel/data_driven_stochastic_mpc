@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import KernelDensity
 from scipy import stats
 
-from DD_DE import helpers
+from data_driven_mpc import helpers
 
 
 # Todo: Implement interface for disturbance estimators (great exercise)
