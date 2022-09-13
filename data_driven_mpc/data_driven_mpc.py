@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 
 from data_driven_mpc import helpers
-from data_driven_mpc import lti_system
+from lti_system import lti_system
 from data_driven_mpc import data_driven_predictor
 from data_driven_mpc import disturbance
 

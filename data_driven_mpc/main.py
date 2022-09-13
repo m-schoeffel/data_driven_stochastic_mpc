@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from sklearn.metrics import pairwise_distances_chunked
 
-from data_driven_mpc import lti_system
+from lti_system import lti_system
 from data_driven_mpc import data_driven_predictor
 from data_driven_mpc import data_driven_mpc
 from data_driven_mpc import disturbance
