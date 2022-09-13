@@ -80,17 +80,17 @@ class DataDrivenMPC:
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
         
-        # Specify non-linear constraints
+        # Specify non-linear constraints, currently not used
         # Todo: The non-linear constrains should be read in from the config file and not hardcoded for the current system on hand
         # constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*(0.01),np.ones(self.prediction_horizon)*(5))
-        constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*0.5,np.ones(self.prediction_horizon)*40)
+        # constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*0.5,np.ones(self.prediction_horizon)*40)
 
         # Calculate feasible starting point for optimization
         # Needed, because scipy.minimize() produces faulty result otherwise
         alpha_0=self.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,current_x[0],current_x[1],current_x[2],current_x[3]]).transpose()
         
         # constr_input_state,constr_x_0
-        res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP',constraints=[constr_input_state,constr_x_0,constr_circle])
+        res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP',constraints=[constr_input_state,constr_x_0])
         # print(res)
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
         # print(trajectory)

@@ -1,6 +1,8 @@
 import time
+from turtle import color
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import animation
 from sklearn.metrics import pairwise_distances_chunked
 
 from DD_DE import lti_system
@@ -83,18 +85,52 @@ def main():
         disturbance_estimator.add_delta_x(my_system.k, delta_x)
         print("--- \"Main Loop\" took %s seconds ---" % (time.time() - start_time))
     
-    # ------------------ Plot state sequence ------------------
-    fig,axs = plt.subplots(2,2)    
-    x_values = list(range(0,NUMBER_OF_MEASUREMENTS))
-    axs[0,0].plot(x_values,state_storage[0,:],label="x_0")
-    axs[0,1].plot(x_values,state_storage[1,:],label="x_1")
-    axs[1,0].plot(x_values,state_storage[2,:],label="x_2")
-    axs[1,1].plot(x_values,state_storage[3,:],label="x_3")
+    # # ------------------ Plot state sequence ------------------
+    # fig,axs = plt.subplots(2,2)    
+    # x_values = list(range(0,NUMBER_OF_MEASUREMENTS))
+    # axs[0,0].plot(x_values,state_storage[0,:],label="x_0")
+    # axs[0,1].plot(x_values,state_storage[1,:],label="x_1")
+    # axs[1,0].plot(x_values,state_storage[2,:],label="x_2")
+    # axs[1,1].plot(x_values,state_storage[3,:],label="x_3")
 
-    plt.figure()
-    plt.plot(state_storage[0,:],state_storage[1,:])
+    # plt.figure()
+    # plt.plot(state_storage[0,:],state_storage[1,:])
+
+    # plt.show()
+
+
+
+    # ------------------ Animate state sequence ------------------
+    
+    fig = plt.figure()
+    ax = plt.axes(xlim=(-4, 4), ylim=(-4, 4))
+
+    # prepare plots for joint constraints for x1 and x2
+    # Todo: Make plottet constraints truly flexible
+    constraints = helpers.load_constraints()
+    G_x = np.array(constraints["G_x"])
+    g_x = np.array(constraints["g_x"])
+    x1_constr=np.ones(100)*g_x[0]
+    y1_constr=np.linspace(-4,4,100)
+
+    x2_constr=np.linspace(-4,4,100)
+    y2_constr=np.ones(100)*g_x[1]
+
+
+    def animate(i):
+        ax.scatter(state_storage[0,i],state_storage[1,i])
+        ax.scatter(0,0)
+
+        ax.plot(x1_constr,y1_constr,color='blue',lw=10)
+        ax.plot(x2_constr,y2_constr,color='blue',lw=10)
+
+    anim = animation.FuncAnimation(fig, animate, interval=1000)
 
     plt.show()
+
+
+
+
 
     # ------------------ Plot disturbance ------------------
     # print(disturbance_estimator.delta_x_array.shape)
