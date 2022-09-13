@@ -4,7 +4,7 @@ import yaml
 
 # Load parameters from config.yaml
 # Create dictionaries for each section of parameters
-def load_parameters():
+def load_main_params():
 
     with open('config/config.yaml') as file:
         param = yaml.load(file, Loader=yaml.FullLoader)
@@ -21,14 +21,20 @@ def load_parameters():
     main_param["number_of_measurements"] = param["number_of_measurements"]
     main_param["dist_est"] = param["disturbance_estimation"]
 
+    return main_param
+
+def load_lti_system_params():
+
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
     lti_system_param = dict()
     lti_system_param["A"] = np.array(param["lti_system"]["a_system_matrix"])
     lti_system_param["B"] = np.array(param["lti_system"]["b_input_matrix"])
     lti_system_param["x_0"] = np.array(param["lti_system"]["x_initial_state"])
     lti_system_param["dist"] = param["lti_system"]["types_of_disturbances"]
 
-    return main_param, lti_system_param
-
+    return lti_system_param
 
 def load_cost_matrices():
     with open('config/config.yaml') as file:

@@ -8,7 +8,8 @@ from config import load_parameters
 from . import create_modules
 
 
-[main_param, lti_system_param] = load_parameters.load_parameters()
+lti_system_param = load_parameters.load_lti_system_params()
+main_param = load_parameters.load_main_params()
 
 NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 

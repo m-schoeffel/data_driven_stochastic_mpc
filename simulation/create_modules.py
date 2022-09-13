@@ -8,12 +8,7 @@ from config import load_parameters
 from disturbance_estimation import gaussian_process, discounted_kernel_density_estimator
 
 def create_system():
-    [main_param, lti_system_param] = load_parameters.load_parameters()
-
-    NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
-
-    # gaussian_process/traditional_kde/discounted_kde
-    DISTURBANCE_ESTIMATION = main_param["dist_est"]
+    lti_system_param = load_parameters.load_lti_system_params()
 
     # Specify the type of disturbance for each state
     TYPES_OF_DISTURBANCES = lti_system_param["dist"]  # gaussian/uniform/triangular/lognormal
@@ -23,8 +18,6 @@ def create_system():
     B_INPUT_MATRIX = lti_system_param["B"]
 
     X_INITIAL_STATE = lti_system_param["x_0"]
-
-    INPUT_SEQUENCE = main_param["input_seq"]
 
     state_disturbances = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
@@ -35,25 +28,19 @@ def create_system():
 
 def create_controller_modules(real_system):
 
-    [main_param, lti_system_param] = load_parameters.load_parameters()
+    main_param = load_parameters.load_main_params()
+    lti_system_param = load_parameters.load_lti_system_params()
 
     NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
 
     # gaussian_process/traditional_kde/discounted_kde
     DISTURBANCE_ESTIMATION = main_param["dist_est"]
 
-    # Specify the type of disturbance for each state
-    TYPES_OF_DISTURBANCES = lti_system_param["dist"]  # gaussian/uniform/triangular/lognormal
-
-
-    A_SYSTEM_MATRIX = lti_system_param["A"]
-    B_INPUT_MATRIX = lti_system_param["B"]
-
     X_INITIAL_STATE = lti_system_param["x_0"]
 
     INPUT_SEQUENCE = main_param["input_seq"]
 
-    # Create input-state (needed for Hankel matrix in Data Driven MPC Module)
+    # Create input-state sequence (needed for Hankel matrix in data_driven_mpc module)
     state_sequence = np.zeros((X_INITIAL_STATE.shape[0],INPUT_SEQUENCE.shape[1]+1))
     state_sequence[:,0] = X_INITIAL_STATE[:,0]
     # Record input-state sequence
