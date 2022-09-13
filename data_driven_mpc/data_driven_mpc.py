@@ -19,7 +19,6 @@ class DataDrivenMPC:
 
         # Todo: Make system flexibel
 
-        # Todo: Load constraints from config.yaml
         # Hardcode constraints (for system with 2 inputs) for now
         constraints = load_parameters.load_constraints()
         self.G_u = np.array(constraints["G_u"])
@@ -37,12 +36,6 @@ class DataDrivenMPC:
             input_sequence, state_sequence, self.prediction_horizon)
         self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
-
-        u_sequence = np.array([1, 2, -1, -2, 3, 5])
-        current_x = np.array([0, 1])
-        # trajectory = self.predict_state_sequence(current_x, u_sequence)
-        # cost = self.get_sequence_cost(u_sequence, current_x)
-        # print(f"The sum of traj is {trajectory.transpose()@trajectory} and the cost is {cost}")
 
     def get_new_u(self, current_x,goal_state=0):
         start_time = time.time()
@@ -79,11 +72,6 @@ class DataDrivenMPC:
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
         
-        # Specify non-linear constraints, currently not used
-        # Todo: The non-linear constrains should be read in from the config file and not hardcoded for the current system on hand
-        # constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*(0.01),np.ones(self.prediction_horizon)*(5))
-        # constr_circle = NonlinearConstraint(self.check_circle_constraint,np.ones(self.prediction_horizon)*0.5,np.ones(self.prediction_horizon)*40)
-
         # Calculate feasible starting point for optimization
         # Needed, because scipy.minimize() produces faulty result otherwise
         alpha_0=self.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,current_x[0],current_x[1],current_x[2],current_x[3]]).transpose()
@@ -92,81 +80,12 @@ class DataDrivenMPC:
         res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP',constraints=[constr_input_state,constr_x_0])
         # print(res)
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
-        # print(trajectory)
-        # print(trajectory.shape)
-        # print(trajectory[-15])
-        # print("--- \"DataDrivenMPC.get_new_u\" took %s seconds ---" % (time.time() - start_time))
-
-        # # Plot for debugging
-        # fig, axs = plt.subplots(3, 2)
-
-        # x_coord = list(range(0,6))
-        # x_u = list(range(0,5))
-        # u_1 = [u for i,u in enumerate(trajectory[0:10]) if i%2==0]
-        # print(len(u_1))
-        # axs[0,0].plot(x_u,u_1,label="u_1")
-
-        # u_2 = [u for i,u in enumerate(trajectory[0:10]) if i%2==1]
-        # print(len(u_1))
-        # axs[0,1].plot(x_u,u_2,label="u_2")
-
-        # x_1 = [x for i,x in enumerate(trajectory[12:36]) if i%4==0]
-        # print(len(x_1))
-        # axs[1,0].plot(x_coord,x_1,label="x_1")
-
-        # x_2 = [x for i,x in enumerate(trajectory[12:36]) if i%4==1]
-        # print(len(x_2))
-        # axs[1,1].plot(x_coord,x_2,label="x_2")
-
-        # x_3 = [x for i,x in enumerate(trajectory[12:36]) if i%4==2]
-        # print(len(x_3))
-        # axs[2,0].plot(x_coord,x_3,label="x_3")
-
-        # x_4 = [x for i,x in enumerate(trajectory[12:36]) if i%4==3]
-        # print(len(x_4))
-        # axs[2,1].plot(x_coord,x_4,label="x_4")
-
-        # plt.show()
 
         # return next input (MPC Ouput)
         # Todo: replace hardcoded indices by flexible selection
         # print(trajectory[0:2])
         next_u = trajectory[0:2]
         return next_u
-    
-    def check_circle_constraint(self,alpha):
-        """This function specifies a non-linear, circular constraint"""
-        # All state should be located outside of the circle (except x_0)
-        trajectory = self.h_matrix @ alpha
-        # if trajectory[12]==2:
-        #     print(f"trajectory:\n{trajectory[12:16]}")
-
-        # ____________ Comment out for debugging ____________
-        radius_of_predictions = np.zeros(self.prediction_horizon)
-        m = 0
-        for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x,self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
-            # x*x+y*y
-            radius = trajectory[i]*trajectory[i]+trajectory[i+1]*trajectory[i+1]
-            radius_of_predictions[m]=radius
-            m+=1
-        return radius_of_predictions
-        # ____________ Comment out for debugging ____________
-
-        # radius = np.zeros(2)
-        # radius[0] = trajectory[28]*trajectory[28]+trajectory[29]*trajectory[29]
-        # radius[1] = trajectory[32]*trajectory[32]+trajectory[33]*trajectory[33]
-        # # return radius
-        # return trajectory[16]*trajectory[16]+trajectory[17]*trajectory[17]
-
-
-
-    def transform_state_constraints(self, G_x, g_x, current_x):
-        """Transform state constraints to depend on u"""
-        # This function is used to express the state constraints in dependance on u
-        # So the control inputs can be the only decision variable and state constraints can still be used
-        x = 1
-        # G_x_u
-        # g_x_u
 
     def determine_complete_constraint_matrix(self, G_u_fs, G_x_fs):
         u_block = np.hstack(
@@ -241,53 +160,3 @@ class DataDrivenMPC:
         # print(f"\n\ntrajectory: {np.round(trajectory).astype(np.int)}\n\n")
         # print(f"\n\ntrajectory: {trajectory}\n\n")
         return trajectory
-
-
-def testbench():
-    [main_param, lti_system_param] = load_parameters.load_parameters()
-
-    # gaussian_process/traditional_kde/discounted_kde
-    DISTURBANCE_ESTIMATION = main_param["dist_est"]
-
-    # Specify the type of disturbance for each state
-    # gaussian/uniform/triangular/lognormal
-    TYPES_OF_DISTURBANCES = lti_system_param["dist"]
-
-
-    A_SYSTEM_MATRIX = lti_system_param["A"]
-    B_INPUT_MATRIX = lti_system_param["B"]
-
-    X_INITIAL_STATE = lti_system_param["x_0"]
-
-    INPUT_SEQUENCE = main_param["input_seq"]
-
-    my_disturbance = disturbance.Disturbance(TYPES_OF_DISTURBANCES)
-
-    my_system = lti_system.LTISystem(
-        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=my_disturbance)
-
-    state_sequence = np.zeros(
-        (X_INITIAL_STATE.shape[0], INPUT_SEQUENCE.shape[1]+1))
-    state_sequence[:, 0] = X_INITIAL_STATE[:, 0]
-    # Record input-state sequence
-    for i in range(INPUT_SEQUENCE.shape[1]):
-        state_sequence[:, i+1] = my_system.next_step(
-            INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
-
-    my_mpc = DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
-    print(my_mpc.h_matrix.shape)
-
-    alpha=my_mpc.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,2,2,0,0]).transpose()
-    print(f"alpha:\n{alpha}")
-    print(my_mpc.check_circle_constraint(alpha))
-
-    print(my_mpc.get_new_u(np.array([1.1, 1.1,0,0])))
-
-
-    # Create LTI-System and read sequence
-
-
-    # my_first_mpc = DataDrivenMPC(input, state, 3)
-
-if __name__ == "__main__":
-    testbench()

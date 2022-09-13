@@ -17,7 +17,6 @@ class LTISystem:
     def next_step(self, u, add_disturbance = True):
         self.u = np.array(u).reshape(-1,1)
 
-        # Todo: When matrix multidimensional: * -> @
         if add_disturbance:
             self.x = self.A @ self.x + self.B @ self.u + self.disturbances.get_dist_vector()
         else:
