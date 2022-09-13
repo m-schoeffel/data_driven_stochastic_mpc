@@ -8,7 +8,7 @@ from sklearn.metrics import pairwise_distances_chunked
 from lti_system import lti_system
 from data_driven_mpc import data_driven_predictor
 from data_driven_mpc import data_driven_mpc
-from data_driven_mpc import disturbance
+from lti_system import disturbance
 from data_driven_mpc import helpers
 from disturbance_estimation import gaussian_process, traditional_kernel_density_estimator, discounted_kernel_density_estimator
 

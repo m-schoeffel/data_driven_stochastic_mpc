@@ -8,7 +8,7 @@ from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint
 from data_driven_mpc import helpers
 from lti_system import lti_system
 from data_driven_mpc import data_driven_predictor
-from data_driven_mpc import disturbance
+from lti_system import disturbance
 
 
 class DataDrivenMPC:
