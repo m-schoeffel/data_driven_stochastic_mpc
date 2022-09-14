@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.neighbors import KernelDensity
 from scipy import stats
 
 from config import load_parameters
