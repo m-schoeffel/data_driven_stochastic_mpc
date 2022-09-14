@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 
 class Disturbance:
-    def __init__(self, types_of_disturbances:list()):
+    def __init__(self, types_of_disturbances: list()):
         self.types_of_disturbances = types_of_disturbances
 
-    def get_specific_dist(self,type_of_disturbance) -> float:
+    def get_specific_dist(self, type_of_disturbance) -> float:
         if type_of_disturbance == "gaussian":
             return np.random.normal(loc=0, scale=1.0)
         elif type_of_disturbance == "uniform":
@@ -23,11 +23,12 @@ class Disturbance:
         return 0
 
     def get_dist_vector(self) -> list():
-        dist_list = [self.get_specific_dist(dist_type) for dist_type in self.types_of_disturbances]
-        dist_vector = np.array(dist_list).reshape(-1,1)
+        dist_list = [self.get_specific_dist(
+            dist_type) for dist_type in self.types_of_disturbances]
+        dist_vector = np.array(dist_list).reshape(-1, 1)
         return dist_vector
 
-    def plot_real_disturbance(self, ax,type_of_disturbance) -> None:
+    def plot_real_disturbance(self, ax, type_of_disturbance) -> None:
         number_samples = 1000
         x = np.linspace(-5, 5, number_samples).reshape(-1, 1)
 

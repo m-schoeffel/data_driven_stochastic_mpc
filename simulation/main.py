@@ -33,7 +33,7 @@ def main():
         next_u = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, goal_state=[-2, -2, 0, 0])
         predicted_state = dd_predictor.predict_state(real_system.x, next_u)
-        real_system.next_step(next_u, add_disturbance=False)
+        real_system.next_step(next_u, add_disturbance=True)
 
         state_storage[:, i] = real_system.x.reshape(-1)
 
@@ -43,9 +43,11 @@ def main():
         print("--- \"Main Loop\" took %s seconds ---" %
               (time.time() - start_time))
 
-    animate_state_sequence.animate_state_sequence(state_storage)
+    disturbance_estimator.get_disturbance_intervals()
+
+    # animate_state_sequence.animate_state_sequence(state_storage)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
-    # plot_disturbance.plot_disturbance_estimation(disturbance_estimator)
+    plot_disturbance.plot_disturbance_estimation(disturbance_estimator)
 
 
 if __name__ == "__main__":
