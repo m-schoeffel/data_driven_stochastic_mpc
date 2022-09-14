@@ -4,7 +4,7 @@ import numpy as np
 from config import load_parameters
 from graphics import animate_state_sequence, plot_state_sequence, plot_disturbance
 
-from . import create_modules
+from simulation import create_modules
 
 
 def main():
@@ -40,8 +40,8 @@ def main():
         delta_x = real_system.x - predicted_state
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
 
-        print("--- \"Main Loop\" took %s seconds ---" %
-              (time.time() - start_time))
+        #print("--- \"Main Loop\" took %s seconds ---" %
+        #      (time.time() - start_time))
 
     disturbance_estimator.get_disturbance_intervals()
 
