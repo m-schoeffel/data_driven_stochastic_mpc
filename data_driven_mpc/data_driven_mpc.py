@@ -6,6 +6,7 @@ from scipy.optimize import minimize, LinearConstraint
 from . import hankel_helpers
 from config import load_parameters
 
+
 class DataDrivenMPC:
     def __init__(self, input_sequence, state_sequence):
         self.dim_u = input_sequence.shape[0]
@@ -22,7 +23,6 @@ class DataDrivenMPC:
         self.G_x = np.array(constraints["G_x"])
         self.g_x = np.array(constraints["g_x"])
 
-
         # Matrices for input and state cost
         cost_matrices = load_parameters.load_cost_matrices()
         self.R = np.array(cost_matrices["R"])
@@ -33,7 +33,7 @@ class DataDrivenMPC:
         self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
-    def get_new_u(self, current_x,goal_state=0):
+    def get_new_u(self, current_x, goal_state=0):
         start_time = time.time()
 
         # Specify goal_state
@@ -66,13 +66,15 @@ class DataDrivenMPC:
 
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
-        
+
         # Calculate feasible starting point for optimization
         # Needed, because scipy.minimize() produces faulty result otherwise
-        alpha_0=self.h_matrix_inv@np.array([0,0,0,0,0,0,0,0,0,0,current_x[0],current_x[1],current_x[2],current_x[3]]).transpose()
-        
+        alpha_0 = self.h_matrix_inv@np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                             current_x[0], current_x[1], current_x[2], current_x[3]]).transpose()
+
         # constr_input_state,constr_x_0
-        res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP',constraints=[constr_input_state,constr_x_0])
+        res = minimize(self.get_sequence_cost, alpha_0, args=(
+        ), method='SLSQP', constraints=[constr_input_state, constr_x_0])
         # print(res)
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
 
@@ -125,10 +127,11 @@ class DataDrivenMPC:
 
         trajectory = self.h_matrix @ alpha
         cost = 0
-        for i in range(0,self.dim_u*self.prediction_horizon,self.dim_u):
-            cost += trajectory[i:i+self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
+        for i in range(0, self.dim_u*self.prediction_horizon, self.dim_u):
+            cost += trajectory[i:i +
+                               self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
-        for i in range(self.dim_u*(self.prediction_horizon+1),self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1),self.dim_x):
+        for i in range(self.dim_u*(self.prediction_horizon+1), self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1), self.dim_x):
             state_diff = trajectory[i:i+self.dim_x] - self.goal_state
             cost += state_diff.transpose()@self.R@state_diff
         return cost

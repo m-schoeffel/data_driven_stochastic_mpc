@@ -6,6 +6,7 @@ from sklearn.gaussian_process.kernels import RBF
 
 from config import load_parameters
 
+
 class GaussianProcess:
     def __init__(self, number_of_states, number_timesteps):
 
@@ -30,13 +31,16 @@ class GaussianProcess:
 
         fig.suptitle("Gaussian process of each state")
 
-        idx_considered_for_estimation = list(range(self.numbr_measurements-self.number_of_past_samples_considered,self.numbr_measurements))
+        idx_considered_for_estimation = list(range(
+            self.numbr_measurements-self.number_of_past_samples_considered, self.numbr_measurements))
         print(f"{idx_considered_for_estimation=}")
 
         for i in range(0, self.number_of_states):
             # A gaussian process has to be plotted for every state
-            y_train = self.delta_x_array[i,idx_considered_for_estimation].reshape(-1, 1)
-            X_train = np.atleast_2d(list(range(0,self.number_of_past_samples_considered))).reshape(-1,1)
+            y_train = self.delta_x_array[i,
+                                         idx_considered_for_estimation].reshape(-1, 1)
+            X_train = np.atleast_2d(
+                list(range(0, self.number_of_past_samples_considered))).reshape(-1, 1)
 
             kernel = 1 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e2))
             gaussian_process = GaussianProcessRegressor(
@@ -61,7 +65,8 @@ class GaussianProcess:
             )
             ax[i].legend()
             ax[i].set(xlabel='x', ylabel='f(x)')
-            ax[i].set_title("Gaussian process regression on noise-free dataset")
+            ax[i].set_title(
+                "Gaussian process regression on noise-free dataset")
 
         plot_real_density = False
         return plot_real_density, fig, ax

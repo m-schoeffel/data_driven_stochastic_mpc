@@ -23,6 +23,7 @@ def load_main_params():
 
     return main_param
 
+
 def load_lti_system_params():
 
     with open('config/config.yaml') as file:
@@ -35,6 +36,7 @@ def load_lti_system_params():
     lti_system_param["dist"] = param["lti_system"]["types_of_disturbances"]
 
     return lti_system_param
+
 
 def load_cost_matrices():
     with open('config/config.yaml') as file:
@@ -83,5 +85,4 @@ def load_param_discounted_kde():
     base_of_exponential_weights = param["discounted_kde"]["base_of_exponential_weights"]
     number_of_past_samples_considered = param["discounted_kde"]["density_number_of_past_samples_considered"]
 
-    
     return base_of_exponential_weights, number_of_past_samples_considered

@@ -9,11 +9,11 @@ matplotlib.rcParams['lines.markersize'] = 10
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-plt.rc('font', size=20) #controls default text size
+plt.rc('font', size=20)  # controls default text size
 
 # Create subplots
 
-figure, ax = plt.subplots(figsize=(14,15))
+figure, ax = plt.subplots(figsize=(14, 15))
 
 # Data Coordinates
 
@@ -24,14 +24,14 @@ y = np.sin(x)
 
 plt.ion()
 
-ax.scatter(1,1,linewidths=20)
+ax.scatter(1, 1, linewidths=20)
 
 plt.show()
 
 for i in range(200):
-    ax.plot([0,4],[1,5])
-    ax.plot([0,4],[-1,3])
-    ax.scatter(i/50,i/50)
+    ax.plot([0, 4], [1, 5])
+    ax.plot([0, 4], [-1, 3])
+    ax.scatter(i/50, i/50)
     figure.canvas.draw()
     figure.canvas.flush_events()
     ax.clear()
@@ -50,10 +50,10 @@ for i in range(200):
 
 # for value in range(150):
 #     update_y_value = np.sin(x-2.5*value)
-    
+
 #     plot1.set_xdata(x)
 #     plot1.set_ydata(update_y_value)
-    
+
 #     figure.canvas.draw()
 #     figure.canvas.flush_events()
 #     time.sleep(0.01)

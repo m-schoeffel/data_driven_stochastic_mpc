@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
     n = prediction_horizon
 
