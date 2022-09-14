@@ -2,7 +2,7 @@ import numpy as np
 
 from config import load_parameters
 
-class ConstraintTighting:
+class ConstraintTightening:
     def __init__(self):
         constraints = load_parameters.load_constraints()
         self.G_u = np.array(constraints["G_u"])

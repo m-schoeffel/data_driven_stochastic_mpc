@@ -11,7 +11,7 @@ setup(
     license="BSD",
     keywords="data driven stochastic model predictive control with online disturbance estimation and constraint tightening",
     url="https://github.com/ratherbeflyin2080/data_driven_stochastic_mpc",
-    packages=['data_driven_mpc','disturbance_estimation','lti_system','simulation','config','graphics'],
+    packages=['data_driven_mpc','disturbance_estimation','lti_system','simulation','config','graphics','constraint_tightening'],
     entry_points={
         'console_scripts': [
             'dsa = simulation.main:main',

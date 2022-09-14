@@ -6,6 +6,7 @@ from data_driven_mpc import data_driven_predictor
 from lti_system import disturbance
 from config import load_parameters
 from disturbance_estimation import gaussian_process, discounted_kernel_density_estimator
+from constraint_tightening.constraint_tightening import ConstraintTightening
 
 
 def create_system():
@@ -62,4 +63,6 @@ def create_controller_modules(real_system):
         disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(
             X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS)
 
-    return dd_mpc, dd_predictor, disturbance_estimator
+    constraint_tightener = ConstraintTightening()
+
+    return dd_mpc, dd_predictor, disturbance_estimator, constraint_tightener

@@ -17,7 +17,7 @@ def main():
     real_system = create_modules.create_system()
 
     [dd_mpc, dd_predictor,
-        disturbance_estimator] = create_modules.create_controller_modules(real_system)
+        disturbance_estimator, constraint_tightener] = create_modules.create_controller_modules(real_system)
 
     # Set initial state
     real_system.x = x_initial_state
@@ -29,7 +29,9 @@ def main():
     for i in range(0, number_of_measurements):
         start_time = time.time()
 
-        next_u = dd_mpc.get_new_u(real_system.x, goal_state=[-2, -2, 0, 0])
+        [G_v, g_v, G_z, g_z] = constraint_tightener.get_tightened_constraints()
+        next_u = dd_mpc.get_new_u(
+            real_system.x, G_v, g_v, G_z, g_z, goal_state=[-2, -2, 0, 0])
         predicted_state = dd_predictor.predict_state(real_system.x, next_u)
         real_system.next_step(next_u, add_disturbance=False)
 

@@ -14,15 +14,6 @@ class DataDrivenMPC:
 
         self.prediction_horizon = load_parameters.load_prediction_horizon()
 
-        # Todo: Make system flexibel
-
-        # Hardcode constraints (for system with 2 inputs) for now
-        constraints = load_parameters.load_constraints()
-        self.G_u = np.array(constraints["G_u"])
-        self.g_u = np.array(constraints["g_u"])
-        self.G_x = np.array(constraints["G_x"])
-        self.g_x = np.array(constraints["g_x"])
-
         # Matrices for input and state cost
         cost_matrices = load_parameters.load_cost_matrices()
         self.R = np.array(cost_matrices["R"])
@@ -33,8 +24,7 @@ class DataDrivenMPC:
         self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
-    def get_new_u(self, current_x, goal_state=0):
-        start_time = time.time()
+    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, goal_state=0):
 
         # Specify goal_state
         if goal_state == 0:
@@ -43,12 +33,12 @@ class DataDrivenMPC:
             self.goal_state = np.array(goal_state)
 
         # Get constraint matrices to cover full sequence (fs) of input and state
-        G_u_fs = self.determine_full_seq_constr_matrix(self.G_u)
-        g_u_fs = self.determine_full_seq_constr_ub(self.g_u)
-        G_x_fs = self.determine_full_seq_constr_matrix(self.G_x)
-        g_x_fs = self.determine_full_seq_constr_ub(self.g_x)
-        G_compl = self.determine_complete_constraint_matrix(G_u_fs, G_x_fs)
-        g_compl = np.vstack([g_u_fs, g_x_fs])
+        G_v_fs = self.determine_full_seq_constr_matrix(G_v)
+        g_v_fs = self.determine_full_seq_constr_ub(g_v)
+        G_z_fs = self.determine_full_seq_constr_matrix(G_z)
+        g_z_fs = self.determine_full_seq_constr_ub(g_z)
+        G_compl = self.determine_complete_constraint_matrix(G_v_fs, G_z_fs)
+        g_compl = np.vstack([g_v_fs, g_z_fs])
         g_compl = g_compl.reshape(-1,)
 
         # Create Constraintmatrix, which is depending on alpha (decision variable)
@@ -84,11 +74,11 @@ class DataDrivenMPC:
         next_u = trajectory[0:2]
         return next_u
 
-    def determine_complete_constraint_matrix(self, G_u_fs, G_x_fs):
+    def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
         u_block = np.hstack(
-            [G_u_fs, np.zeros([G_u_fs.shape[0], G_x_fs.shape[1]])])
+            [G_v_fs, np.zeros([G_v_fs.shape[0], G_z_fs.shape[1]])])
         x_block = np.hstack(
-            [np.zeros([G_x_fs.shape[0], G_u_fs.shape[1]]), G_x_fs])
+            [np.zeros([G_z_fs.shape[0], G_v_fs.shape[1]]), G_z_fs])
         G_compl = np.vstack([u_block, x_block])
         return G_compl
 
