@@ -12,7 +12,7 @@ class DiscountedKDE:
         [base_of_exponential_weights,
             default_number_past_samples] = load_parameters.load_param_discounted_kde()
 
-        # Limit number of consideres samples if not enough samples available
+        # Limit number of considered samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(
             number_timesteps, default_number_past_samples)
 
