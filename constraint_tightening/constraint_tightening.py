@@ -12,12 +12,12 @@ class ConstraintTightening:
         self.g_x = np.array(constraints["g_x"])
 
         # Initialize pseudo constraints
-        self.G_v = self.G_u
-        self.g_v = self.g_u
-        self.G_z = self.G_x
-        self.g_z = self.g_x
+        self.G_v = self.G_u.copy()
+        self.g_v = self.g_u.copy()
+        self.G_z = self.G_x.copy()
+        self.g_z = self.g_x.copy()
 
-        self.numbr_state_constr = self.G_u.shape[0]
+        self.numbr_state_constr = self.G_x.shape[0]
 
     def tighten_constraints(self):
         x = 1
@@ -30,12 +30,13 @@ class ConstraintTightening:
 
         # Todo: Create more flexible solution
         # Currently solution is hardcoded for systems with no joint constraints (Every state has it's own constraints)
+        # No joint constraints means, that G_x is of the form G_x = [[1,0,0],[0,1,0,[1,0,0],[0,0,1]]]
 
         for i in range(0, self.numbr_state_constr):
             # Calculate dist interval for state, which corresponds to constraint
             # --> Only works, if there are no joint constraints
             interval = np.abs(self.G_x[i, :]) @ dist_interval
-            if (np.sum(self.G_x) > 0):
+            if (np.sum(self.G_x[i]) > 0):
                 self.g_z[i] = self.g_x[i]+interval[0]
             else:
                 self.g_z[i] = self.g_x[i]+interval[1]

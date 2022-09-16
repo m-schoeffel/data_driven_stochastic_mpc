@@ -24,8 +24,10 @@ class DiscountedKDE:
         # self.numbr_measurements = 0
 
         # Initialize deque which stores delta_x
-        self.delta_x_deque = deque([np.random.normal(0, 3, size=[number_of_states]) for _ in range(
+        self.delta_x_deque = deque([np.random.normal(0, 0.1, size=[number_of_states]) for _ in range(
             0, self.number_of_past_samples_considered_for_kde)])
+        # self.delta_x_deque = deque([0 for _ in range(
+        #     0, self.number_of_past_samples_considered_for_kde)])
 
         # Create exponential weight array for discounted kde
         self.weights = np.power(base_of_exponential_weights, np.arange(
@@ -103,10 +105,11 @@ class DiscountedKDE:
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p+(1-self.p)/2, side='right')-1
 
-            lower_bound = x_eval_pdf[idx_lower_bound]
-            upper_bound = x_eval_pdf[idx_upper_bound]
+            lower_bound = x_eval_pdf[idx_lower_bound] if idx_lower_bound < number_eval_points else 0
+            upper_bound = x_eval_pdf[idx_upper_bound] if idx_lower_bound < number_eval_points else 0
 
             dist_intervals[i, 0] = lower_bound
             dist_intervals[i, 1] = upper_bound
 
         print(f"dist_intervals:\n{dist_intervals}")
+        return dist_intervals

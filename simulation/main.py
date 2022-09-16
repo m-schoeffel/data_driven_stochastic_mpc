@@ -29,7 +29,9 @@ def main():
     for i in range(0, number_of_measurements):
         start_time = time.time()
 
+        dist_intervals = disturbance_estimator.get_disturbance_intervals()
         [G_v, g_v, G_z, g_z] = constraint_tightener.get_tightened_constraints()
+        [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(dist_intervals)
         next_u = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, goal_state=[-2, -2, 0, 0])
         predicted_state = dd_predictor.predict_state(real_system.x, next_u)
@@ -40,8 +42,8 @@ def main():
         delta_x = real_system.x - predicted_state
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
 
-        #print("--- \"Main Loop\" took %s seconds ---" %
-        #      (time.time() - start_time))
+        print("--- \"Main Loop\" took %s seconds ---" %
+             (time.time() - start_time))
 
     disturbance_estimator.get_disturbance_intervals()
 
