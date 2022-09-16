@@ -19,6 +19,9 @@ def main():
     [dd_mpc, dd_predictor,
         disturbance_estimator, constraint_tightener] = create_modules.create_controller_modules(real_system)
 
+    # Load reference trajectory
+    ref_traj = np.genfromtxt("lti_system/reference_trajectories/"+"ref_traj_1.csv", delimiter=',')
+
     # Set initial state
     real_system.x = x_initial_state
     print(f"initial state: \n{real_system.x}")
