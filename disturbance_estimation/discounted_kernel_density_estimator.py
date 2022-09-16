@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from collections import deque
 
 from scipy import stats
 
@@ -19,9 +20,11 @@ class DiscountedKDE:
         self.number_of_states = number_of_states
 
         # Store index k and delta x of every state (difference between prediction and actual state)
-        self.k_array = np.zeros((1, number_timesteps), dtype=int)
-        self.delta_x_array = np.zeros((number_of_states, number_timesteps))
-        self.numbr_measurements = 0
+        # self.k_array = np.zeros((1, number_timesteps), dtype=int)
+        # self.numbr_measurements = 0
+
+        # Initialize deque which stores delta_x
+        self.delta_x_deque = deque([np.random.normal(0,3,size=[number_of_states]) for _ in range(0,self.number_of_past_samples_considered_for_kde)])
 
         # Create exponential weight array for discounted kde
         self.weights = np.power(base_of_exponential_weights, np.arange(
@@ -31,9 +34,12 @@ class DiscountedKDE:
         self.p = risk_param
 
     def add_delta_x(self, index_k, delta_x):
-        self.k_array[0, self.numbr_measurements] = index_k
-        self.delta_x_array[:, self.numbr_measurements] = delta_x.reshape(-1)
-        self.numbr_measurements += 1
+        # Todo: remove or use k_array
+        # self.k_array[0, self.numbr_measurements] = index_k
+        # self.numbr_measurements += 1
+
+        self.delta_x_deque.popleft()
+        self.delta_x_deque.append(delta_x.reshape(-1))
 
     def plot_distribution(self):
         fig, ax = plt.subplots(self.number_of_states)
@@ -41,12 +47,13 @@ class DiscountedKDE:
         fig.suptitle(
             "Distribution of disturbance on each state (discounted kde)")
 
+        delta_x_storage = np.zeros([self.number_of_states,self.number_of_past_samples_considered_for_kde])
+        for i,delta_x in enumerate(self.delta_x_deque):
+            delta_x_storage[:,i] = delta_x
+
         for i in range(0, self.number_of_states):
             # A disturbance distribution is plotted for every state
-            indices_considered_samples = list(range(
-                self.numbr_measurements-self.number_of_past_samples_considered_for_kde, self.numbr_measurements))
-            state_deviations = self.delta_x_array[i,
-                                                  indices_considered_samples]
+            state_deviations = delta_x_storage[i,:]
 
             # Todo: Implement weights
             kde = stats.gaussian_kde(
@@ -71,12 +78,13 @@ class DiscountedKDE:
 
         dist_intervals = np.zeros([self.number_of_states, 2])
 
+        delta_x_storage = np.zeros([self.number_of_states,self.number_of_past_samples_considered_for_kde])
+        for i,delta_x in enumerate(self.delta_x_deque):
+            delta_x_storage[:,i] = delta_x
+
         for i in range(0, self.number_of_states):
             # A disturbance distribution is plotted for every state
-            indices_considered_samples = list(range(
-                self.numbr_measurements-self.number_of_past_samples_considered_for_kde, self.numbr_measurements))
-            state_deviations = self.delta_x_array[i,
-                                                  indices_considered_samples]
+            state_deviations = delta_x_storage[i,:]
 
             kde = stats.gaussian_kde(
                 state_deviations, bw_method=0.1, weights=self.weights)
