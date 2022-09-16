@@ -24,7 +24,8 @@ class DiscountedKDE:
         # self.numbr_measurements = 0
 
         # Initialize deque which stores delta_x
-        self.delta_x_deque = deque([np.random.normal(0,3,size=[number_of_states]) for _ in range(0,self.number_of_past_samples_considered_for_kde)])
+        self.delta_x_deque = deque([np.random.normal(0, 3, size=[number_of_states]) for _ in range(
+            0, self.number_of_past_samples_considered_for_kde)])
 
         # Create exponential weight array for discounted kde
         self.weights = np.power(base_of_exponential_weights, np.arange(
@@ -47,13 +48,14 @@ class DiscountedKDE:
         fig.suptitle(
             "Distribution of disturbance on each state (discounted kde)")
 
-        delta_x_storage = np.zeros([self.number_of_states,self.number_of_past_samples_considered_for_kde])
-        for i,delta_x in enumerate(self.delta_x_deque):
-            delta_x_storage[:,i] = delta_x
+        delta_x_storage = np.zeros(
+            [self.number_of_states, self.number_of_past_samples_considered_for_kde])
+        for i, delta_x in enumerate(self.delta_x_deque):
+            delta_x_storage[:, i] = delta_x
 
         for i in range(0, self.number_of_states):
             # A disturbance distribution is plotted for every state
-            state_deviations = delta_x_storage[i,:]
+            state_deviations = delta_x_storage[i, :]
 
             # Todo: Implement weights
             kde = stats.gaussian_kde(
@@ -66,7 +68,8 @@ class DiscountedKDE:
             ax[i].set_title(f"State {i+1}")
 
         plot_real_density = True
-        return plot_real_density, fig, ax
+
+        plt.show()
 
     def get_disturbance_intervals(self):
 
@@ -78,13 +81,14 @@ class DiscountedKDE:
 
         dist_intervals = np.zeros([self.number_of_states, 2])
 
-        delta_x_storage = np.zeros([self.number_of_states,self.number_of_past_samples_considered_for_kde])
-        for i,delta_x in enumerate(self.delta_x_deque):
-            delta_x_storage[:,i] = delta_x
+        delta_x_storage = np.zeros(
+            [self.number_of_states, self.number_of_past_samples_considered_for_kde])
+        for i, delta_x in enumerate(self.delta_x_deque):
+            delta_x_storage[:, i] = delta_x
 
         for i in range(0, self.number_of_states):
             # A disturbance distribution is plotted for every state
-            state_deviations = delta_x_storage[i,:]
+            state_deviations = delta_x_storage[i, :]
 
             kde = stats.gaussian_kde(
                 state_deviations, bw_method=0.1, weights=self.weights)

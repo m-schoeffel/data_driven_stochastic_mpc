@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from config import load_parameters
-from graphics import animate_state_sequence, plot_state_sequence, plot_disturbance
+from graphics import animate_state_sequence, plot_state_sequence
 
 from simulation import create_modules
 
@@ -47,7 +47,7 @@ def main():
 
     # animate_state_sequence.animate_state_sequence(state_storage)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
-    plot_disturbance.plot_disturbance_estimation(disturbance_estimator)
+    disturbance_estimator.plot_distribution()
 
 
 if __name__ == "__main__":
