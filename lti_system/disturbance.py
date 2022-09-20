@@ -10,9 +10,9 @@ class Disturbance:
 
     def get_specific_dist(self, type_of_disturbance) -> float:
         if type_of_disturbance == "gaussian":
-            return np.random.normal(loc=0, scale=1.0)
+            return np.random.normal(loc=0, scale=0.1)
         elif type_of_disturbance == "uniform":
-            return np.random.uniform(low=-0.5, high=0.5)
+            return np.random.uniform(low=-0.1, high=0.1)
         elif type_of_disturbance == "triangular":
             return np.random.triangular(left=-2, mode=0.5, right=1)
         elif type_of_disturbance == "lognormal":

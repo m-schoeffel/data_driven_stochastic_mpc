@@ -111,5 +111,5 @@ class DiscountedKDE:
             dist_intervals[i, 0] = lower_bound
             dist_intervals[i, 1] = upper_bound
 
-        print(f"dist_intervals:\n{dist_intervals}")
+        # print(f"dist_intervals:\n{dist_intervals}")
         return dist_intervals

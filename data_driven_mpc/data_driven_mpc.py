@@ -27,7 +27,7 @@ class DataDrivenMPC:
     def get_new_u(self, current_x, G_v, g_v, G_z, g_z, goal_state=0):
 
         # Specify goal_state
-        if goal_state == 0:
+        if len(goal_state)==1 and goal_state == 0:
             self.goal_state = np.zeros([self.dim_x])
         else:
             self.goal_state = np.array(goal_state)

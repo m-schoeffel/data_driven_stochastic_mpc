@@ -20,10 +20,13 @@ def main():
         disturbance_estimator, constraint_tightener] = create_modules.create_controller_modules(real_system)
 
     # Load reference trajectory
-    ref_traj = np.genfromtxt("lti_system/reference_trajectories/"+"ref_traj_1.csv", delimiter=',')
+    ref_traj = np.genfromtxt(
+        "lti_system/reference_trajectories/"+"ref_traj_1.csv", delimiter=',')
+    print(ref_traj[:, 25].reshape(-1))
 
     # Set initial state
     real_system.x = x_initial_state
+    real_system.x[:] = ref_traj[:, 0].reshape(-1, 1)
     print(f"initial state: \n{real_system.x}")
 
     state_storage = np.zeros(
@@ -34,9 +37,11 @@ def main():
         start_time = time.time()
 
         dist_intervals = disturbance_estimator.get_disturbance_intervals()
-        [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(dist_intervals)
+        [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(
+            dist_intervals)
+        ref_state = ref_traj[:, i]
         next_u = dd_mpc.get_new_u(
-            real_system.x, G_v, g_v, G_z, g_z, goal_state=[-2, -2, 0, 0])
+            real_system.x, G_v, g_v, G_z, g_z, goal_state=ref_state)
         predicted_state = dd_predictor.predict_state(real_system.x, next_u)
         real_system.next_step(next_u, add_disturbance=True)
 
@@ -44,12 +49,16 @@ def main():
         state_storage[:, i] = real_system.x.reshape(-1)
         g_z_storage.append(g_z)
 
-
         delta_x = real_system.x - predicted_state
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
 
+        print(f"goal state x:{ref_traj[0,i]}")
+        print(f"goal state y:{ref_traj[1,i]}")
+        print(f"current state x:{real_system.x[0]}")
+        print(f"current state y:{real_system.x[1]}")
+
         print("--- \"Main Loop\" took %s seconds ---" %
-             (time.time() - start_time))
+              (time.time() - start_time))
 
     disturbance_estimator.get_disturbance_intervals()
 
