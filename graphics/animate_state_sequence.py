@@ -12,7 +12,7 @@ from config import load_parameters
 def animate_state_sequence(state_storage,g_z_storage,ref_traj):
 
     cm = 1/2.54  # centimeters in inches
-    my_figsize = (16*cm, 8*cm)
+    my_figsize = (128*cm, 64*cm)
 
     fig = plt.figure(figsize=my_figsize)
     ax = plt.axes(xlim=(-4, 4), ylim=(-4, 4))
