@@ -52,6 +52,14 @@ def animate_state_sequence(state_storage,g_z_storage,ref_traj):
         ax.set_xlim(0,len_traj)
 
 
-    anim = animation.FuncAnimation(fig, animate, interval=100)
+    anim = animation.FuncAnimation(fig, animate, frames=state_storage.shape[1], interval=100)
+
+
+
+    # f = r"first_reverence_tracking.mp4" 
+    # writervideo = animation.FFMpegWriter(fps=10) 
+    # anim.save(f, writer=writervideo)
+
+
 
     plt.show()

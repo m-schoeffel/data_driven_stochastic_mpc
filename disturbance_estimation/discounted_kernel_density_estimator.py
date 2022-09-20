@@ -24,7 +24,7 @@ class DiscountedKDE:
         # self.numbr_measurements = 0
 
         # Initialize deque which stores delta_x
-        self.delta_x_deque = deque([np.random.normal(0, 0.1, size=[number_of_states]) for _ in range(
+        self.delta_x_deque = deque([np.random.normal(0, 0.15, size=[number_of_states]) for _ in range(
             0, self.number_of_past_samples_considered_for_kde)])
         # self.delta_x_deque = deque([0 for _ in range(
         #     0, self.number_of_past_samples_considered_for_kde)])
