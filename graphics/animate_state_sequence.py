@@ -33,7 +33,8 @@ def animate_state_sequence(state_storage,g_z_storage,ref_traj):
         ax.plot(timesteps, x1_constr, color='blue', lw=3)
 
         # Plot tightened pseudo constraints
-        curr_tight_x1_constr = g_z_storage[0][0]
+        curr_tight_x1_constr = g_z_storage[k][0]
+        print(f"curr_tight_x1_constr:\n{curr_tight_x1_constr}")
         curr_tight_x1_constr_array = np.ones(len_traj)*curr_tight_x1_constr
         ax.plot(timesteps,curr_tight_x1_constr_array,color='green',lw=3)
 
@@ -42,6 +43,6 @@ def animate_state_sequence(state_storage,g_z_storage,ref_traj):
 
         ax.set_xlim(0,len_traj)
 
-    anim = animation.FuncAnimation(fig, animate, interval=10)
+    anim = animation.FuncAnimation(fig, animate, interval=100)
 
     plt.show()
