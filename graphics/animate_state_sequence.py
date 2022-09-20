@@ -10,8 +10,16 @@ from config import load_parameters
 
 
 def animate_state_sequence(state_storage,g_z_storage,ref_traj):
-    fig = plt.figure()
+
+    cm = 1/2.54  # centimeters in inches
+    my_figsize = (16*cm, 8*cm)
+
+    fig = plt.figure(figsize=my_figsize)
     ax = plt.axes(xlim=(-4, 4), ylim=(-4, 4))
+
+    line1, = ax.plot([], [], color='blue', lw=3)
+    line2, = ax.plot([], [],color='green',lw=3, ls='--')
+    line3, = ax.plot([], [], lw=2)
 
     len_traj = state_storage.shape[1]
     timesteps = list(range(0,len_traj))
@@ -30,18 +38,19 @@ def animate_state_sequence(state_storage,g_z_storage,ref_traj):
         ax.scatter(k, state_storage[0, k], color='red')
 
         # Plot real constraint
-        ax.plot(timesteps, x1_constr, color='blue', lw=3)
+        line1.set_data(timesteps, x1_constr)
 
         # Plot tightened pseudo constraints
         curr_tight_x1_constr = g_z_storage[k][0]
         print(f"curr_tight_x1_constr:\n{curr_tight_x1_constr}")
         curr_tight_x1_constr_array = np.ones(len_traj)*curr_tight_x1_constr
-        ax.plot(timesteps,curr_tight_x1_constr_array,color='green',lw=3)
+        line2.set_data(timesteps,curr_tight_x1_constr_array)
 
         # Plot reference trajectory
-        ax.plot(timesteps,ref_traj[0,0:len_traj])
+        line3.set_data(timesteps,ref_traj[0,0:len_traj])
 
         ax.set_xlim(0,len_traj)
+
 
     anim = animation.FuncAnimation(fig, animate, interval=100)
 

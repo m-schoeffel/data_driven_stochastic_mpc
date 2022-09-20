@@ -11,7 +11,7 @@ def main():
     main_param = load_parameters.load_main_params()
 
     # Currently a reference is being tracked, so the number_of_measurements corresponds to the number of reference samples
-    # number_of_measurements = main_param["number_of_measurements"]
+    number_of_measurements = main_param["number_of_measurements"]
 
     lti_system_param = load_parameters.load_lti_system_params()
     x_initial_state = lti_system_param["x_0"]
@@ -26,7 +26,7 @@ def main():
         "lti_system/reference_trajectories/"+"ref_traj_1.csv", delimiter=',')
     print(ref_traj[:, 25].reshape(-1))
 
-    number_of_measurements = ref_traj.shape[1]
+    # number_of_measurements = ref_traj.shape[1]
 
     # Set initial state
     real_system.x = x_initial_state
