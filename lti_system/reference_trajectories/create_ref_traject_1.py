@@ -4,7 +4,7 @@ import numpy as np
 
 # reference trajectory for 4 state system
 # alternate 0.1 and 1.9 for x-coordinate (state 1) in 2s intervals 
-# (sampling rate is gerally assumed to be 10Hz)
+# (sampling rate is generally assumed to be 10Hz)
 # States 2-4 supposed to stay 0 for the whole duration
 traj_a = np.array([[0.1],[0],[0],[0]])
 traj_a = np.tile(traj_a,20)
