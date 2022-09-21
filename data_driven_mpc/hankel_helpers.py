@@ -1,8 +1,8 @@
 import numpy as np
 
 
-def create_hankel_matrix(input_sequence, state_sequence, prediction_horizon):
-    n = prediction_horizon
+def create_hankel_matrix(input_sequence, state_sequence, predic_hori_size):
+    n = predic_hori_size
 
     dim_u = input_sequence.shape[0]
     dim_x = state_sequence.shape[0]
