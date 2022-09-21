@@ -9,7 +9,7 @@ from simulation import create_modules
 
 def main():
     main_param = load_parameters.load_main_params()
-    prediction_horizon = load_parameters.load_prediction_horizon()
+    prediction_horizon_size = load_parameters.load_prediction_horizon()
 
 
     # Currently a reference is being tracked, so the number_of_measurements corresponds to the number of reference samples
@@ -38,6 +38,7 @@ def main():
     state_storage = np.zeros(
         [x_initial_state.shape[0], number_of_measurements])
     g_z_storage = list()
+    pred_hor_storage = list()
 
     for i in range(0, number_of_measurements):
         start_time = time.time()
@@ -45,14 +46,15 @@ def main():
         dist_intervals = disturbance_estimator.get_disturbance_intervals()
         [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(
             dist_intervals)
-        ref_pred_hor = ref_traj[:, i:i+prediction_horizon]
-        [next_u, x_pred] = dd_mpc.get_new_u(
+        ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size]
+        [next_u, x_pred,prediction_horizon] = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_pred_hor)
         real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
         state_storage[:, i] = real_system.x.reshape(-1)
         g_z_storage.append(g_z.copy())
+        pred_hor_storage.append(prediction_horizon.copy())
 
         delta_x = real_system.x - x_pred
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
@@ -67,7 +69,7 @@ def main():
               (time.time() - start_time))
         print()
 
-    animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
+    animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj,pred_hor_storage)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
     disturbance_estimator.plot_distribution()
 
