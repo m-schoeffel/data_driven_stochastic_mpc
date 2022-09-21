@@ -32,6 +32,9 @@ input_sequence:
 
 number_of_measurements: 210
 
+# States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
+number_of_inputs: 70
+
 disturbance_estimation: "discounted_kde" # gaussian_process/traditional_kde/discounted_kde
 
 discounted_kde:

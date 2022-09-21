@@ -34,24 +34,28 @@ def create_controller_modules(real_system):
     lti_system_param = load_parameters.load_lti_system_params()
 
     NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
+    NUMBER_OF_INPUTS = main_param["number_of_inputs"]
 
     # gaussian_process/traditional_kde/discounted_kde
     DISTURBANCE_ESTIMATION = main_param["dist_est"]
 
     X_INITIAL_STATE = lti_system_param["x_0"]
 
-    INPUT_SEQUENCE = main_param["input_seq"]
+    # Create input sequence
+    dim_u = lti_system_param["B"].shape[1]
+    number_of_inputs = NUMBER_OF_INPUTS
+    input_sequence = np.random.randint(-10,10,[dim_u,number_of_inputs])
 
     # Create input-state sequence (needed for Hankel matrix in data_driven_mpc module)
     state_sequence = np.zeros(
-        (X_INITIAL_STATE.shape[0], INPUT_SEQUENCE.shape[1]+1))
+        (X_INITIAL_STATE.shape[0], input_sequence.shape[1]+1))
     state_sequence[:, 0] = X_INITIAL_STATE[:, 0]
     # Record input-state sequence
-    for i in range(INPUT_SEQUENCE.shape[1]):
+    for i in range(input_sequence.shape[1]):
         state_sequence[:, i+1] = real_system.next_step(
-            INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
+            input_sequence[:, i], add_disturbance=False)[:, 0]
 
-    dd_mpc = data_driven_mpc.DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
+    dd_mpc = data_driven_mpc.DataDrivenMPC(input_sequence, state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = gaussian_process.GaussianProcess(
