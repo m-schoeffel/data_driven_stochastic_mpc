@@ -70,7 +70,7 @@ class DataDrivenMPC:
 
         # return next input (MPC Ouput) and predicted next state
         next_u = trajectory[0:self.dim_u]
-        x_pred = trajectory[self.dim_u*(self.prediction_horizon+1):self.dim_u*(self.prediction_horizon+1)+self.dim_x]
+        x_pred = trajectory[self.dim_u*(self.prediction_horizon+1)+self.dim_x:self.dim_u*(self.prediction_horizon+1)+self.dim_x*2]
         return next_u, x_pred
 
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):

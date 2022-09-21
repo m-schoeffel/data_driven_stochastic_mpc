@@ -47,13 +47,13 @@ def main():
         [next_u, x_pred] = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, goal_state=ref_state)
         predicted_state = dd_predictor.predict_state(real_system.x, next_u)
-        real_system.next_step(next_u, add_disturbance=False)
+        real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
         state_storage[:, i] = real_system.x.reshape(-1)
         g_z_storage.append(g_z.copy())
 
-        delta_x = real_system.x - predicted_state
+        delta_x = real_system.x - x_pred
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
 
         print(f"goal state x: {ref_traj[0,i]}")
@@ -67,9 +67,9 @@ def main():
         print()
 
 
-    animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
+    # animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
-    # disturbance_estimator.plot_distribution()
+    disturbance_estimator.plot_distribution()
 
 
 if __name__ == "__main__":
