@@ -46,7 +46,6 @@ def main():
         ref_state = ref_traj[:, i]
         [next_u, x_pred] = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, goal_state=ref_state)
-        predicted_state = dd_predictor.predict_state(real_system.x, next_u)
         real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
