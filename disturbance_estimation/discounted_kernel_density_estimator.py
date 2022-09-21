@@ -4,14 +4,11 @@ from collections import deque
 
 from scipy import stats
 
-from config import load_parameters
-
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
-    def __init__(self, number_of_states, number_timesteps, risk_param=0.95):
-        [base_of_exponential_weights,
-            default_number_past_samples] = load_parameters.load_param_discounted_kde()
+    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights,default_number_past_samples,risk_param=0.95):
+
 
         # Limit number of considered samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(

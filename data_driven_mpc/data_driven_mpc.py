@@ -4,23 +4,22 @@ import time
 from scipy.optimize import minimize, LinearConstraint
 
 from . import hankel_helpers
-from config import load_parameters
 
 
 class DataDrivenMPC:
-    def __init__(self, input_sequence, state_sequence):
+    def __init__(self, input_sequence, state_sequence,predic_hori_size,state_cost,input_cost):
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
 
-        self.prediction_horizon = load_parameters.load_prediction_horizon()
+        # Set size of the prediction horizon
+        self.predic_hori_size = predic_hori_size
 
-        # Matrices for input and state cost
-        cost_matrices = load_parameters.load_cost_matrices()
-        self.R = np.array(cost_matrices["R"])
-        self.Q = np.array(cost_matrices["Q"])
+        # Matrices for state and input cost
+        self.R = np.array(state_cost)
+        self.Q = np.array(input_cost)
 
         self.h_matrix = hankel_helpers.create_hankel_matrix(
-            input_sequence, state_sequence, self.prediction_horizon)
+            input_sequence, state_sequence, self.predic_hori_size)
         self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
@@ -28,7 +27,7 @@ class DataDrivenMPC:
 
         # Specify ref_pred_hor
         if len(ref_pred_hor)==1 and ref_pred_hor == 0:
-            self.ref_pred_hor = np.zeros([self.dim_x,self.prediction_horizon])
+            self.ref_pred_hor = np.zeros([self.dim_x,self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
 
@@ -51,7 +50,7 @@ class DataDrivenMPC:
         # Make sure trajectory starts at current_x
         C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
         for i in range(0, len(current_x.reshape(-1, 1))):
-            C_x_0[i, self.dim_u*(self.prediction_horizon+1)+i] = 1
+            C_x_0[i, self.dim_u*(self.predic_hori_size+1)+i] = 1
         C_x_0 = C_x_0 @ self.h_matrix
 
         constr_x_0 = LinearConstraint(
@@ -59,7 +58,7 @@ class DataDrivenMPC:
 
         # Use feasible starting point for optimization (In this case u=0 for inputs and x_0 for initial state)
         # Needed, because scipy.minimize() produces faulty result otherwise
-        starting_point_opt = np.vstack([np.ones([self.dim_u*(self.prediction_horizon),1]),current_x])
+        starting_point_opt = np.vstack([np.ones([self.dim_u*(self.predic_hori_size),1]),current_x])
         alpha_0 = self.h_matrix_inv@starting_point_opt
 
         # constr_input_state,constr_x_0
@@ -70,11 +69,11 @@ class DataDrivenMPC:
 
         # return next input (MPC Ouput) and predicted next state
         next_u = trajectory[0:self.dim_u]
-        x_pred = trajectory[self.dim_u*(self.prediction_horizon+1)+self.dim_x:self.dim_u*(self.prediction_horizon+1)+self.dim_x*2]
+        x_pred = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*2]
         
         # Return prediction horizon for later visualization
-        prediction_horizon = trajectory[self.dim_u*(self.prediction_horizon+1)+self.dim_x:self.dim_u*(self.prediction_horizon+1)+self.dim_x*(1+self.prediction_horizon)]
-        return next_u, x_pred, prediction_horizon
+        predic_hori_size = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
+        return next_u, x_pred, predic_hori_size
 
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
         u_block = np.hstack(
@@ -87,7 +86,7 @@ class DataDrivenMPC:
     def determine_full_seq_constr_matrix(self, matrix):
         """Scale up constraint matrices to cover full sequence"""
 
-        steps = self.prediction_horizon
+        steps = self.predic_hori_size
 
         full_constrainted_matrix = np.array([0, 0])
 
@@ -109,7 +108,7 @@ class DataDrivenMPC:
     def determine_full_seq_constr_ub(self, upper_bound):
         """Scale up constraint upper bound vectors to cover full sequence"""
 
-        steps = self.prediction_horizon
+        steps = self.predic_hori_size
 
         ub_fs = np.tile(upper_bound, [steps+1, 1])
 
@@ -121,13 +120,13 @@ class DataDrivenMPC:
         cost = 0
 
         # Input cost is the the sum of inputs squared and weighted by the cost matrix Q
-        for i in range(0, self.dim_u*self.prediction_horizon, self.dim_u):
+        for i in range(0, self.dim_u*self.predic_hori_size, self.dim_u):
             cost += trajectory[i:i +
                                self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
         # State cost is the quadratic difference between the reference trajectory for the prediction horizon and the actual prediction, weighted with the cost matrix R
-        for i in range(0, self.prediction_horizon):
-            idx_state = self.dim_u*(self.prediction_horizon+1)+self.dim_x + i*self.dim_x
+        for i in range(0, self.predic_hori_size):
+            idx_state = self.dim_u*(self.predic_hori_size+1)+self.dim_x + i*self.dim_x
             state_pred = trajectory[idx_state:idx_state+self.dim_x]
             state_ref = self.ref_pred_hor[:,i]
             state_diff = state_pred - state_ref

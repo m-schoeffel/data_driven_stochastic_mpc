@@ -1,15 +1,12 @@
 import numpy as np
 
-from config import load_parameters
-
 
 class ConstraintTightening:
-    def __init__(self):
-        constraints = load_parameters.load_constraints()
-        self.G_u = np.array(constraints["G_u"])
-        self.g_u = np.array(constraints["g_u"])
-        self.G_x = np.array(constraints["G_x"])
-        self.g_x = np.array(constraints["g_x"])
+    def __init__(self,G_u,g_u,G_x,g_x):
+        self.G_u = np.array(G_u)
+        self.g_u = np.array(g_u)
+        self.G_x = np.array(G_x)
+        self.g_x = np.array(g_x)
 
         # Initialize pseudo constraints
         self.G_v = self.G_u.copy()

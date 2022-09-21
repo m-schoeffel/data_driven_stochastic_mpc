@@ -41,7 +41,7 @@ def create_controller_modules(real_system):
 
     X_INITIAL_STATE = lti_system_param["x_0"]
 
-    # Create input sequence
+    # Create input sequence (needed to create input-state sequence)
     dim_u = lti_system_param["B"].shape[1]
     number_of_inputs = NUMBER_OF_INPUTS
     input_sequence = np.random.randint(-10,10,[dim_u,number_of_inputs])
@@ -55,15 +55,19 @@ def create_controller_modules(real_system):
         state_sequence[:, i+1] = real_system.next_step(
             input_sequence[:, i], add_disturbance=False)[:, 0]
 
-    dd_mpc = data_driven_mpc.DataDrivenMPC(input_sequence, state_sequence)
+    PREDICTION_HORIZON = load_parameters.load_prediction_horizon()
+    cost_matrices = load_parameters.load_cost_matrices()
+    dd_mpc = data_driven_mpc.DataDrivenMPC(input_sequence, state_sequence,PREDICTION_HORIZON,cost_matrices["R"],cost_matrices["Q"])
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = gaussian_process.GaussianProcess(
             X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
+        [BASE_OF_EXPONENTIAL_WEIGHTS,DEFAULT_NUMBER_PAST_SAMPLES] = load_parameters.load_param_discounted_kde()
         disturbance_estimator = discounted_kernel_density_estimator.DiscountedKDE(
-            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS)
+            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS,BASE_OF_EXPONENTIAL_WEIGHTS,DEFAULT_NUMBER_PAST_SAMPLES)
 
-    constraint_tightener = ConstraintTightening()
+    constraints = load_parameters.load_constraints()
+    constraint_tightener = ConstraintTightening(constraints["G_u"],constraints["g_u"],constraints["G_x"],constraints["g_x"])
 
     return dd_mpc, disturbance_estimator, constraint_tightener
