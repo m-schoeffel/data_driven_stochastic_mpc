@@ -18,7 +18,7 @@ def main():
 
     real_system = create_modules.create_system()
 
-    [dd_mpc, dd_predictor,
+    [dd_mpc,
         disturbance_estimator, constraint_tightener] = create_modules.create_controller_modules(real_system)
 
     # Load reference trajectory
@@ -45,7 +45,7 @@ def main():
             dist_intervals)
         ref_state = ref_traj[:, i]
         [next_u, x_pred] = dd_mpc.get_new_u(
-            real_system.x, G_v, g_v, G_z, g_z, goal_state=ref_state)
+            real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_state)
         real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
@@ -64,7 +64,6 @@ def main():
         print("--- \"Main Loop\" took %s seconds ---" %
               (time.time() - start_time))
         print()
-
 
     # animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)

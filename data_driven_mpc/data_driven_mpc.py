@@ -24,13 +24,13 @@ class DataDrivenMPC:
         self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
-    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, goal_state=0):
+    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, ref_pred_hor=0):
 
-        # Specify goal_state
-        if len(goal_state)==1 and goal_state == 0:
-            self.goal_state = np.zeros([self.dim_x])
+        # Specify ref_pred_hor
+        if len(ref_pred_hor)==1 and ref_pred_hor == 0:
+            self.ref_pred_hor = np.zeros([self.dim_x])
         else:
-            self.goal_state = np.array(goal_state)
+            self.ref_pred_hor = np.array(ref_pred_hor)
 
         # Get constraint matrices to cover full sequence (fs) of input and state
         G_v_fs = self.determine_full_seq_constr_matrix(G_v)
@@ -116,12 +116,15 @@ class DataDrivenMPC:
 
         trajectory = self.h_matrix @ alpha
         cost = 0
+
+        # Input cost is the the sum of inputs squared and weighted by the cost matrix Q
         for i in range(0, self.dim_u*self.prediction_horizon, self.dim_u):
             cost += trajectory[i:i +
                                self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
+        # State cost is the quadratic difference between the reference trajectory for the prediction horizon and the actual prediction, weighted with the cost matrix R
         for i in range(self.dim_u*(self.prediction_horizon+1), self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1), self.dim_x):
-            state_diff = trajectory[i:i+self.dim_x] - self.goal_state
+            state_diff = trajectory[i:i+self.dim_x] - self.ref_pred_hor
             cost += state_diff.transpose()@self.R@state_diff
         return cost
 

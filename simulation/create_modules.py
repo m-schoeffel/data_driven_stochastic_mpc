@@ -2,7 +2,6 @@ import numpy as np
 
 from lti_system import lti_system
 from data_driven_mpc import data_driven_mpc
-from data_driven_mpc import data_driven_predictor
 from lti_system import disturbance
 from config import load_parameters
 from disturbance_estimation import gaussian_process, discounted_kernel_density_estimator
@@ -52,8 +51,6 @@ def create_controller_modules(real_system):
         state_sequence[:, i+1] = real_system.next_step(
             INPUT_SEQUENCE[:, i], add_disturbance=False)[:, 0]
 
-    dd_predictor = data_driven_predictor.DDPredictor(
-        INPUT_SEQUENCE, state_sequence)
     dd_mpc = data_driven_mpc.DataDrivenMPC(INPUT_SEQUENCE, state_sequence)
 
     if DISTURBANCE_ESTIMATION == "gaussian_process":
@@ -65,4 +62,4 @@ def create_controller_modules(real_system):
 
     constraint_tightener = ConstraintTightening()
 
-    return dd_mpc, dd_predictor, disturbance_estimator, constraint_tightener
+    return dd_mpc, disturbance_estimator, constraint_tightener
