@@ -11,7 +11,6 @@ def main():
     main_param = load_parameters.load_main_params()
     prediction_horizon_size = load_parameters.load_prediction_horizon()
 
-
     # Currently a reference is being tracked, so the number_of_measurements corresponds to the number of reference samples
     number_of_measurements = main_param["number_of_measurements"]
 
@@ -47,7 +46,7 @@ def main():
         [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(
             dist_intervals)
         ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size]
-        [next_u, x_pred,prediction_horizon] = dd_mpc.get_new_u(
+        [next_u, x_pred, prediction_horizon] = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_pred_hor)
         real_system.next_step(next_u, add_disturbance=False)
 
@@ -69,7 +68,8 @@ def main():
               (time.time() - start_time))
         print()
 
-    animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj,pred_hor_storage)
+    animate_state_sequence.animate_state_sequence(
+        state_storage, g_z_storage, ref_traj, pred_hor_storage)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
     disturbance_estimator.plot_distribution()
 

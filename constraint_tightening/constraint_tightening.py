@@ -2,7 +2,7 @@ import numpy as np
 
 
 class ConstraintTightening:
-    def __init__(self,G_u,g_u,G_x,g_x):
+    def __init__(self, G_u, g_u, G_x, g_x):
         self.G_u = np.array(G_u)
         self.g_u = np.array(g_u)
         self.G_x = np.array(G_x)

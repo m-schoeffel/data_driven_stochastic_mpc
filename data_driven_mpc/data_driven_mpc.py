@@ -7,7 +7,7 @@ from . import hankel_helpers
 
 
 class DataDrivenMPC:
-    def __init__(self, input_sequence, state_sequence,predic_hori_size,state_cost,input_cost):
+    def __init__(self, input_sequence, state_sequence, predic_hori_size, state_cost, input_cost):
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
 
@@ -26,8 +26,8 @@ class DataDrivenMPC:
     def get_new_u(self, current_x, G_v, g_v, G_z, g_z, ref_pred_hor=0):
 
         # Specify ref_pred_hor
-        if len(ref_pred_hor)==1 and ref_pred_hor == 0:
-            self.ref_pred_hor = np.zeros([self.dim_x,self.predic_hori_size])
+        if len(ref_pred_hor) == 1 and ref_pred_hor == 0:
+            self.ref_pred_hor = np.zeros([self.dim_x, self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
 
@@ -58,7 +58,8 @@ class DataDrivenMPC:
 
         # Use feasible starting point for optimization (In this case u=0 for inputs and x_0 for initial state)
         # Needed, because scipy.minimize() produces faulty result otherwise
-        starting_point_opt = np.vstack([np.ones([self.dim_u*(self.predic_hori_size),1]),current_x])
+        starting_point_opt = np.vstack(
+            [np.ones([self.dim_u*(self.predic_hori_size), 1]), current_x])
         alpha_0 = self.h_matrix_inv@starting_point_opt
 
         # constr_input_state,constr_x_0
@@ -69,10 +70,12 @@ class DataDrivenMPC:
 
         # return next input (MPC Ouput) and predicted next state
         next_u = trajectory[0:self.dim_u]
-        x_pred = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*2]
-        
+        x_pred = trajectory[self.dim_u*(self.predic_hori_size+1) +
+                            self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*2]
+
         # Return prediction horizon for later visualization
-        predic_hori_size = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
+        predic_hori_size = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(
+            self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
         return next_u, x_pred, predic_hori_size
 
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
@@ -126,9 +129,10 @@ class DataDrivenMPC:
 
         # State cost is the quadratic difference between the reference trajectory for the prediction horizon and the actual prediction, weighted with the cost matrix R
         for i in range(0, self.predic_hori_size):
-            idx_state = self.dim_u*(self.predic_hori_size+1)+self.dim_x + i*self.dim_x
+            idx_state = self.dim_u * \
+                (self.predic_hori_size+1)+self.dim_x + i*self.dim_x
             state_pred = trajectory[idx_state:idx_state+self.dim_x]
-            state_ref = self.ref_pred_hor[:,i]
+            state_ref = self.ref_pred_hor[:, i]
             state_diff = state_pred - state_ref
             cost += state_diff.transpose()@self.R@state_diff
         return cost
