@@ -39,7 +39,7 @@ def create_hankel_pseudo_inverse(h_matrix, dim_u, dim_x):
     # Determine prediction horizon of hankel matrix:
     predict_horizon = int(h_matrix.shape[0]/(dim_u+dim_x)-1)
 
-    # Select relevant rows vor pseudo inverse of hankel matrix (used for prediction step)
+    # Select relevant rows for pseudo inverse of hankel matrix (used for prediction step)
     u_rows_idx = list(range(0, dim_u*predict_horizon))
     x_rows_idx = list(range(dim_u*(predict_horizon+1),
                       dim_u*(predict_horizon+1)+dim_x))

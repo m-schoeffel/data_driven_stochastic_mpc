@@ -41,7 +41,7 @@ class DataDrivenMPC:
         g_compl = np.vstack([g_v_fs, g_z_fs])
         g_compl = g_compl.reshape(-1,)
 
-        # Create Constraintmatrix, which is depending on alpha (decision variable)
+        # Create Constraintmatrix, which is depending on alpha (decision variable in solver)
         G_alpha = G_compl @ self.h_matrix
 
         # Create Alpha Constraints
@@ -57,10 +57,10 @@ class DataDrivenMPC:
         constr_x_0 = LinearConstraint(
             C_x_0, lb=current_x.reshape(-1,), ub=current_x.reshape(-1,))
 
-        # Calculate feasible starting point for optimization
+        # Use feasible starting point for optimization (In this case u=0 for inputs and x_0 for initial state)
         # Needed, because scipy.minimize() produces faulty result otherwise
-        alpha_0 = self.h_matrix_inv@np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                             current_x[0], current_x[1], current_x[2], current_x[3]]).transpose()
+        starting_point_opt = np.vstack([np.ones([self.dim_u*(self.prediction_horizon),1]),current_x])
+        alpha_0 = self.h_matrix_inv@starting_point_opt
 
         # constr_input_state,constr_x_0
         res = minimize(self.get_sequence_cost, alpha_0, args=(
@@ -68,11 +68,10 @@ class DataDrivenMPC:
         # print(res)
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
 
-        # return next input (MPC Ouput)
-        # Todo: replace hardcoded indices by flexible selection
-        # print(trajectory[0:2])
-        next_u = trajectory[0:2]
-        return next_u
+        # return next input (MPC Ouput) and predicted next state
+        next_u = trajectory[0:self.dim_u]
+        x_pred = trajectory[self.dim_u*(self.prediction_horizon+1):self.dim_u*(self.prediction_horizon+1)+self.dim_x]
+        return next_u, x_pred
 
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
         u_block = np.hstack(

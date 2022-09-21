@@ -75,5 +75,5 @@ constraints:
   - [30]
   - [30]
 
-prediction_horizon: 5
+prediction_horizon: 10
 
