@@ -26,7 +26,7 @@ class DataDrivenMPC:
     def get_new_u(self, current_x, G_v, g_v, G_z, g_z, ref_pred_hor=0):
 
         # Specify ref_pred_hor
-        if len(ref_pred_hor) == 1 and ref_pred_hor == 0:
+        if type(ref_pred_hor) == int and ref_pred_hor == 0:
             self.ref_pred_hor = np.zeros([self.dim_x, self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
@@ -74,9 +74,9 @@ class DataDrivenMPC:
                             self.dim_x:self.dim_u*(self.predic_hori_size+1)+self.dim_x*2]
 
         # Return prediction horizon for later visualization
-        predic_hori_size = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(
+        prediction_horizon = trajectory[self.dim_u*(self.predic_hori_size+1)+self.dim_x:self.dim_u*(
             self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
-        return next_u, x_pred, predic_hori_size
+        return next_u, x_pred, prediction_horizon
 
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
         u_block = np.hstack(
