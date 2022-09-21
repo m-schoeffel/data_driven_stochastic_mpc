@@ -28,7 +28,7 @@ class DataDrivenMPC:
 
         # Specify ref_pred_hor
         if len(ref_pred_hor)==1 and ref_pred_hor == 0:
-            self.ref_pred_hor = np.zeros([self.dim_x])
+            self.ref_pred_hor = np.zeros([self.dim_x,self.prediction_horizon])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
 
@@ -123,8 +123,11 @@ class DataDrivenMPC:
                                self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
         # State cost is the quadratic difference between the reference trajectory for the prediction horizon and the actual prediction, weighted with the cost matrix R
-        for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x, self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1), self.dim_x):
-            state_diff = trajectory[i:i+self.dim_x] - self.ref_pred_hor
+        for i in range(0, self.prediction_horizon):
+            idx_state = self.dim_u*(self.prediction_horizon+1)+self.dim_x + i*self.dim_x
+            state_pred = trajectory[idx_state:idx_state+self.dim_x]
+            state_ref = self.ref_pred_hor[:,i]
+            state_diff = state_pred - state_ref
             cost += state_diff.transpose()@self.R@state_diff
         return cost
 

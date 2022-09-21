@@ -9,6 +9,8 @@ from simulation import create_modules
 
 def main():
     main_param = load_parameters.load_main_params()
+    prediction_horizon = load_parameters.load_prediction_horizon()
+
 
     # Currently a reference is being tracked, so the number_of_measurements corresponds to the number of reference samples
     number_of_measurements = main_param["number_of_measurements"]
@@ -43,9 +45,9 @@ def main():
         dist_intervals = disturbance_estimator.get_disturbance_intervals()
         [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(
             dist_intervals)
-        ref_state = ref_traj[:, i]
+        ref_pred_hor = ref_traj[:, i:i+prediction_horizon]
         [next_u, x_pred] = dd_mpc.get_new_u(
-            real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_state)
+            real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_pred_hor)
         real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
