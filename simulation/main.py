@@ -65,7 +65,7 @@ def main():
               (time.time() - start_time))
         print()
 
-    # animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
+    animate_state_sequence.animate_state_sequence(state_storage,g_z_storage,ref_traj)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
     disturbance_estimator.plot_distribution()
 

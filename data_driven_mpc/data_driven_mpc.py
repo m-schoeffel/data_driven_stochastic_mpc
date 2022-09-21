@@ -123,7 +123,7 @@ class DataDrivenMPC:
                                self.dim_u].transpose()@self.Q@trajectory[i:i+self.dim_u]
 
         # State cost is the quadratic difference between the reference trajectory for the prediction horizon and the actual prediction, weighted with the cost matrix R
-        for i in range(self.dim_u*(self.prediction_horizon+1), self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1), self.dim_x):
+        for i in range(self.dim_u*(self.prediction_horizon+1)+self.dim_x, self.dim_u*(self.prediction_horizon+1)+self.dim_x*(self.prediction_horizon+1), self.dim_x):
             state_diff = trajectory[i:i+self.dim_x] - self.ref_pred_hor
             cost += state_diff.transpose()@self.R@state_diff
         return cost
