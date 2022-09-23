@@ -41,7 +41,7 @@ class ConstraintTightening:
             else:
                 self.g_z[i] = self.g_x[i]+interval[1]
 
-        return self.G_v, self.g_v, self.G_z, self.g_z
+        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
     def tighten_constraints_on_indep_kde(self, kde_of_states):
         """Tighten constraints based on independent disturbance distributions from every state"""
@@ -65,7 +65,7 @@ class ConstraintTightening:
                 coeff_state = self.G_x[idx_c,idx_s]
                 
                 # Only consider state if distribution part of (joint) constraint
-                if np.abs(coeff_state) < 0.001:
+                if np.abs(coeff_state) > 0.001:
                     
                     # Calculate linearly transformed pdf on interval
                     # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
@@ -92,7 +92,8 @@ class ConstraintTightening:
 
             self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
-        return self.g_z
+        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
+
 
 
 
