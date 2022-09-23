@@ -99,7 +99,7 @@ class DiscountedKDE:
                 prob_distr_integr, self.p+(1-self.p)/2, side='right')-1
 
             lower_bound = x_eval_pdf[idx_lower_bound] if idx_lower_bound < number_eval_points else 0
-            upper_bound = x_eval_pdf[idx_upper_bound] if idx_lower_bound < number_eval_points else 0
+            upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
 
             dist_intervals[i, 0] = lower_bound
             dist_intervals[i, 1] = upper_bound

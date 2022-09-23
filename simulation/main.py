@@ -42,6 +42,8 @@ def main():
     for i in range(0, number_of_measurements):
         start_time = time.time()
 
+        kde_of_states = disturbance_estimator.get_kde_independent_dist()
+
         dist_intervals = disturbance_estimator.get_disturbance_intervals()
         [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_interv(
             dist_intervals)
