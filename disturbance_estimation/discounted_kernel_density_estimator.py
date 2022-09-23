@@ -79,10 +79,7 @@ class DiscountedKDE:
 
         dist_intervals = np.zeros([self.number_of_states, 2])
 
-        delta_x_storage = np.zeros(
-            [self.number_of_states, self.number_of_past_samples_considered_for_kde])
-        for i, delta_x in enumerate(self.delta_x_deque):
-            delta_x_storage[:, i] = delta_x
+        delta_x_storage = self.calculate_numpy_array_of_delta_x()
 
         for i in range(0, self.number_of_states):
             # A disturbance distribution is plotted for every state
@@ -109,3 +106,36 @@ class DiscountedKDE:
 
         # print(f"dist_intervals:\n{dist_intervals}")
         return dist_intervals
+
+    def calculate_numpy_array_of_delta_x(self):
+
+        delta_x_storage = np.zeros(
+            [self.number_of_states, self.number_of_past_samples_considered_for_kde])
+        for i, delta_x in enumerate(self.delta_x_deque):
+            delta_x_storage[:, i] = delta_x
+
+        return delta_x_storage
+
+    def get_kde_independent_dist(self):
+        """This function calculates the KDE for every state independently"""
+        
+        # This is used, if the disturbances on every state are not correlated with each other
+        # Estimating a univariate KDE for every state needs less samples than estimating a multivariate KDE for a joint distribution
+
+        # Store and later return KDE for every state
+        # Those KDEs are later used in the constraint tightening module
+        kde_of_states = list()
+
+        delta_x_storage = self.calculate_numpy_array_of_delta_x()
+
+        for i in range(0, self.number_of_states):
+            # A disturbance distribution is plotted for every state
+            state_deviations = delta_x_storage[i, :]
+
+            kde = stats.gaussian_kde(
+                state_deviations, bw_method=0.1, weights=self.weights)
+
+            kde_of_states.append(kde)
+
+        return kde_of_states
+
