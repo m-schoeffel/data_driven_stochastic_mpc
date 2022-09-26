@@ -14,7 +14,7 @@ setup(
     packages=['data_driven_mpc','disturbance_estimation','lti_system','simulation','config','graphics','constraint_tightening'],
     entry_points={
         'console_scripts': [
-            'dsa = simulation.main:main',
+            'run_ddsmpc = simulation.main:main',
         ],
     },
 )

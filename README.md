@@ -3,6 +3,12 @@
 The DDSMPC control scheme implemented in this repository corresponds to the Master Thesis "Data Driven Stochastic MPC with Online Disturbance Estimation and Constraint Tightening" of Matthias Schöffel and is currently under development.
 The implemented algorithm adapts to the environment it is placed in and is able to satisfy constraints up to a specified probability level in the face of time-varying disturbances.
 
+To run the system clone the repository and then run the following in the root folder:
+
+> pip install .
+
+> run_ddsmpc
+
 ## Background
 
 The implemented algorithm takes concepts from Stochastic Model Predictive Control (SMPC), trajectory-based representations of LTI-Systems and Kernel Density Estimation (KDE).
@@ -21,11 +27,15 @@ MPC controllers need a model of the system dynamics to predict finite horizon tr
 Kernel Desity Estimation estimates probabilistic distributions based on samples of the distribution. A kernel function is placed on the position of every sample. The estimation of the distribution is created by summing up the kernel functions and normalizing the result. In DDSMPC scheme presented here a discount factor is introduced to discount older samples.
 
 ## Main Modules
-The control scheme features three main modules: [Data-Driven MPC](data_driven_mpc/), [Disturbance Estimation](disturbance_estimation/) and [Constraint Tightening](constraint_tightening/).
-
-### Data
-
-
+The control scheme features three main modules: [Data-Driven MPC](data_driven_mpc/), [Disturbance Estimation](disturbance_estimation/) and [Constraint Tightening](constraint_tightening/). Furthermore the real system is being simulated in [lti_system](lti_system/) and (hyper)parameters can be changed in [config](config/). The simulation is started in [simulation](simulation/)
 
 ![Alt text](figures_thesis/overview/Low_Level_DDSMPC.png?raw=true "Title")
 
+### [Data-Driven MPC](data_driven_mpc/)
+The Data-Driven MPC module receives a reference state **r_k**, cost matrices **Q**,**R** and **P** and tightened constraints **Z**, **V**, **Z_f**. It utilizes the [scipy.optimize.minimize](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html) solver to find the optimal n-step trajectory based on the current state of the system and the inputs of the DDMPC module. It outputs the next input to the system and its predicted next state.
+
+### [Disturbance Estimation](disturbance_estimation/)
+The disturbance estimation module receives both the predicted and actual state of the system. It utilizes the last n differences between the predicted and the actual state of the system to estimate the distribution of the disturbance via a discounted Kernel Density Estimation. It outputs the estimation of the distribution to the constraint [constraint_tightening](constraint_tightening/) module.
+
+### [Constraint Tightening](constraint_tightening/)
+The constraint tightening module takes the disturbance distribution and projects in onto the constraints to get the confidence interval based on the risk parameter specified in [config.yaml](config/config.yaml).
