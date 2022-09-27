@@ -94,7 +94,60 @@ class ConstraintTightening:
 
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
+    def tighten_constraints_on_mulivariate_kde(self, multi_kde):
+        """Tighten constraints based on one multivariate KDE"""
 
+        # The current implementation only allows constraints which involve one or two states
+
+        # Each distribution is always evaluated on the same interval
+        number_eval_points = 1000
+        interv_min = -10
+        interv_max = 10
+
+        x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
+
+        # Iterate over every state constraint
+        for idx_c in range(0, self.numbr_state_constr):
+            
+            # Store indices of states, which are affected by constraints
+            involved_states = list()
+
+            # Iterate over every state
+            for idx_s in range(0,self.numbr_states):
+
+                if self.G_x[idx_c,idx_s] > 0.001:
+                    involved_states.append(idx_s)
+
+            if len(involved_states)==1:
+                # Tighten constraint which only affects a single state
+                marginal_kde = multi_kde.marginal(involved_states[0])
+
+                coeff_state = self.G_x[idx_c,involved_states[0]]
+
+                # Calculate linearly transformed pdf on interval
+                # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
+                interval = np.linspace(interv_min/coeff_state,interv_max/coeff_state,number_eval_points)
+                transf_pdf_on_interv = (1/np.abs(coeff_state)) * marginal_kde.evaluate(interval)
+
+                # Calculate beta with P(Z>=beta) <= 1-risk_factor
+                prob_distr_integr = np.cumsum(transf_pdf_on_interv) * (interv_max-interv_min)/number_eval_points
+                idx_upper_bound = np.searchsorted(prob_distr_integr, self.p, side='right')-1
+                upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
+
+                self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
+
+
+            elif len(involved_states)==2:
+                # Tighten joint constraint
+                marginal_kde = multi_kde.marginal(involved_states)
+
+                coeff_state_1 = self.G_x[idx_c,involved_states[0]]
+                coeff_state_2 = self.G_x[idx_c,involved_states[0]]
+
+            
+            elif len(involved_states)>2:
+                msg = "Joint constraints are not allowed to involve more than two states currently."
+                raise ValueError(msg)
 
 
             
