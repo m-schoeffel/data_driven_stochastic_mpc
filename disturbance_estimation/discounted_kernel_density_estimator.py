@@ -139,3 +139,16 @@ class DiscountedKDE:
 
         return kde_of_states
 
+    def get_kde_multivariate_dist(self):
+        """This function calculates a multivariate KDE"""
+
+        # Calculating a multivariate KDE for all states takes longer to converge to the true density compared to calculating individual KDE for each state
+        # Calculating a multivariate KDE is necessary if the random variables (disturbances of states) are correlated
+
+
+        delta_x_storage = self.calculate_numpy_array_of_delta_x()
+
+        kde = stats.gaussian_kde(
+        delta_x_storage, bw_method=0.1, weights=self.weights)
+
+        return kde
