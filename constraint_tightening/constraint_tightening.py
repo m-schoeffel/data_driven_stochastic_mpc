@@ -141,8 +141,33 @@ class ConstraintTightening:
                 # Tighten joint constraint
                 marginal_kde = multi_kde.marginal(involved_states)
 
+                # Get coefficients of involved states (Z = coeff_state_1 * X + coeff_state_2 * y <= c)
                 coeff_state_1 = self.G_x[idx_c,involved_states[0]]
                 coeff_state_2 = self.G_x[idx_c,involved_states[0]]
+
+                # Calculate linearly transformed pdfs on interval
+                # Z_1 = aX -> f_z1(x) = 1/|a| * f_x(x/a)
+                interval_1 = np.linspace(interv_min/coeff_state_1,interv_max/coeff_state_1,number_eval_points)
+                # Z_2 = bY -> f_z2(x) = 1/|b| * f_y(x/b)
+                interval_2 = np.linspace(interv_min/coeff_state_2,interv_max/coeff_state_2,number_eval_points)
+
+                # Calculate matrix to evaluate pdf on
+                matrix_to_eval = list
+                for pos_1 in interval_1:
+                    for pos_2 in interval_2:
+                        matrix_to_eval.append([pos_1,pos_2])
+                matrix_to_eval = np.array(matrix_to_eval).transpose()
+
+                pdf_on_matrix = (1/np.abs(coeff_state)) * marginal_kde.evaluate(matrix_to_eval)
+                # Get pdf realizations in matrix form
+                pdf_on_matrix = pdf_on_matrix.reshape(number_eval_points,number_eval_points)
+                # Normalize pdf
+                # IMPORTANT: normalizing pdf is only correct, if likelyhood of samples lying outside of matrix_to_eval is neglectable
+                pdf_on_matrix = pdf_on_matrix/np.sum(pdf_on_matrix)
+
+                sum_probability = 0
+
+
 
             
             elif len(involved_states)>2:
