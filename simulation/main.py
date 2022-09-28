@@ -1,26 +1,26 @@
 import time
 import numpy as np
 
-from config import load_parameters
+from config import _load_parameters
 from graphics import animate_state_sequence, plot_state_sequence
 
-from simulation import create_modules
+from simulation import _create_modules
 
 
 def main():
-    main_param = load_parameters.load_main_params()
-    prediction_horizon_size = load_parameters.load_prediction_horizon()
+    main_param = _load_parameters.load_main_params()
+    prediction_horizon_size = _load_parameters.load_prediction_horizon()
 
     # Currently a reference is being tracked, so the number_of_measurements corresponds to the number of reference samples
     number_of_measurements = main_param["number_of_measurements"]
 
-    lti_system_param = load_parameters.load_lti_system_params()
+    lti_system_param = _load_parameters.load_lti_system_params()
     x_initial_state = lti_system_param["x_0"]
 
-    real_system = create_modules.create_system()
+    real_system = _create_modules.create_system()
 
     [dd_mpc,
-        disturbance_estimator, constraint_tightener] = create_modules.create_controller_modules(real_system)
+        disturbance_estimator, constraint_tightener] = _create_modules.create_controller_modules(real_system)
 
     # Load reference trajectory
     ref_traj = np.genfromtxt(

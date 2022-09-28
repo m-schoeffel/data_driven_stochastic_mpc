@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import data_driven_mpc
+from . import _data_driven_mpc
 
 # Check behaviour of data_driven_mpc with simple test cases
 
@@ -24,7 +24,7 @@ def test_get_new_u():
     G_z = np.atleast_2d(1)
     g_z = np.atleast_2d(6)
 
-    dd_mpc = data_driven_mpc.DataDrivenMPC(
+    dd_mpc = _data_driven_mpc.DataDrivenMPC(
         input_sequence, state_sequence, predic_hori_size, state_cost, input_cost)
 
     current_x = np.atleast_2d([1])

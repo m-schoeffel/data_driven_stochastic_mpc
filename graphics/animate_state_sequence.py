@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
-from config import load_parameters
+from config import _load_parameters
 
 # ------------------ Animate state sequence ------------------
 
@@ -27,7 +27,7 @@ def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storag
 
     # prepare plots for joint constraints for x1 and x2
     # Todo: Make plottet constraints truly flexible
-    constraints = load_parameters.load_constraints()
+    constraints = _load_parameters.load_constraints()
 
     G_x = np.array(constraints["G_x"])
     g_x = np.array(constraints["g_x"])

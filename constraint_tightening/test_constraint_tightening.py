@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 # from constraint_tightening.constraint_tightening import ConstraintTightening
-import constraint_tightening
+from constraint_tightening import _constraint_tightening
 
 
 # Check behaviour of lti_system class
@@ -21,7 +21,7 @@ def test_tighten_constraints_on_multivariate_kde():
     mean = np.zeros([4])
     cov = np.array([[2,0,0,0],[0,2,0,0],[0,0,2,0],[0,0,0,2]])
 
-    constraint_tightener = constraint_tightening.ConstraintTightening(G_u,g_u,G_x,g_x,risk_factor=0.975)
+    constraint_tightener = _constraint_tightening.ConstraintTightening(G_u,g_u,G_x,g_x,risk_factor=0.975)
 
     dataset_delta_x = np.random.multivariate_normal(mean, cov, size=size_dataset).transpose()
 
@@ -29,7 +29,7 @@ def test_tighten_constraints_on_multivariate_kde():
 
     [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(kde)
 
-    assert g_z[0] <=-20
+    assert -1.3 <= g_z[0] <=-0.7
 
 if __name__ == "__main__":
     test_tighten_constraints_on_multivariate_kde()

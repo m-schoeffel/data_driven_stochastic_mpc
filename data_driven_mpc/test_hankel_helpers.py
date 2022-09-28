@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import hankel_helpers
+from . import _hankel_helpers
 
 
 def test_create_hankel_matrix():
@@ -13,7 +13,7 @@ def test_create_hankel_matrix():
     state_sequence = np.atleast_2d([4, 5, 6, 7, 8, 9])
     predic_hori_size = 3
 
-    h_matrix = hankel_helpers.create_hankel_matrix(
+    h_matrix = _hankel_helpers.create_hankel_matrix(
         input_sequence, state_sequence, predic_hori_size)
 
     h_matrix_comp = np.atleast_2d([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [

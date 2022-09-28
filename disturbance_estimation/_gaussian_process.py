@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 
-from config import load_parameters
+from config import _load_parameters
 
 
 class GaussianProcess:
     def __init__(self, number_of_states, number_timesteps):
 
         self.number_of_past_samples_considered = min(
-            number_timesteps, load_parameters.load_param_gaussian_process())
+            number_timesteps, _load_parameters.load_param_gaussian_process())
 
         self.number_of_states = number_of_states
 

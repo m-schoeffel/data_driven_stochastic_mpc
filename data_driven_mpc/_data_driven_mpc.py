@@ -3,7 +3,7 @@ import time
 
 from scipy.optimize import minimize, LinearConstraint
 
-from . import hankel_helpers
+from . import _hankel_helpers
 
 
 class DataDrivenMPC:
@@ -18,9 +18,9 @@ class DataDrivenMPC:
         self.R = np.array(state_cost)
         self.Q = np.array(input_cost)
 
-        self.h_matrix = hankel_helpers.create_hankel_matrix(
+        self.h_matrix = _hankel_helpers.create_hankel_matrix(
             input_sequence, state_sequence, self.predic_hori_size)
-        self.h_matrix_inv = hankel_helpers.create_hankel_pseudo_inverse(
+        self.h_matrix_inv = _hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
     def get_new_u(self, current_x, G_v, g_v, G_z, g_z, ref_pred_hor=0):

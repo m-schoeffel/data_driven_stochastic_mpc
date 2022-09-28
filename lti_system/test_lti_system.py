@@ -1,7 +1,7 @@
 import numpy as np
 
-from .lti_system import LTISystem
-from .disturbance import Disturbance
+from ._lti_system import LTISystem
+from ._disturbance import Disturbance
 
 # Check behaviour of lti_system class
 # Disturbance is turned off during check, so that the behaviour is deterministic

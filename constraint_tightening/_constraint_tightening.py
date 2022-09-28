@@ -50,8 +50,8 @@ class ConstraintTightening:
 
         # Each distribution is always evaluated on the same interval
         number_eval_points = 1000
-        interv_min = -10
-        interv_max = 10
+        interv_min = -50
+        interv_max = 50
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
@@ -108,8 +108,8 @@ class ConstraintTightening:
         # Each distribution is always evaluated on the same interval
         number_eval_points = 1000
         # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -10
-        interv_max = 10
+        interv_min = -50
+        interv_max = 50
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
