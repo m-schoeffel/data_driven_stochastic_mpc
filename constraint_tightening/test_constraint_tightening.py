@@ -21,7 +21,7 @@ def test_tighten_constraints_on_multivariate_kde_one_state_constraint():
     G_x = np.atleast_2d([1,0,0,0])
     g_x = np.atleast_2d([2])
 
-    size_dataset = 200
+    size_dataset = 1000
     mean = np.zeros([4])
     cov = np.array([[2,0,0,0],[0,2,0,0],[0,0,2,0],[0,0,0,2]])
 
@@ -47,7 +47,7 @@ def test_tighten_constraints_on_multivariate_kde_joint_constraint():
     G_x = np.atleast_2d([2,0,-1,0])
     g_x = np.atleast_2d([2])
 
-    size_dataset = 200
+    size_dataset = 1000
     mean = np.zeros([4])
     cov = np.array([[2,0,0,0],[0,2,0,0],[0,0,2,0],[0,0,0,2]])
 
