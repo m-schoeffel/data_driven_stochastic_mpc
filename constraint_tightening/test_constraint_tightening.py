@@ -33,7 +33,7 @@ def test_tighten_constraints_on_multivariate_kde_one_state_constraint():
 
     [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(kde)
 
-    assert -1.3 <= g_z[0] <=-0.7
+    assert -1.4 <= g_z[0] <=-0.7
 
 def test_tighten_constraints_on_multivariate_kde_joint_constraint():
     """Test function tighten_constraints_on_multivariate_kde() with a joint constraint
@@ -59,7 +59,7 @@ def test_tighten_constraints_on_multivariate_kde_joint_constraint():
 
     [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(kde)
 
-    assert -4.7 <= g_z[0] <=-3.5
+    assert -4.9 <= g_z[0] <=-3.5
 
 
 
