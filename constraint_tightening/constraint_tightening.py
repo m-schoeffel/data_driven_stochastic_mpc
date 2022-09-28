@@ -53,24 +53,25 @@ class ConstraintTightening:
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
-
         # Iterate over every state constraint
         for idx_c in range(0, self.numbr_state_constr):
 
             distributions_for_convolution = list()
 
             # Iterate over every state
-            for idx_s in range(0,self.numbr_states):
+            for idx_s in range(0, self.numbr_states):
 
-                coeff_state = self.G_x[idx_c,idx_s]
+                coeff_state = self.G_x[idx_c, idx_s]
 
                 # Only consider state if distribution part of (joint) constraint
                 if np.abs(coeff_state) > 0.001:
 
                     # Calculate linearly transformed pdf on interval
                     # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
-                    interval = np.linspace(interv_min/coeff_state,interv_max/coeff_state,number_eval_points)
-                    transf_pdf_on_interv = (1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval)
+                    interval = np.linspace(
+                        interv_min/coeff_state, interv_max/coeff_state, number_eval_points)
+                    transf_pdf_on_interv = (
+                        1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval)
 
                     distributions_for_convolution.append(transf_pdf_on_interv)
 
@@ -80,14 +81,17 @@ class ConstraintTightening:
             conv_pdf = distributions_for_convolution[0]
 
             if len(distributions_for_convolution) > 1:
-                for i in range(1,len(distributions_for_convolution)):
-                    conv_pdf = np.convolve(conv_pdf,distributions_for_convolution[i],'same')
+                for i in range(1, len(distributions_for_convolution)):
+                    conv_pdf = np.convolve(
+                        conv_pdf, distributions_for_convolution[i], 'same')
 
             # Now conv_pdf is the pdf resulting from the linear combination of the pdf's of the states on the interval [-10,10]
 
             # Calculate beta with P(Z>=beta) <= 1-risk_factor
-            prob_distr_integr = np.cumsum(conv_pdf) * (interv_max-interv_min)/number_eval_points
-            idx_upper_bound = np.searchsorted(prob_distr_integr, self.p, side='right')-1
+            prob_distr_integr = np.cumsum(
+                conv_pdf) * (interv_max-interv_min)/number_eval_points
+            idx_upper_bound = np.searchsorted(
+                prob_distr_integr, self.p, side='right')-1
             upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
 
             self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
@@ -114,58 +118,64 @@ class ConstraintTightening:
             involved_states = list()
 
             # Iterate over every state
-            for idx_s in range(0,self.numbr_states):
+            for idx_s in range(0, self.numbr_states):
 
-                if self.G_x[idx_c,idx_s] > 0.001:
+                if self.G_x[idx_c, idx_s] > 0.001:
                     involved_states.append(idx_s)
 
-            if len(involved_states)==1:
+            if len(involved_states) == 1:
                 # Tighten constraint which only affects a single state
                 marginal_kde = multi_kde.marginal(involved_states[0])
 
-                coeff_state = self.G_x[idx_c,involved_states[0]]
+                coeff_state = self.G_x[idx_c, involved_states[0]]
 
                 # Calculate linearly transformed pdf on interval
                 # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
-                interval = np.linspace(interv_min/coeff_state,interv_max/coeff_state,number_eval_points)
-                transf_pdf_on_interv = (1/np.abs(coeff_state)) * marginal_kde.evaluate(interval)
+                interval = np.linspace(
+                    interv_min/coeff_state, interv_max/coeff_state, number_eval_points)
+                transf_pdf_on_interv = (
+                    1/np.abs(coeff_state)) * marginal_kde.evaluate(interval)
 
                 # Calculate beta with P(Z>=beta) <= 1-risk_factor
-                prob_distr_integr = np.cumsum(transf_pdf_on_interv) * (interv_max-interv_min)/number_eval_points
-                idx_upper_bound = np.searchsorted(prob_distr_integr, self.p, side='right')-1
+                prob_distr_integr = np.cumsum(
+                    transf_pdf_on_interv) * (interv_max-interv_min)/number_eval_points
+                idx_upper_bound = np.searchsorted(
+                    prob_distr_integr, self.p, side='right')-1
                 upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
 
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
-
-            elif len(involved_states)==2:
+            elif len(involved_states) == 2:
                 # Tighten joint constraint
                 marginal_kde = multi_kde.marginal(involved_states)
 
                 # Get coefficients of involved states (Z = coeff_state_1 * X + coeff_state_2 * y <= c)
-                coeff_state_1 = self.G_x[idx_c,involved_states[0]]
-                coeff_state_2 = self.G_x[idx_c,involved_states[0]]
+                coeff_state_1 = self.G_x[idx_c, involved_states[0]]
+                coeff_state_2 = self.G_x[idx_c, involved_states[0]]
 
                 # Calculate linearly transformed pdfs on interval
                 # Z_1 = aX -> f_z1(x) = 1/|a| * f_x(x/a)
-                interval_1 = np.linspace(interv_min/coeff_state_1,interv_max/coeff_state_1,number_eval_points)
+                interval_1 = np.linspace(
+                    interv_min/coeff_state_1, interv_max/coeff_state_1, number_eval_points)
                 # Z_2 = bY -> f_z2(x) = 1/|b| * f_y(x/b)
-                interval_2 = np.linspace(interv_min/coeff_state_2,interv_max/coeff_state_2,number_eval_points)
+                interval_2 = np.linspace(
+                    interv_min/coeff_state_2, interv_max/coeff_state_2, number_eval_points)
 
                 # Calculate matrix to evaluate pdf on
                 matrix_to_eval = list
                 for pos_1 in interval_1:
                     for pos_2 in interval_2:
-                        matrix_to_eval.append([pos_1,pos_2])
+                        matrix_to_eval.append([pos_1, pos_2])
                 matrix_to_eval = np.array(matrix_to_eval).transpose()
 
-                pdf_on_matrix = (1/np.abs(coeff_state)) * marginal_kde.evaluate(matrix_to_eval)
+                pdf_on_matrix = (1/np.abs(coeff_state)) * \
+                    marginal_kde.evaluate(matrix_to_eval)
                 # Get pdf realizations in matrix form
-                pdf_on_matrix = pdf_on_matrix.reshape(number_eval_points,number_eval_points)
+                pdf_on_matrix = pdf_on_matrix.reshape(
+                    number_eval_points, number_eval_points)
                 # Normalize pdf
                 # IMPORTANT: normalizing pdf is only correct, if likelyhood of samples lying outside of matrix_to_eval is neglectable
                 pdf_on_matrix = pdf_on_matrix/np.sum(pdf_on_matrix)
-
 
                 # Traverse matrix from highest disturbance to zero disturbance and sum up probabilities of the corresponding disturbance realizations
                 # Start with lower right corner (corresponds to highest disturbance)
@@ -174,26 +184,21 @@ class ConstraintTightening:
                 sum_probability = 0
                 round = 0
                 while sum_probability < 1 - self.p and round < number_eval_points:
-                    for i in range(0,round):
+                    for i in range(0, round):
                         idx_1 = number_eval_points-1-i
                         idx_2 = number_eval_points-1-round+i
-                        sum_probability += pdf_on_matrix[idx_1,idx_2]
-                    
+                        sum_probability += pdf_on_matrix[idx_1, idx_2]
+
                     round += 1
 
                 # Z = Z_1 + Z_2
-                upper_bound = (interv_max-interv_min)/2*(1+(number_eval_points-round)/number_eval_points)
-                
+                upper_bound = (interv_max-interv_min)/2 * \
+                    (1+(number_eval_points-round)/number_eval_points)
+
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
-
-
-            elif len(involved_states)>2:
+            elif len(involved_states) > 2:
                 msg = "Joint constraints are not allowed to involve more than two states currently."
                 raise ValueError(msg)
 
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
-
-
-
-
