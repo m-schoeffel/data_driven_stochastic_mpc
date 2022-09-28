@@ -19,4 +19,12 @@ def test_tighten_constraints_on_multivariate_kde():
     mean = np.zeros([4])
     cov = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
 
+    constraint_tightener = ConstraintTightening(G_u,g_u,G_x,g_x,risk_factor=0.95)
+
     dataset_delta_x = np.random.multivariate_normal(mean, cov, size=size_dataset).transpose()
+
+    kde = stats.gaussian_kde(dataset_delta_x)
+
+    [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(kde)
+
+    assert g_z[0] <=2
