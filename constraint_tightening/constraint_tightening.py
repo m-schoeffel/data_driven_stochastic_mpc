@@ -53,32 +53,32 @@ class ConstraintTightening:
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
-        
+
         # Iterate over every state constraint
         for idx_c in range(0, self.numbr_state_constr):
-            
+
             distributions_for_convolution = list()
-            
+
             # Iterate over every state
             for idx_s in range(0,self.numbr_states):
 
                 coeff_state = self.G_x[idx_c,idx_s]
-                
+
                 # Only consider state if distribution part of (joint) constraint
                 if np.abs(coeff_state) > 0.001:
-                    
+
                     # Calculate linearly transformed pdf on interval
                     # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
                     interval = np.linspace(interv_min/coeff_state,interv_max/coeff_state,number_eval_points)
                     transf_pdf_on_interv = (1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval)
-                    
+
                     distributions_for_convolution.append(transf_pdf_on_interv)
 
             # Linear combination of random variables in self.G_x[idx_c] results in convolution of transformed pdf
             # Z = X + Y -> f_z(x) = f_x(x) x f_y(x)
 
             conv_pdf = distributions_for_convolution[0]
-            
+
             if len(distributions_for_convolution) > 1:
                 for i in range(1,len(distributions_for_convolution)):
                     conv_pdf = np.convolve(conv_pdf,distributions_for_convolution[i],'same')
@@ -94,13 +94,14 @@ class ConstraintTightening:
 
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
-    def tighten_constraints_on_mulivariate_kde(self, multi_kde):
+    def tighten_constraints_on_multivariate_kde(self, multi_kde):
         """Tighten constraints based on one multivariate KDE"""
 
         # The current implementation only allows constraints which involve one or two states
 
         # Each distribution is always evaluated on the same interval
         number_eval_points = 1000
+        # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
         interv_min = -10
         interv_max = 10
 
@@ -108,7 +109,7 @@ class ConstraintTightening:
 
         # Iterate over every state constraint
         for idx_c in range(0, self.numbr_state_constr):
-            
+
             # Store indices of states, which are affected by constraints
             involved_states = list()
 
@@ -165,15 +166,34 @@ class ConstraintTightening:
                 # IMPORTANT: normalizing pdf is only correct, if likelyhood of samples lying outside of matrix_to_eval is neglectable
                 pdf_on_matrix = pdf_on_matrix/np.sum(pdf_on_matrix)
 
+
+                # Traverse matrix from highest disturbance to zero disturbance and sum up probabilities of the corresponding disturbance realizations
+                # Start with lower right corner (corresponds to highest disturbance)
+                # Stop at diagonal of matrix (round < number_eval_points), because then sum of disturbance is 0
+                # Going further would lead to constraint relaxing
                 sum_probability = 0
+                round = 0
+                while sum_probability < 1 - self.p and round < number_eval_points:
+                    for i in range(0,round):
+                        idx_1 = number_eval_points-1-i
+                        idx_2 = number_eval_points-1-round+i
+                        sum_probability += pdf_on_matrix[idx_1,idx_2]
+                    
+                    round += 1
+
+                # Z = Z_1 + Z_2
+                upper_bound = (interv_max-interv_min)/2*(1+(number_eval_points-round)/number_eval_points)
+                
+                self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
 
 
-            
             elif len(involved_states)>2:
                 msg = "Joint constraints are not allowed to involve more than two states currently."
                 raise ValueError(msg)
 
+        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
-            
+
+
 
