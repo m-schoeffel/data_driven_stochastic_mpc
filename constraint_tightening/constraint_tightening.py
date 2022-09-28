@@ -1,5 +1,7 @@
 import numpy as np
 
+from scipy import stats
+
 
 class ConstraintTightening:
     def __init__(self, G_u, g_u, G_x, g_x, risk_factor=0.95):
@@ -125,7 +127,7 @@ class ConstraintTightening:
 
             if len(involved_states) == 1:
                 # Tighten constraint which only affects a single state
-                marginal_kde = multi_kde.marginal(involved_states[0])
+                marginal_kde = self.det_marginal_distribution(multi_kde,involved_states)
 
                 coeff_state = self.G_x[idx_c, involved_states[0]]
 
@@ -147,7 +149,7 @@ class ConstraintTightening:
 
             elif len(involved_states) == 2:
                 # Tighten joint constraint
-                marginal_kde = multi_kde.marginal(involved_states)
+                marginal_kde = self.det_marginal_distribution(multi_kde,involved_states)
 
                 # Get coefficients of involved states (Z = coeff_state_1 * X + coeff_state_2 * y <= c)
                 coeff_state_1 = self.G_x[idx_c, involved_states[0]]
@@ -162,13 +164,13 @@ class ConstraintTightening:
                     interv_min/coeff_state_2, interv_max/coeff_state_2, number_eval_points)
 
                 # Calculate matrix to evaluate pdf on
-                matrix_to_eval = list
+                matrix_to_eval = list()
                 for pos_1 in interval_1:
                     for pos_2 in interval_2:
                         matrix_to_eval.append([pos_1, pos_2])
                 matrix_to_eval = np.array(matrix_to_eval).transpose()
 
-                pdf_on_matrix = (1/np.abs(coeff_state)) * \
+                pdf_on_matrix = (1/np.abs(coeff_state_1*coeff_state_2)) * \
                     marginal_kde.evaluate(matrix_to_eval)
                 # Get pdf realizations in matrix form
                 pdf_on_matrix = pdf_on_matrix.reshape(
@@ -202,3 +204,37 @@ class ConstraintTightening:
                 raise ValueError(msg)
 
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
+
+    def det_marginal_distribution(self,kde,dimensions):
+        """"Return marginal distribution of kde for dimensions
+        This function is largely taken from the current (28.09.2022) KDE implementation of the main branch of scipy
+        https://github.com/scipy/scipy/blob/dd153ceab933e74ab33c9391445dc8686c28479a/scipy/stats/_kde.py#L629
+        """
+
+        dims = np.atleast_1d(dimensions)
+
+        if not np.issubdtype(dims.dtype, np.integer):
+            msg = ("Elements of `dimensions` must be integers - the indices "
+                   "of the marginal variables being retained.")
+            raise ValueError(msg)
+
+        n = len(kde.dataset)  # number of dimensions
+        original_dims = dims.copy()
+
+        dims[dims < 0] = n + dims[dims < 0]
+
+        if len(np.unique(dims)) != len(dims):
+            msg = ("All elements of `dimensions` must be unique.")
+            raise ValueError(msg)
+
+        i_invalid = (dims < 0) | (dims >= n)
+        if np.any(i_invalid):
+            msg = (f"Dimensions {original_dims[i_invalid]} are invalid "
+                   f"for a distribution in {n} dimensions.")
+            raise ValueError(msg)
+
+        dataset = kde.dataset[dims]
+        weights = kde.weights
+
+        return stats.gaussian_kde(dataset, bw_method=kde.covariance_factor(),
+                            weights=weights)
