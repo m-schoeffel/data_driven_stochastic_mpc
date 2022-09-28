@@ -12,7 +12,7 @@ To run the system clone the repository and then run the following commands in th
 
 ## Background
 
-The implemented algorithm takes concepts from Stochastic Model Predictive Control (SMPC), trajectory-based representations of LTI-Systems and Kernel Density Estimation (KDE).
+The implemented algorithm takes concepts from Stochastic Model Predictive Control (SMPC), trajectory-based representations of LTI-Systems and Kernel Density Estimation (KDE) to implement an adaptive SMPC scheme.
 
 ![Alt text](figures_thesis/overview/High_Level_DDSMPC.png?raw=true "Title")
 
