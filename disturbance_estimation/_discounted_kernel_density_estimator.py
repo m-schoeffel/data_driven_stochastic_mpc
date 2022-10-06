@@ -129,7 +129,7 @@ class DiscountedKDE:
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
 
         for i in range(0, self.number_of_states):
-            # A disturbance distribution is plotted for every state
+            # A disturbance distribution is calculated for every state
             state_deviations = delta_x_storage[i, :]
 
             kde = stats.gaussian_kde(

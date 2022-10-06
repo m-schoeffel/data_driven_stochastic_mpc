@@ -4,7 +4,7 @@ from scipy import stats
 
 
 class ConstraintTightening:
-    def __init__(self, G_u, g_u, G_x, g_x, risk_factor=0.95):
+    def __init__(self, G_u, g_u, G_x, g_x, risk_factor=0.975):
         self.G_u = np.array(G_u, dtype=float)
         self.g_u = np.array(g_u, dtype=float)
         self.G_x = np.array(G_x, dtype=float)
