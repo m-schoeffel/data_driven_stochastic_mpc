@@ -30,6 +30,8 @@ class DataDrivenMPC:
             self.ref_pred_hor = np.zeros([self.dim_x, self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
+        
+        self.len_g_z = g_z.shape[0]
 
         # Get constraint matrices to cover full sequence (fs) of input and state
         G_v_fs = self.determine_full_seq_constr_matrix(G_v)
@@ -43,9 +45,9 @@ class DataDrivenMPC:
         # Create Constraintmatrix, which is depending on alpha (decision variable in solver)
         G_alpha = G_compl @ self.h_matrix
 
-        # Create Alpha Constraints
-        constr_input_state = LinearConstraint(
-            G_alpha, lb=-g_compl*np.inf, ub=g_compl)
+        # # Create Alpha Constraints
+        # constr_input_state = LinearConstraint(
+        #     G_alpha, lb=-g_compl*np.inf, ub=g_compl)
 
         # Make sure trajectory starts at current_x
         C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
@@ -62,10 +64,13 @@ class DataDrivenMPC:
             [np.ones([self.dim_u*(self.predic_hori_size), 1]), current_x])
         alpha_0 = self.h_matrix_inv@starting_point_opt
 
-        # constr_input_state,constr_x_0
-        res = minimize(self.get_sequence_cost, alpha_0, args=(
-        ), method='SLSQP', constraints=[constr_input_state, constr_x_0])
-        # print(res)
+        # Try to find optimal feasible trajectory
+        # If no feasible trajectory is found, lift the state constraints for #nmbr_lift_constraints states, beginning with the initial state
+        for nmbr_lift_constraints in range(0,self.predic_hori_size+2):
+            res = self.optimize_cost_over_constraints(alpha_0,G_alpha,g_v_fs,g_z_fs,constr_x_0,nmbr_lift_constraints)
+            if res.success:
+                break
+
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
 
         # return next input (MPC Ouput) and predicted next state
@@ -78,6 +83,28 @@ class DataDrivenMPC:
             self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
         return next_u, x_pred, prediction_horizon
 
+    def optimize_cost_over_constraints(self,alpha_0,G_alpha,g_v_fs,g_z_fs,constr_x_0,nmbr_lift_constraints):
+        """This function implements the solver of the mpc module
+            If no feasible solution can be found given the system dynamics and state constraints, the state constraints on the prediction horizon are lifted one by one
+            The parameter nmbr_lift_constraints specifies the number of states in the prediction horizon which do not have to satisfy the constraints"""
+
+
+        # Lift upper bound for first #nmbr_lift_constraints states to get feasible trajectory
+        g_z_fs[0:nmbr_lift_constraints*self.len_g_z] = np.inf
+        
+        g_compl = np.vstack([g_v_fs, g_z_fs])
+        g_compl = g_compl.reshape(-1,)
+
+        # Create Alpha Constraints
+
+        constr_input_state = LinearConstraint(
+            G_alpha, lb=-g_compl*np.inf, ub=g_compl)
+
+        # constr_input_state,constr_x_0
+        res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP', constraints=[constr_input_state, constr_x_0])
+
+        return res
+
     def determine_complete_constraint_matrix(self, G_v_fs, G_z_fs):
         u_block = np.hstack(
             [G_v_fs, np.zeros([G_v_fs.shape[0], G_z_fs.shape[1]])])
@@ -87,11 +114,9 @@ class DataDrivenMPC:
         return G_compl
 
     def determine_full_seq_constr_matrix(self, matrix):
-        """Scale up constraint matrices to cover full sequence"""
+        """Scale up constraint matrices to cover all states and inputs in prediction horizon"""
 
         steps = self.predic_hori_size
-
-        full_constrainted_matrix = np.array([0, 0])
 
         full_constrainted_matrix = np.hstack(
             [matrix, np.tile(np.zeros(matrix.shape), steps)])
@@ -109,7 +134,7 @@ class DataDrivenMPC:
         return full_constrainted_matrix
 
     def determine_full_seq_constr_ub(self, upper_bound):
-        """Scale up constraint upper bound vectors to cover full sequence"""
+        """Scale up constraint upper bound vectors to cover all states and inputs in prediction horizon"""
 
         steps = self.predic_hori_size
 

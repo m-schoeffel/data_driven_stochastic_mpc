@@ -54,7 +54,7 @@ def main():
         ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size]
         [next_u, x_pred, prediction_horizon] = dd_mpc.get_new_u(
             real_system.x, G_v, g_v, G_z, g_z, ref_pred_hor=ref_pred_hor)
-        real_system.next_step(next_u, add_disturbance=False)
+        real_system.next_step(next_u, add_disturbance=True)
 
         # Save data (states, tightened_constraints, etc.) for animation
         state_storage[:, i] = real_system.x.reshape(-1)
