@@ -30,7 +30,7 @@ class DataDrivenMPC:
             self.ref_pred_hor = np.zeros([self.dim_x, self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
-        
+
         self.len_g_z = g_z.shape[0]
 
         # Get constraint matrices to cover full sequence (fs) of input and state
@@ -39,15 +39,9 @@ class DataDrivenMPC:
         G_z_fs = self.determine_full_seq_constr_matrix(G_z)
         g_z_fs = self.determine_full_seq_constr_ub(g_z)
         G_compl = self.determine_complete_constraint_matrix(G_v_fs, G_z_fs)
-        g_compl = np.vstack([g_v_fs, g_z_fs])
-        g_compl = g_compl.reshape(-1,)
 
         # Create Constraintmatrix, which is depending on alpha (decision variable in solver)
         G_alpha = G_compl @ self.h_matrix
-
-        # # Create Alpha Constraints
-        # constr_input_state = LinearConstraint(
-        #     G_alpha, lb=-g_compl*np.inf, ub=g_compl)
 
         # Make sure trajectory starts at current_x
         C_x_0 = np.zeros([len(current_x.reshape(-1, 1)), G_compl.shape[1]])
@@ -66,8 +60,9 @@ class DataDrivenMPC:
 
         # Try to find optimal feasible trajectory
         # If no feasible trajectory is found, lift the state constraints for #nmbr_lift_constraints states, beginning with the initial state
-        for nmbr_lift_constraints in range(0,self.predic_hori_size+2):
-            res = self.optimize_cost_over_constraints(alpha_0,G_alpha,g_v_fs,g_z_fs,constr_x_0,nmbr_lift_constraints)
+        for nmbr_lift_constraints in range(0, self.predic_hori_size+2):
+            res = self.optimize_cost_over_constraints(
+                alpha_0, G_alpha, g_v_fs, g_z_fs, constr_x_0, nmbr_lift_constraints)
             if res.success:
                 break
 
@@ -83,15 +78,14 @@ class DataDrivenMPC:
             self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
         return next_u, x_pred, prediction_horizon
 
-    def optimize_cost_over_constraints(self,alpha_0,G_alpha,g_v_fs,g_z_fs,constr_x_0,nmbr_lift_constraints):
+    def optimize_cost_over_constraints(self, alpha_0, G_alpha, g_v_fs, g_z_fs, constr_x_0, nmbr_lift_constraints):
         """This function implements the solver of the mpc module
             If no feasible solution can be found given the system dynamics and state constraints, the state constraints on the prediction horizon are lifted one by one
             The parameter nmbr_lift_constraints specifies the number of states in the prediction horizon which do not have to satisfy the constraints"""
 
-
         # Lift upper bound for first #nmbr_lift_constraints states to get feasible trajectory
         g_z_fs[0:nmbr_lift_constraints*self.len_g_z] = np.inf
-        
+
         g_compl = np.vstack([g_v_fs, g_z_fs])
         g_compl = g_compl.reshape(-1,)
 
@@ -101,7 +95,8 @@ class DataDrivenMPC:
             G_alpha, lb=-g_compl*np.inf, ub=g_compl)
 
         # constr_input_state,constr_x_0
-        res = minimize(self.get_sequence_cost, alpha_0, args=(), method='SLSQP', constraints=[constr_input_state, constr_x_0])
+        res = minimize(self.get_sequence_cost, alpha_0, args=(
+        ), method='SLSQP', constraints=[constr_input_state, constr_x_0])
 
         return res
 
