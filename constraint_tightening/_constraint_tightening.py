@@ -5,10 +5,10 @@ from scipy import stats
 
 class ConstraintTightening:
     def __init__(self, G_u, g_u, G_x, g_x, risk_factor=0.95):
-        self.G_u = np.array(G_u,dtype=float)
-        self.g_u = np.array(g_u,dtype=float)
-        self.G_x = np.array(G_x,dtype=float)
-        self.g_x = np.array(g_x,dtype=float)
+        self.G_u = np.array(G_u, dtype=float)
+        self.g_u = np.array(g_u, dtype=float)
+        self.G_x = np.array(G_x, dtype=float)
+        self.g_x = np.array(g_x, dtype=float)
 
         # Initialize pseudo constraints
         self.G_v = self.G_u.copy()
@@ -20,12 +20,6 @@ class ConstraintTightening:
         self.numbr_states = self.G_x.shape[1]
 
         self.p = risk_factor
-
-    def tighten_constraints(self):
-        x = 1
-
-    def get_tightened_constraints(self):
-        return self.G_v, self.g_v, self.G_z, self.g_z
 
     def tighten_constraints_on_interv(self, dist_interval):
         """Tighten constraints based on disturbance intervals"""
@@ -108,8 +102,8 @@ class ConstraintTightening:
         # Each distribution is always evaluated on the same interval
         number_eval_points = 1000
         # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -50
-        interv_max = 50
+        interv_min = -10
+        interv_max = 10
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
@@ -127,7 +121,8 @@ class ConstraintTightening:
 
             if len(involved_states) == 1:
                 # Tighten constraint which only affects a single state
-                marginal_kde = self.det_marginal_distribution(multi_kde,involved_states)
+                marginal_kde = self.det_marginal_distribution(
+                    multi_kde, involved_states)
 
                 coeff_state = self.G_x[idx_c, involved_states[0]]
 
@@ -149,7 +144,8 @@ class ConstraintTightening:
 
             elif len(involved_states) == 2:
                 # Tighten joint constraint
-                marginal_kde = self.det_marginal_distribution(multi_kde,involved_states)
+                marginal_kde = self.det_marginal_distribution(
+                    multi_kde, involved_states)
 
                 # Get coefficients of involved states (Z = coeff_state_1 * X + coeff_state_2 * y <= c)
                 coeff_state_1 = self.G_x[idx_c, involved_states[0]]
@@ -205,7 +201,7 @@ class ConstraintTightening:
 
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
-    def det_marginal_distribution(self,kde,dimensions):
+    def det_marginal_distribution(self, kde, dimensions):
         """"Return marginal distribution of kde for dimensions
         This function is largely taken from the current (28.09.2022) KDE implementation of the main branch of scipy
         https://github.com/scipy/scipy/blob/dd153ceab933e74ab33c9391445dc8686c28479a/scipy/stats/_kde.py#L629
@@ -237,4 +233,4 @@ class ConstraintTightening:
         weights = kde.weights
 
         return stats.gaussian_kde(dataset, bw_method=kde.covariance_factor(),
-                            weights=weights)
+                                  weights=weights)
