@@ -78,7 +78,7 @@ class DataDrivenMPC:
             self.predic_hori_size+1)+self.dim_x*(1+self.predic_hori_size)]
         return next_u, x_pred, prediction_horizon
 
-    def optimize_cost_over_constraints(self, alpha_0, G_alpha, g_v_fs, g_z_fs, constr_x_0, nmbr_lift_constraints):
+    def optimize_cost_over_constraints(self, alpha_0, G_alpha, g_v_fs, g_z_fs, constr_x_0, nmbr_lift_constraints=0):
         """This function implements the solver of the mpc module
             If no feasible solution can be found given the system dynamics and state constraints, the state constraints on the prediction horizon are lifted one by one
             The parameter nmbr_lift_constraints specifies the number of states in the prediction horizon which do not have to satisfy the constraints"""
