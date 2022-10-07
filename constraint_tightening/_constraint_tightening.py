@@ -133,6 +133,11 @@ class ConstraintTightening:
                 transf_pdf_on_interv = (
                     1/np.abs(coeff_state)) * marginal_kde.evaluate(interval)
 
+                # Check, if significant parts of distribution are likely to be outside of interval
+                if transf_pdf_on_interv[0] >= 0.00001 or transf_pdf_on_interv[0] >= 0.00001:
+                    msg = "Probability of disturbance lying outside of specified interval not neglectable."
+                    raise ValueError(msg)
+
                 # Calculate beta with P(Z>=beta) <= 1-risk_factor
                 prob_distr_integr = np.cumsum(
                     transf_pdf_on_interv) * (interv_max-interv_min)/number_eval_points
@@ -171,8 +176,15 @@ class ConstraintTightening:
                 # Get pdf realizations in matrix form
                 pdf_on_matrix = pdf_on_matrix.reshape(
                     number_eval_points, number_eval_points)
+
+                # Check, if significant parts of distribution are likely to be outside of interval
+                if pdf_on_matrix[0,0] >= 0.00001 or pdf_on_matrix[-1,-1] >= 0.00001 or pdf_on_matrix[0,-1] >= 0.00001 or pdf_on_matrix[-1,0] >= 0.00001:
+                    msg = "Probability of disturbance lying outside of specified interval not neglectable."
+                    raise ValueError(msg)
+
+
                 # Normalize pdf
-                # IMPORTANT: normalizing pdf is only correct, if likelyhood of samples lying outside of matrix_to_eval is neglectable
+                # IMPORTANT: normalizing pdf is only correct, if likelihood of samples lying outside of matrix_to_eval is neglectable
                 sum_matrix = np.sum(pdf_on_matrix)
                 pdf_on_matrix = pdf_on_matrix/sum_matrix
 
