@@ -118,7 +118,7 @@ class DiscountedKDE:
 
     def get_kde_independent_dist(self):
         """This function calculates the KDE for every state independently"""
-        
+
         # This is used, if the disturbances on every state are not correlated with each other
         # Estimating a univariate KDE for every state needs less samples than estimating a multivariate KDE for a joint distribution
 
@@ -133,7 +133,7 @@ class DiscountedKDE:
             state_deviations = delta_x_storage[i, :]
 
             kde = stats.gaussian_kde(
-                state_deviations, bw_method=0.1, weights=self.weights)
+                state_deviations, weights=self.weights)
 
             kde_of_states.append(kde)
 
@@ -145,10 +145,9 @@ class DiscountedKDE:
         # Calculating a multivariate KDE for all states takes longer to converge to the true density compared to calculating individual KDE for each state
         # Calculating a multivariate KDE is necessary if the random variables (disturbances of states) are correlated
 
-
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
 
         kde = stats.gaussian_kde(
-        delta_x_storage, bw_method=0.1, weights=self.weights)
+            delta_x_storage, weights=self.weights)
 
         return kde
