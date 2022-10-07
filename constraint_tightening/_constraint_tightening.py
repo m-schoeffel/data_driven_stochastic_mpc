@@ -116,7 +116,7 @@ class ConstraintTightening:
             # Iterate over every state
             for idx_s in range(0, self.numbr_states):
 
-                if self.G_x[idx_c, idx_s] > 0.001:
+                if np.abs(self.G_x[idx_c, idx_s]) > 0.001:
                     involved_states.append(idx_s)
 
             if len(involved_states) == 1:
@@ -149,7 +149,7 @@ class ConstraintTightening:
 
                 # Get coefficients of involved states (Z = coeff_state_1 * X + coeff_state_2 * y <= c)
                 coeff_state_1 = self.G_x[idx_c, involved_states[0]]
-                coeff_state_2 = self.G_x[idx_c, involved_states[0]]
+                coeff_state_2 = self.G_x[idx_c, involved_states[1]]
 
                 # Calculate linearly transformed pdfs on interval
                 # Z_1 = aX -> f_z1(x) = 1/|a| * f_x(x/a)
@@ -182,7 +182,7 @@ class ConstraintTightening:
                 sum_probability = 0
                 round = 0
                 while sum_probability < 1 - self.p and round < number_eval_points:
-                    for i in range(0, round):
+                    for i in range(0, round+1):
                         idx_1 = number_eval_points-1-i
                         idx_2 = number_eval_points-1-round+i
                         sum_probability += pdf_on_matrix[idx_1, idx_2]
