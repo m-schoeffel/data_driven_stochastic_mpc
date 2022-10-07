@@ -100,10 +100,10 @@ class ConstraintTightening:
         # The current implementation only allows constraints which involve one or two states
 
         # Each distribution is always evaluated on the same interval
-        number_eval_points = 1000
+        number_eval_points = 201
         # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -10
-        interv_max = 10
+        interv_min = -1.0
+        interv_max = 1.0
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
@@ -173,7 +173,8 @@ class ConstraintTightening:
                     number_eval_points, number_eval_points)
                 # Normalize pdf
                 # IMPORTANT: normalizing pdf is only correct, if likelyhood of samples lying outside of matrix_to_eval is neglectable
-                pdf_on_matrix = pdf_on_matrix/np.sum(pdf_on_matrix)
+                sum_matrix = np.sum(pdf_on_matrix)
+                pdf_on_matrix = pdf_on_matrix/sum_matrix
 
                 # Traverse matrix from highest disturbance to zero disturbance and sum up probabilities of the corresponding disturbance realizations
                 # Start with lower right corner (corresponds to highest disturbance)
@@ -189,9 +190,8 @@ class ConstraintTightening:
 
                     round += 1
 
-                # Z = Z_1 + Z_2
-                upper_bound = (interv_max-interv_min)/2 * \
-                    (1+(number_eval_points-round)/number_eval_points)
+                # P(Z = Z_1 + Z_2 <= y) >= p
+                upper_bound = ((number_eval_points-round)/number_eval_points)*(interv_max)*2
 
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
