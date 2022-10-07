@@ -1,3 +1,4 @@
+from this import d
 import numpy as np
 
 from . import _data_driven_mpc
@@ -18,11 +19,11 @@ def test_get_new_u():
     input_cost = np.atleast_2d(0)
 
     # State tightened constraints
-    G_v = np.atleast_2d(1)
-    g_v = np.atleast_2d(4)
+    G_v = np.atleast_2d(1.0)
+    g_v = np.atleast_2d(4.0)
 
-    G_z = np.atleast_2d(1)
-    g_z = np.atleast_2d(6)
+    G_z = np.atleast_2d(1.0)
+    g_z = np.atleast_2d(6.0)
 
     dd_mpc = _data_driven_mpc.DataDrivenMPC(
         input_sequence, state_sequence, predic_hori_size, state_cost, input_cost)
