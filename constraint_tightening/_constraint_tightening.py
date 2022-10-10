@@ -21,24 +21,6 @@ class ConstraintTightening:
 
         self.p = risk_factor
 
-    def tighten_constraints_on_interv(self, dist_interval):
-        """Tighten constraints based on disturbance intervals"""
-
-        # Todo: Create more flexible solution
-        # Currently solution is hardcoded for systems with no joint constraints (Every state has it's own constraints)
-        # No joint constraints means, that G_x is of the form G_x = [[1,0,0],[0,1,0,[1,0,0],[0,0,1]]]
-
-        for i in range(0, self.numbr_state_constr):
-            # Calculate dist interval for state, which corresponds to constraint
-            # --> Only works, if there are no joint constraints
-            interval = np.abs(self.G_x[i, :]) @ dist_interval
-            if (np.sum(self.G_x[i]) > 0):
-                self.g_z[i] = self.g_x[i]+interval[0]
-            else:
-                self.g_z[i] = self.g_x[i]+interval[1]
-
-        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
-
     def tighten_constraints_on_indep_kde(self, kde_of_states):
         """Tighten constraints based on independent disturbance distributions from every state"""
 
@@ -85,7 +67,6 @@ class ConstraintTightening:
 
             # Calculate beta with P(Z>=beta) <= 1-risk_factor
             prob_distr_integr = np.cumsum(conv_pdf)
-            sum_prob_debug = np.sum(conv_pdf)
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p, side='right')-1
             upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
