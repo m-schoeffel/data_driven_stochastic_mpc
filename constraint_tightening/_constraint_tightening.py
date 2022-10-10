@@ -67,7 +67,7 @@ class ConstraintTightening:
                     interval = np.linspace(
                         interv_min/coeff_state, interv_max/coeff_state, number_eval_points)
                     transf_pdf_on_interv = (
-                        1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval)
+                        1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval) * (interv_max-interv_min)/number_eval_points
 
                     distributions_for_convolution.append(transf_pdf_on_interv)
 
@@ -84,8 +84,7 @@ class ConstraintTightening:
             # Now conv_pdf is the pdf resulting from the linear combination of the pdf's of the states on the interval [-10,10]
 
             # Calculate beta with P(Z>=beta) <= 1-risk_factor
-            prob_distr_integr = np.cumsum(
-                conv_pdf) * (interv_max-interv_min)/number_eval_points
+            prob_distr_integr = np.cumsum(conv_pdf)
             sum_prob_debug = np.sum(conv_pdf)
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p, side='right')-1
@@ -179,10 +178,9 @@ class ConstraintTightening:
                     number_eval_points, number_eval_points)
 
                 # Check, if significant parts of distribution are likely to be outside of interval
-                if pdf_on_matrix[0,0] >= 0.00001 or pdf_on_matrix[-1,-1] >= 0.00001 or pdf_on_matrix[0,-1] >= 0.00001 or pdf_on_matrix[-1,0] >= 0.00001:
+                if pdf_on_matrix[0, 0] >= 0.00001 or pdf_on_matrix[-1, -1] >= 0.00001 or pdf_on_matrix[0, -1] >= 0.00001 or pdf_on_matrix[-1, 0] >= 0.00001:
                     msg = "Probability of disturbance lying outside of specified interval not neglectable."
                     raise ValueError(msg)
-
 
                 # Normalize pdf
                 # IMPORTANT: normalizing pdf is only correct, if likelihood of samples lying outside of matrix_to_eval is neglectable
@@ -204,7 +202,8 @@ class ConstraintTightening:
                     round += 1
 
                 # P(Z = Z_1 + Z_2 <= y) >= p
-                upper_bound = ((number_eval_points-round)/number_eval_points)*(interv_max)*2
+                upper_bound = ((number_eval_points-round) /
+                               number_eval_points)*(interv_max)*2
 
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
