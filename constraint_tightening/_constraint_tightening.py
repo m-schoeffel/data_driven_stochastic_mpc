@@ -43,9 +43,9 @@ class ConstraintTightening:
         """Tighten constraints based on independent disturbance distributions from every state"""
 
         # Each distribution is always evaluated on the same interval
-        number_eval_points = 1000
-        interv_min = -50
-        interv_max = 50
+        number_eval_points = 201
+        interv_min = -1.0
+        interv_max = 1.0
 
         x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
 
