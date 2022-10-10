@@ -43,7 +43,7 @@ class ConstraintTightening:
         """Tighten constraints based on independent disturbance distributions from every state"""
 
         # Each distribution is always evaluated on the same interval
-        number_eval_points = 201
+        number_eval_points = 2001
         interv_min = -1.0
         interv_max = 1.0
 
@@ -86,6 +86,7 @@ class ConstraintTightening:
             # Calculate beta with P(Z>=beta) <= 1-risk_factor
             prob_distr_integr = np.cumsum(
                 conv_pdf) * (interv_max-interv_min)/number_eval_points
+            sum_prob_debug = np.sum(conv_pdf)
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p, side='right')-1
             upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
