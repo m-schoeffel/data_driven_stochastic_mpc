@@ -84,6 +84,9 @@ class DiscountedKDE:
         # This is used, if the disturbances on every state are not correlated with each other
         # Estimating a univariate KDE for every state needs less samples than estimating a multivariate KDE for a joint distribution
 
+        # Determine weights for each kde
+        self.determine_weights_for_indep()
+
         # Store and later return KDE for every state
         # Those KDEs are later used in the constraint tightening module
         kde_of_states = list()
@@ -95,7 +98,7 @@ class DiscountedKDE:
             state_deviations = delta_x_storage[i, :]
 
             kde = stats.gaussian_kde(
-                state_deviations, weights=self.weights)
+                state_deviations, weights=self.indep_weights[i,:])
 
             kde_of_states.append(kde)
 
@@ -114,8 +117,8 @@ class DiscountedKDE:
 
         return kde
 
-    def determine_weights(self):
-        """This function determines the weights of the kde estimation using the Bhattacharyya coefficient
+    def determine_weights_for_indep(self):
+        """This function determines the weights of the independent kde estimation using the Bhattacharyya coefficient
             First the recorded delta_x samples are divided in to groups
 
              1. Oldest 0.75*n samples
@@ -179,8 +182,8 @@ class DiscountedKDE:
             base_weights[i] = base
 
         # Calculate weights
-        self.weights = np.zeros(delta_x_storage.shape)
+        self.indep_weights = np.zeros(delta_x_storage.shape)
 
         for i in range(0, self.number_of_past_samples_considered_for_kde):
             cur_exponent = self.number_of_past_samples_considered_for_kde-i
-            self.weights[:, i] = np.power(base_weights, cur_exponent)
+            self.indep_weights[:, i] = np.power(base_weights, cur_exponent)
