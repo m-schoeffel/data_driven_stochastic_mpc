@@ -113,3 +113,75 @@ class DiscountedKDE:
             delta_x_storage, weights=self.weights)
 
         return kde
+
+    def determine_weights(self):
+        """This function determines the weights of the kde estimation using the Bhattacharyya coefficient
+            First the recorded delta_x samples are divided in to groups
+            
+             1. Oldest 0.75*n samples
+             2. Newest 0.25*n samples
+            
+            Then the kernel density estimation of these two sample set is calculated.
+            Afterwards the Bhattacharyya coefficient of the two distributions is calculated
+            A Bhattacharyya coefficient close to one indicates little change in the underlying distriubtion of the disturbance
+            A Bhattacharyya coefficient close to zero indicates a big change in the underlying distriubtion of the disturbance
+            
+            The Bhattacharyya coefficient is then mapped on the interval 0.975-1.
+            The result is used as a base to calculate the weights of the samples in the KDE used to calculate the disturbance distribution"""
+
+        # Each distribution is always evaluated on the same interval
+        number_eval_points = 2001
+        # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
+        interv_min = -10.0
+        interv_max = 10.0
+
+        delta_x_storage = self.calculate_numpy_array_of_delta_x()
+        idx_border_old_new = int(self.number_of_past_samples_considered_for_kde * 0.75)
+
+        old_samples = delta_x_storage[:,::idx_border_old_new]
+        new_samples = delta_x_storage[:,idx_border_old_new::]
+
+        kde_old = list()
+        kde_new = list()
+
+        for i in range(0,self.number_of_states):
+            kde_old.append(stats.gaussian_kde(old_samples[i,:]))
+            kde_new.append(stats.gaussian_kde(new_samples[i,:]))
+
+        # Eval Pdf
+        interv_eval = np.linspace(interv_min,interv_max,number_eval_points)
+
+        pdf_old = list()
+        pdf_new = list()
+
+        # Normalize pdf
+        norm_factor = (interv_max-interv_min)/number_eval_points
+
+        for i in range(0,self.number_of_states):
+            pdf_old.append(kde_old[i].evaluate(interv_eval)*norm_factor)
+            pdf_new.append(kde_new[i].evaluate(interv_eval)*norm_factor)
+
+        # Calculate Bhattacharyya coefficient for each state
+        b_coeff = list()
+        
+        for i in range(0,self.number_of_states):
+            coeff = pdf_old[i]*pdf_new[i]
+            coeff = np.sqrt(coeff)
+            coeff = np.sum(coeff)
+            b_coeff.append(coeff)
+
+        # Calculate base for weights
+        base_weights = np.zeros([self.number_of_states])
+
+        for i in range(0,self.number_of_states):
+            base = 0.975 + 0.025 * b_coeff[i]
+            base_weights[i] = base
+
+        # Calculate weights
+        self.weights = np.zeros(delta_x_storage.shape)
+
+        for i in range(0,self.number_of_past_samples_considered_for_kde):
+            cur_exponent = self.number_of_past_samples_considered_for_kde-i
+            self.weights[:,i] = np.power(base_weights,cur_exponent)
+
+
