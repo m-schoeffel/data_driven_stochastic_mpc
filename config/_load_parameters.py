@@ -79,4 +79,8 @@ def load_param_discounted_kde():
     base_of_exponential_weights = param["discounted_kde"]["base_of_exponential_weights"]
     number_of_past_samples_considered = param["discounted_kde"]["density_number_of_past_samples_considered"]
 
-    return base_of_exponential_weights, number_of_past_samples_considered
+    number_eval_points = param["discounted_kde"]["number_eval_points"]
+    interv_min = param["discounted_kde"]["interv_min"]
+    interv_max = param["discounted_kde"]["interv_max"]
+
+    return base_of_exponential_weights, number_of_past_samples_considered, number_eval_points, interv_min, interv_max

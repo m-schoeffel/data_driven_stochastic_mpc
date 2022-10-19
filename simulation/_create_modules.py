@@ -65,12 +65,13 @@ def create_controller_modules(real_system):
             X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS)
     elif DISTURBANCE_ESTIMATION == "discounted_kde":
         [BASE_OF_EXPONENTIAL_WEIGHTS,
-            DEFAULT_NUMBER_PAST_SAMPLES] = _load_parameters.load_param_discounted_kde()
+            DEFAULT_NUMBER_PAST_SAMPLES,
+            NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX] = _load_parameters.load_param_discounted_kde()
         disturbance_estimator = _discounted_kernel_density_estimator.DiscountedKDE(
-            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS, BASE_OF_EXPONENTIAL_WEIGHTS, DEFAULT_NUMBER_PAST_SAMPLES)
+            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS, BASE_OF_EXPONENTIAL_WEIGHTS, DEFAULT_NUMBER_PAST_SAMPLES,NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX)
 
     constraints = _load_parameters.load_constraints()
     constraint_tightener = ConstraintTightening(
-        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"])
+        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"], NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX)
 
     return dd_mpc, disturbance_estimator, constraint_tightener

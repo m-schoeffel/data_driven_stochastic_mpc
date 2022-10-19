@@ -42,6 +42,15 @@ discounted_kde:
 
  density_number_of_past_samples_considered: 200
 
+ # Specify number of samples kde should be evaluated on
+ number_eval_points: 2001
+
+ # Specify interval kde should be evaluated on
+ # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
+ interv_min: -1.0
+ 
+ interv_max: 1.0
+
 gaussian_process:
 
  density_number_of_past_samples_considered: 10
@@ -67,16 +76,15 @@ constraints:
   - [20]
 
   G_x:
-  - [1,1,0,0]
+  - [1,0,0,0]
   - [0,1,0,0]
   - [0,0,1,0]
   - [0,0,0,1]
 
   g_x:
-  - [2.5]
+  - [2.0]
   - [2]
   - [30]
   - [30]
 
 prediction_horizon: 10
-

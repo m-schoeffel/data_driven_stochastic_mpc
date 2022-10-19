@@ -4,7 +4,7 @@ from scipy import stats
 
 
 class ConstraintTightening:
-    def __init__(self, G_u, g_u, G_x, g_x, risk_factor=0.975):
+    def __init__(self, G_u, g_u, G_x, g_x, number_eval_points, interv_min, interv_max, risk_factor=0.975):
         self.G_u = np.array(G_u, dtype=float)
         self.g_u = np.array(g_u, dtype=float)
         self.G_x = np.array(G_x, dtype=float)
@@ -19,17 +19,16 @@ class ConstraintTightening:
         self.numbr_state_constr = self.G_x.shape[0]
         self.numbr_states = self.G_x.shape[1]
 
+        self.number_eval_points = number_eval_points
+        self.interv_min = interv_min
+        self.interv_max = interv_max
+
         self.p = risk_factor
 
     def tighten_constraints_on_indep_kde(self, kde_of_states):
         """Tighten constraints based on independent disturbance distributions from every state"""
 
-        # Each distribution is always evaluated on the same interval
-        number_eval_points = 2001
-        interv_min = -1.0
-        interv_max = 1.0
-
-        x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
+        x_eval_pdf = np.linspace(self.interv_min, self.interv_max, self.number_eval_points)
 
         # Iterate over every state constraint
         for idx_c in range(0, self.numbr_state_constr):
@@ -47,9 +46,9 @@ class ConstraintTightening:
                     # Calculate linearly transformed pdf on interval
                     # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
                     interval = np.linspace(
-                        interv_min/coeff_state, interv_max/coeff_state, number_eval_points)
+                        self.interv_min/coeff_state, self.interv_max/coeff_state, self.number_eval_points)
                     transf_pdf_on_interv = (
-                        1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval) * (interv_max-interv_min)/number_eval_points
+                        1/np.abs(coeff_state)) * kde_of_states[idx_s].evaluate(interval) * (self.interv_max-self.interv_min)/self.number_eval_points
 
                     distributions_for_convolution.append(transf_pdf_on_interv)
 
@@ -69,7 +68,7 @@ class ConstraintTightening:
             prob_distr_integr = np.cumsum(conv_pdf)
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p, side='right')-1
-            upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
+            upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < self.number_eval_points else 0
 
             self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
@@ -80,13 +79,7 @@ class ConstraintTightening:
 
         # The current implementation only allows constraints which involve one or two states
 
-        # Each distribution is always evaluated on the same interval
-        number_eval_points = 201
-        # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -1.0
-        interv_max = 1.0
-
-        x_eval_pdf = np.linspace(interv_min, interv_max, number_eval_points)
+        x_eval_pdf = np.linspace(self.interv_min, self.interv_max, self.number_eval_points)
 
         # Iterate over every state constraint
         for idx_c in range(0, self.numbr_state_constr):
@@ -110,7 +103,7 @@ class ConstraintTightening:
                 # Calculate linearly transformed pdf on interval
                 # Z = aY -> f_z(x) = 1/|a| * f_y(x/a)
                 interval = np.linspace(
-                    interv_min/coeff_state, interv_max/coeff_state, number_eval_points)
+                    self.interv_min/coeff_state, self.interv_max/coeff_state, self.number_eval_points)
                 transf_pdf_on_interv = (
                     1/np.abs(coeff_state)) * marginal_kde.evaluate(interval)
 
@@ -121,10 +114,10 @@ class ConstraintTightening:
 
                 # Calculate beta with P(Z>=beta) <= 1-risk_factor
                 prob_distr_integr = np.cumsum(
-                    transf_pdf_on_interv) * (interv_max-interv_min)/number_eval_points
+                    transf_pdf_on_interv) * (self.interv_max-self.interv_min)/self.number_eval_points
                 idx_upper_bound = np.searchsorted(
                     prob_distr_integr, self.p, side='right')-1
-                upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < number_eval_points else 0
+                upper_bound = x_eval_pdf[idx_upper_bound] if idx_upper_bound < self.number_eval_points else 0
 
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
@@ -140,10 +133,10 @@ class ConstraintTightening:
                 # Calculate linearly transformed pdfs on interval
                 # Z_1 = aX -> f_z1(x) = 1/|a| * f_x(x/a)
                 interval_1 = np.linspace(
-                    interv_min/coeff_state_1, interv_max/coeff_state_1, number_eval_points)
+                    self.interv_min/coeff_state_1, self.interv_max/coeff_state_1, self.number_eval_points)
                 # Z_2 = bY -> f_z2(x) = 1/|b| * f_y(x/b)
                 interval_2 = np.linspace(
-                    interv_min/coeff_state_2, interv_max/coeff_state_2, number_eval_points)
+                    self.interv_min/coeff_state_2, self.interv_max/coeff_state_2, self.number_eval_points)
 
                 # Calculate matrix to evaluate pdf on
                 matrix_to_eval = list()
@@ -156,7 +149,7 @@ class ConstraintTightening:
                     marginal_kde.evaluate(matrix_to_eval)
                 # Get pdf realizations in matrix form
                 pdf_on_matrix = pdf_on_matrix.reshape(
-                    number_eval_points, number_eval_points)
+                    self.number_eval_points, self.number_eval_points)
 
                 # Check, if significant parts of distribution are likely to be outside of interval
                 if pdf_on_matrix[0, 0] >= 0.00001 or pdf_on_matrix[-1, -1] >= 0.00001 or pdf_on_matrix[0, -1] >= 0.00001 or pdf_on_matrix[-1, 0] >= 0.00001:
@@ -170,21 +163,21 @@ class ConstraintTightening:
 
                 # Traverse matrix from highest disturbance to zero disturbance and sum up probabilities of the corresponding disturbance realizations
                 # Start with lower right corner (corresponds to highest disturbance)
-                # Stop at diagonal of matrix (round < number_eval_points), because then sum of disturbance is 0
+                # Stop at diagonal of matrix (round < self.number_eval_points), because then sum of disturbance is 0
                 # Going further would lead to constraint relaxing
                 sum_probability = 0
                 round = 0
-                while sum_probability < 1 - self.p and round < number_eval_points:
+                while sum_probability < 1 - self.p and round < self.number_eval_points:
                     for i in range(0, round+1):
-                        idx_1 = number_eval_points-1-i
-                        idx_2 = number_eval_points-1-round+i
+                        idx_1 = self.number_eval_points-1-i
+                        idx_2 = self.number_eval_points-1-round+i
                         sum_probability += pdf_on_matrix[idx_1, idx_2]
 
                     round += 1
 
                 # P(Z = Z_1 + Z_2 <= y) >= p
-                upper_bound = ((number_eval_points-round) /
-                               number_eval_points)*(interv_max)*2
+                upper_bound = ((self.number_eval_points-round) /
+                               self.number_eval_points)*(self.interv_max)*2
 
                 self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 

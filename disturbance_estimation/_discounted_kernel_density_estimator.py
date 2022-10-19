@@ -7,7 +7,7 @@ from scipy import stats
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
-    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, risk_param=0.95):
+    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, number_eval_points, interv_min, interv_max, risk_param=0.95):
 
         # Limit number of considered samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(
@@ -29,6 +29,10 @@ class DiscountedKDE:
         self.weights = np.power(base_of_exponential_weights, np.arange(
             self.number_of_past_samples_considered_for_kde))
         self.weights = self.weights/np.sum(self.weights)
+
+        self.number_eval_points = number_eval_points
+        self.interv_min = interv_min
+        self.interv_max = interv_max
 
         self.p = risk_param
 
@@ -135,11 +139,6 @@ class DiscountedKDE:
             The Bhattacharyya coefficient is then mapped on the interval 0.975-1.
             The result is used as a base to calculate the weights of the samples in the KDE used to calculate the disturbance distribution"""
 
-        # Each distribution is always evaluated on the same interval
-        number_eval_points = 2001
-        # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -1.0
-        interv_max = 1.0
 
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
         idx_border_old_new = int(
@@ -156,13 +155,13 @@ class DiscountedKDE:
             kde_new.append(stats.gaussian_kde(new_samples[i, :]))
 
         # Eval Pdf
-        interv_eval = np.linspace(interv_min, interv_max, number_eval_points)
+        interv_eval = np.linspace(self.interv_min, self.interv_max, self.number_eval_points)
 
         pdf_old = list()
         pdf_new = list()
 
         # Normalize pdf
-        norm_factor = (interv_max-interv_min)/number_eval_points
+        norm_factor = (self.interv_max-self.interv_min)/self.number_eval_points
 
         for i in range(0, self.number_of_states):
             pdf_old.append(kde_old[i].evaluate(interv_eval)*norm_factor)
