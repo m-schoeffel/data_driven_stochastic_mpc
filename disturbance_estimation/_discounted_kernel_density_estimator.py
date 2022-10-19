@@ -98,7 +98,7 @@ class DiscountedKDE:
             state_deviations = delta_x_storage[i, :]
 
             kde = stats.gaussian_kde(
-                state_deviations, weights=self.indep_weights[i,:])
+                state_deviations, weights=self.weights[i,:])
 
             kde_of_states.append(kde)
 
@@ -110,10 +110,13 @@ class DiscountedKDE:
         # Calculating a multivariate KDE for all states takes longer to converge to the true density compared to calculating individual KDE for each state
         # Calculating a multivariate KDE is necessary if the random variables (disturbances of states) are correlated
 
+        # Assumption, that in multivariate case, rate of change of disturbance distribution should be the same on each state
+        self.determine_weights_for_indep()
+
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
 
         kde = stats.gaussian_kde(
-            delta_x_storage, weights=self.weights)
+            delta_x_storage, weights=self.weights[0,:])
 
         return kde
 
@@ -135,8 +138,8 @@ class DiscountedKDE:
         # Each distribution is always evaluated on the same interval
         number_eval_points = 2001
         # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
-        interv_min = -10.0
-        interv_max = 10.0
+        interv_min = -1.0
+        interv_max = 1.0
 
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
         idx_border_old_new = int(
@@ -174,6 +177,8 @@ class DiscountedKDE:
             coeff = np.sum(coeff)
             b_coeff.append(coeff)
 
+        print(f"Bhattacharyya coefficient: {b_coeff}")
+
         # Calculate base for weights
         base_weights = np.zeros([self.number_of_states])
 
@@ -182,8 +187,8 @@ class DiscountedKDE:
             base_weights[i] = base
 
         # Calculate weights
-        self.indep_weights = np.zeros(delta_x_storage.shape)
+        self.weights = np.zeros(delta_x_storage.shape)
 
         for i in range(0, self.number_of_past_samples_considered_for_kde):
             cur_exponent = self.number_of_past_samples_considered_for_kde-i
-            self.indep_weights[:, i] = np.power(base_weights, cur_exponent)
+            self.weights[:, i] = np.power(base_weights, cur_exponent)
