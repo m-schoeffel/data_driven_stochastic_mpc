@@ -144,8 +144,8 @@ class DiscountedKDE:
         idx_border_old_new = int(
             self.number_of_past_samples_considered_for_kde * 0.75)
 
-        old_samples = delta_x_storage[:, ::idx_border_old_new]
-        new_samples = delta_x_storage[:, idx_border_old_new::]
+        old_samples = delta_x_storage[:, :idx_border_old_new]
+        new_samples = delta_x_storage[:, idx_border_old_new:]
 
         kde_old = list()
         kde_new = list()
