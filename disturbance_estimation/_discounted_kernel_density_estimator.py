@@ -226,7 +226,8 @@ class DiscountedKDE:
             delta_x_storage = self.calculate_numpy_array_of_delta_x()
             kde = stats.gaussian_kde(delta_x_storage[0,:],weights=self.weights[0,:])
 
-            pdf = kde.evaluate(interval)
+            # Evaluate pdf and normalize result
+            pdf = kde.evaluate(interval)*(self.interv_max-self.interv_min)/self.number_eval_points
 
             filename_estim_pdf = os.path.join(self.dist_x0_path,"estim_pdf_k_"+str(k))
             np.save(filename_estim_pdf,pdf)
