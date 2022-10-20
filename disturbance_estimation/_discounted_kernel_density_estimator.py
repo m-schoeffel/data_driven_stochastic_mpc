@@ -7,7 +7,7 @@ from scipy import stats
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
-    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, number_eval_points, interv_min, interv_max, risk_param=0.95):
+    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, number_eval_points, interv_min, interv_max):
 
         # Limit number of considered samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(

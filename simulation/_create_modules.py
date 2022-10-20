@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from lti_system import _lti_system
@@ -29,6 +30,14 @@ def create_system():
 
 
 def create_controller_modules(real_system):
+
+    [record_data, folder_name] = _load_parameters.load_data_storage_params()
+
+    # Create folder to store data
+    if record_data:
+        path_root_folder = os.getcwd()
+        path = os.path.join(path_root_folder, "recorded_data", folder_name)
+        os.mkdir(path)
 
     main_param = _load_parameters.load_main_params()
     lti_system_param = _load_parameters.load_lti_system_params()

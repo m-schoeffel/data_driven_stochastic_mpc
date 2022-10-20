@@ -30,6 +30,9 @@ input_sequence:
 - [1,-1,0,2,3,-4,0,-6,2,-2,3,-4,0,-6,2,-4,7,6,-3,-2,4,-3,8,-5,3,2,4,5,3,-4,6,-2,3,4,2,3,-4,-3,-1]
 - [-1,0,-2,3,-4,0,-6,2,4,2,3,-4,0,-6,2,5,8,-3,4,5,2,9,-2,-1,4,-6,-8,4,-2,2,3,6,-2,-3,4,-1,6,2,4]
 
+risk_parameter:
+- 0.975
+
 number_of_measurements: 210
 
 # States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
@@ -88,3 +91,7 @@ constraints:
   - [30]
 
 prediction_horizon: 10
+
+data_storage:
+  record_data: True
+  folder_name: "first_folder"
