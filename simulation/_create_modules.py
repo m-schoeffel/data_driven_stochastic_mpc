@@ -84,6 +84,6 @@ def create_controller_modules(real_system):
 
     constraints = _load_parameters.load_constraints()
     constraint_tightener = ConstraintTightening(
-        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"], NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX, risk_param)
+        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"], NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX, risk_param, record_data, folder_name)
 
     return dd_mpc, disturbance_estimator, constraint_tightener

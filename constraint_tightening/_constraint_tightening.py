@@ -1,10 +1,11 @@
+import os
 import numpy as np
 
 from scipy import stats
 
 
 class ConstraintTightening:
-    def __init__(self, G_u, g_u, G_x, g_x, number_eval_points, interv_min, interv_max, risk_param):
+    def __init__(self, G_u, g_u, G_x, g_x, number_eval_points, interv_min, interv_max, risk_param, record_data=False, folder_name=""):
         self.G_u = np.array(G_u, dtype=float)
         self.g_u = np.array(g_u, dtype=float)
         self.G_x = np.array(G_x, dtype=float)
@@ -25,7 +26,17 @@ class ConstraintTightening:
 
         self.p = risk_param
 
-    def tighten_constraints_on_indep_kde(self, kde_of_states):
+        # Create folders to store data
+        self.record_data = record_data
+        if self.record_data:
+            path_root_folder = os.getcwd()
+            record_folder_path = os.path.join(path_root_folder, "recorded_data", folder_name, "constraint_tightening")
+            os.mkdir(record_folder_path)
+            
+            self.trajectory_path = os.path.join(record_folder_path,"tightened_constraints")
+            os.mkdir(self.trajectory_path)
+
+    def tighten_constraints_on_indep_kde(self, kde_of_states,k):
         """Tighten constraints based on independent disturbance distributions from every state"""
 
         x_eval_pdf = np.linspace(self.interv_min, self.interv_max, self.number_eval_points)
@@ -72,9 +83,11 @@ class ConstraintTightening:
 
             self.g_z[idx_c] = self.g_x[idx_c] - upper_bound
 
+        self.store_g_z(k)
+
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
-    def tighten_constraints_on_multivariate_kde(self, multi_kde):
+    def tighten_constraints_on_multivariate_kde(self, multi_kde,k):
         """Tighten constraints based on one multivariate KDE"""
 
         # The current implementation only allows constraints which involve one or two states
@@ -185,6 +198,8 @@ class ConstraintTightening:
                 msg = "Joint constraints are not allowed to involve more than two states currently."
                 raise ValueError(msg)
 
+        self.store_g_z(k)
+
         return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
 
     def det_marginal_distribution(self, kde, dimensions):
@@ -220,3 +235,8 @@ class ConstraintTightening:
 
         return stats.gaussian_kde(dataset, bw_method=kde.covariance_factor(),
                                   weights=weights)
+
+    def store_g_z(self,k):
+        if self.record_data:
+            filename_g_z = os.path.join(self.trajectory_path,"g_z_k_"+str(k))
+            np.save(filename_g_z,self.g_z)
