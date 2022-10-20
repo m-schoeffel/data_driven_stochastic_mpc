@@ -34,8 +34,6 @@ class DiscountedKDE:
         self.interv_min = interv_min
         self.interv_max = interv_max
 
-        self.p = risk_param
-
     def add_delta_x(self, index_k, delta_x):
         # Todo: remove or use k_array
         # self.k_array[0, self.numbr_measurements] = index_k
