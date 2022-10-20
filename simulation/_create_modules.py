@@ -68,7 +68,7 @@ def create_controller_modules(real_system):
     PREDICTION_HORIZON = _load_parameters.load_prediction_horizon()
     cost_matrices = _load_parameters.load_cost_matrices()
     dd_mpc = _data_driven_mpc.DataDrivenMPC(
-        input_sequence, state_sequence, PREDICTION_HORIZON, cost_matrices["R"], cost_matrices["Q"])
+        input_sequence, state_sequence, PREDICTION_HORIZON, cost_matrices["R"], cost_matrices["Q"], record_data, folder_name)
 
     risk_param = _load_parameters.load_risk_param()
 

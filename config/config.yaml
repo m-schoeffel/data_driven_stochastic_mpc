@@ -1,6 +1,6 @@
 # Decide if current run should be recorded
 data_storage:
-  record_data: False
+  record_data: True
   folder_name: "first_folder"
 
 # Specify the system matrices and the disturbances of the lti system

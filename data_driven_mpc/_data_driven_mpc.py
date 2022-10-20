@@ -1,13 +1,15 @@
+import os
 import numpy as np
 import time
 
 from scipy.optimize import minimize, LinearConstraint
+from sklearn.metrics import recall_score
 
 from . import _hankel_helpers
 
 
 class DataDrivenMPC:
-    def __init__(self, input_sequence, state_sequence, predic_hori_size, state_cost, input_cost):
+    def __init__(self, input_sequence, state_sequence, predic_hori_size, state_cost, input_cost, record_data=False, folder_name=""):
         self.dim_u = input_sequence.shape[0]
         self.dim_x = state_sequence.shape[0]
 
@@ -23,7 +25,20 @@ class DataDrivenMPC:
         self.h_matrix_inv = _hankel_helpers.create_hankel_pseudo_inverse(
             self.h_matrix, self.dim_u, self.dim_x)
 
-    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, ref_pred_hor=0):
+        # Create folders to store data
+        self.record_data = record_data
+        if self.record_data:
+            path_root_folder = os.getcwd()
+            record_folder_path = os.path.join(path_root_folder, "recorded_data", folder_name, "mpc")
+            os.mkdir(record_folder_path)
+            
+            self.trajectory_path = os.path.join(record_folder_path,"optimal_trajectories")
+            os.mkdir(self.trajectory_path)
+
+            self.states_path = os.path.join(record_folder_path,"measured_states")
+            os.mkdir(self.states_path)
+
+    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, k, ref_pred_hor=0):
 
         # Specify ref_pred_hor
         if type(ref_pred_hor) == int and ref_pred_hor == 0:
@@ -67,6 +82,13 @@ class DataDrivenMPC:
                 break
 
         trajectory = (self.h_matrix @ res.x).reshape(-1, 1)
+
+        if self.record_data:
+            filename_traj = os.path.join(self.trajectory_path,"trajectory_k_"+str(k))
+            np.save(filename_traj,trajectory)
+
+            filename_state = os.path.join(self.states_path,"real_state_k_"+str(k))
+            np.save(filename_state,current_x)
 
         # return next input (MPC Ouput) and predicted next state
         next_u = trajectory[0:self.dim_u]
