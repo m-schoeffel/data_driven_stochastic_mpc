@@ -4,7 +4,7 @@ from scipy import stats
 
 
 class ConstraintTightening:
-    def __init__(self, G_u, g_u, G_x, g_x, number_eval_points, interv_min, interv_max, risk_factor=0.975):
+    def __init__(self, G_u, g_u, G_x, g_x, number_eval_points, interv_min, interv_max, risk_param):
         self.G_u = np.array(G_u, dtype=float)
         self.g_u = np.array(g_u, dtype=float)
         self.G_x = np.array(G_x, dtype=float)
@@ -23,7 +23,7 @@ class ConstraintTightening:
         self.interv_min = interv_min
         self.interv_max = interv_max
 
-        self.p = risk_factor
+        self.p = risk_param
 
     def tighten_constraints_on_indep_kde(self, kde_of_states):
         """Tighten constraints based on independent disturbance distributions from every state"""
@@ -64,7 +64,7 @@ class ConstraintTightening:
 
             # Now conv_pdf is the pdf resulting from the linear combination of the pdf's of the states on the interval [-10,10]
 
-            # Calculate beta with P(Z>=beta) <= 1-risk_factor
+            # Calculate beta with P(Z>=beta) <= 1-risk_param
             prob_distr_integr = np.cumsum(conv_pdf)
             idx_upper_bound = np.searchsorted(
                 prob_distr_integr, self.p, side='right')-1
@@ -112,7 +112,7 @@ class ConstraintTightening:
                     msg = "Probability of disturbance lying outside of specified interval not neglectable."
                     raise ValueError(msg)
 
-                # Calculate beta with P(Z>=beta) <= 1-risk_factor
+                # Calculate beta with P(Z>=beta) <= 1-risk_param
                 prob_distr_integr = np.cumsum(
                     transf_pdf_on_interv) * (self.interv_max-self.interv_min)/self.number_eval_points
                 idx_upper_bound = np.searchsorted(

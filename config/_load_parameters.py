@@ -93,3 +93,9 @@ def load_data_storage_params():
     folder_name = param["data_storage"]["folder_name"]
 
     return record_data, folder_name
+
+def load_risk_param():
+    with open('config/config.yaml') as file:
+        param = yaml.load(file, Loader=yaml.FullLoader)
+
+    return param["risk_param"]

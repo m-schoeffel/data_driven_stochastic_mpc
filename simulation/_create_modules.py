@@ -34,6 +34,7 @@ def create_controller_modules(real_system):
     [record_data, folder_name] = _load_parameters.load_data_storage_params()
 
     # Create folder to store data
+    # Program exists with error if folder already exists (important to avoid overriding or modifying datasets)
     if record_data:
         path_root_folder = os.getcwd()
         path = os.path.join(path_root_folder, "recorded_data", folder_name)
@@ -69,6 +70,8 @@ def create_controller_modules(real_system):
     dd_mpc = _data_driven_mpc.DataDrivenMPC(
         input_sequence, state_sequence, PREDICTION_HORIZON, cost_matrices["R"], cost_matrices["Q"])
 
+    risk_param = _load_parameters.load_risk_param()
+
     if DISTURBANCE_ESTIMATION == "gaussian_process":
         disturbance_estimator = _gaussian_process.GaussianProcess(
             X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS)
@@ -81,6 +84,6 @@ def create_controller_modules(real_system):
 
     constraints = _load_parameters.load_constraints()
     constraint_tightener = ConstraintTightening(
-        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"], NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX)
+        constraints["G_u"], constraints["g_u"], constraints["G_x"], constraints["g_x"], NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX, risk_param)
 
     return dd_mpc, disturbance_estimator, constraint_tightener
