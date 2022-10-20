@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import deque
@@ -7,7 +8,7 @@ from scipy import stats
 
 # Todo: Implement interface for disturbance estimators (great exercise)
 class DiscountedKDE:
-    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, number_eval_points, interv_min, interv_max):
+    def __init__(self, number_of_states, number_timesteps, base_of_exponential_weights, default_number_past_samples, number_eval_points, interv_min, interv_max, record_data=False, folder_name=""):
 
         # Limit number of considered samples if not enough samples available
         self.number_of_past_samples_considered_for_kde = min(
@@ -33,6 +34,22 @@ class DiscountedKDE:
         self.number_eval_points = number_eval_points
         self.interv_min = interv_min
         self.interv_max = interv_max
+
+        # Create folders to store data
+        self.record_data = record_data
+        if self.record_data:
+            path_root_folder = os.getcwd()
+            record_folder_path = os.path.join(path_root_folder, "recorded_data", folder_name, "disturbance_estimation")
+            os.mkdir(record_folder_path)
+            
+            self.dist_x0_path = os.path.join(record_folder_path,"disturbance_distribution_x_0")
+            os.mkdir(self.dist_x0_path)
+
+            self.b_coeff_path = os.path.join(record_folder_path,"bhattacharyya_coefficients")
+            os.mkdir(self.b_coeff_path)
+
+            self.weights_path = os.path.join(record_folder_path,"weights")
+            os.mkdir(self.weights_path)
 
     def add_delta_x(self, index_k, delta_x):
         # Todo: remove or use k_array
@@ -80,14 +97,14 @@ class DiscountedKDE:
 
         return delta_x_storage
 
-    def get_kde_independent_dist(self):
+    def get_kde_independent_dist(self,k):
         """This function calculates the KDE for every state independently"""
 
         # This is used, if the disturbances on every state are not correlated with each other
         # Estimating a univariate KDE for every state needs less samples than estimating a multivariate KDE for a joint distribution
 
         # Determine weights for each kde
-        self.determine_weights_for_indep()
+        self.determine_weights_for_indep(k)
 
         # Store and later return KDE for every state
         # Those KDEs are later used in the constraint tightening module
@@ -104,25 +121,29 @@ class DiscountedKDE:
 
             kde_of_states.append(kde)
 
+        self.store_dist_x0(k)
+
         return kde_of_states
 
-    def get_kde_multivariate_dist(self):
+    def get_kde_multivariate_dist(self,k):
         """This function calculates a multivariate KDE"""
 
         # Calculating a multivariate KDE for all states takes longer to converge to the true density compared to calculating individual KDE for each state
         # Calculating a multivariate KDE is necessary if the random variables (disturbances of states) are correlated
 
         # Assumption, that in multivariate case, rate of change of disturbance distribution should be the same on each state
-        self.determine_weights_for_indep()
+        self.determine_weights_for_indep(k)
 
         delta_x_storage = self.calculate_numpy_array_of_delta_x()
 
         kde = stats.gaussian_kde(
             delta_x_storage, weights=self.weights[0,:])
 
+        self.store_dist_x0(k)
+
         return kde
 
-    def determine_weights_for_indep(self):
+    def determine_weights_for_indep(self,k):
         """This function determines the weights of the independent kde estimation using the Bhattacharyya coefficient
             First the recorded delta_x samples are divided in to groups
 
@@ -174,6 +195,10 @@ class DiscountedKDE:
             coeff = np.sum(coeff)
             b_coeff.append(coeff)
 
+        if self.record_data:
+            filename_b_coeff = os.path.join(self.b_coeff_path,"b_coeff_k_"+str(k))
+            np.save(filename_b_coeff,np.array(b_coeff))
+
         print(f"Bhattacharyya coefficient: {b_coeff}")
 
         # Calculate base for weights
@@ -189,3 +214,19 @@ class DiscountedKDE:
         for i in range(0, self.number_of_past_samples_considered_for_kde):
             cur_exponent = self.number_of_past_samples_considered_for_kde-i
             self.weights[:, i] = np.power(base_weights, cur_exponent)
+
+        if self.record_data:
+            filename_weights = os.path.join(self.weights_path,"weights_k_"+str(k))
+            np.save(filename_weights,np.array(self.weights))
+
+    def store_dist_x0(self,k):
+        if self.record_data:
+            interval = np.linspace(self.interv_min,self.interv_max,self.number_eval_points)
+
+            delta_x_storage = self.calculate_numpy_array_of_delta_x()
+            kde = stats.gaussian_kde(delta_x_storage[0,:],weights=self.weights[0,:])
+
+            pdf = kde.evaluate(interval)
+
+            filename_estim_pdf = os.path.join(self.dist_x0_path,"estim_pdf_k_"+str(k))
+            np.save(filename_estim_pdf,pdf)

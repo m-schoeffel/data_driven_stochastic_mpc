@@ -43,10 +43,10 @@ def main():
         start_time = time.time()
 
         # Needed to calculate kde for each state individually
-        # kde_of_states = disturbance_estimator.get_kde_independent_dist()
+        # kde_of_states = disturbance_estimator.get_kde_independent_dist(i)
         # [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_indep_kde(kde_of_states,i)
 
-        multivariate_kde = disturbance_estimator.get_kde_multivariate_dist()
+        multivariate_kde = disturbance_estimator.get_kde_multivariate_dist(i)
         [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(multivariate_kde,i)
 
         ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size]

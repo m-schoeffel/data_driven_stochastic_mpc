@@ -80,7 +80,7 @@ def create_controller_modules(real_system):
             DEFAULT_NUMBER_PAST_SAMPLES,
             NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX] = _load_parameters.load_param_discounted_kde()
         disturbance_estimator = _discounted_kernel_density_estimator.DiscountedKDE(
-            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS, BASE_OF_EXPONENTIAL_WEIGHTS, DEFAULT_NUMBER_PAST_SAMPLES,NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX)
+            X_INITIAL_STATE.shape[0], NUMBER_OF_MEASUREMENTS, BASE_OF_EXPONENTIAL_WEIGHTS, DEFAULT_NUMBER_PAST_SAMPLES,NUMBER_EVAL_POINTS, INTERV_MIN, INTERV_MAX, record_data, folder_name)
 
     constraints = _load_parameters.load_constraints()
     constraint_tightener = ConstraintTightening(

@@ -33,8 +33,8 @@ class ConstraintTightening:
             record_folder_path = os.path.join(path_root_folder, "recorded_data", folder_name, "constraint_tightening")
             os.mkdir(record_folder_path)
             
-            self.trajectory_path = os.path.join(record_folder_path,"tightened_constraints")
-            os.mkdir(self.trajectory_path)
+            self.constraints_path = os.path.join(record_folder_path,"tightened_constraints")
+            os.mkdir(self.constraints_path)
 
     def tighten_constraints_on_indep_kde(self, kde_of_states,k):
         """Tighten constraints based on independent disturbance distributions from every state"""
@@ -238,5 +238,5 @@ class ConstraintTightening:
 
     def store_g_z(self,k):
         if self.record_data:
-            filename_g_z = os.path.join(self.trajectory_path,"g_z_k_"+str(k))
+            filename_g_z = os.path.join(self.constraints_path,"g_z_k_"+str(k))
             np.save(filename_g_z,self.g_z)
