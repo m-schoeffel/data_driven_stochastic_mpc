@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
-from config import _load_parameters
-
 # ------------------ Animate dataset ------------------
 
 # The animation is specific to the dataset and has to be adapted to a new dataset
