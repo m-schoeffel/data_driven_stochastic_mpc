@@ -1,3 +1,4 @@
+from ctypes import alignment
 import os
 import yaml
 import numpy as np
@@ -20,9 +21,10 @@ def animate_dataset():
     my_figsize = (128*cm, 64*cm)
 
     fig = plt.figure(figsize=my_figsize)
-    ax_x_0 = plt.subplot2grid((4,4),(0,0),colspan=3,rowspan=3)
-    ax_distr = plt.subplot2grid((4,4),(0,3),colspan=1,rowspan=1)
-    ax_weights = plt.subplot2grid((4,4),(1,3),colspan=1,rowspan=1)
+    ax_x_0 = plt.subplot2grid((3,4),(0,0),colspan=3,rowspan=3)
+    ax_distr = plt.subplot2grid((3,4),(0,3),colspan=1,rowspan=1)
+    ax_weights = plt.subplot2grid((3,4),(1,3),colspan=1,rowspan=1)
+    ax_b_coeff = plt.subplot2grid((3,4),(2,3),colspan=1,rowspan=1)
     
 
     ax_x_0.set_xlabel("Timestep k")
@@ -37,6 +39,8 @@ def animate_dataset():
     ax_weights.set_ylabel("Weight")
     ax_weights.set_title("Weights of samples used for KDE")
 
+    ax_b_coeff.set_title("Bhattacharyya coefficient")
+
     line1, = ax_x_0.plot([], [], color='blue', lw=3)
     line2, = ax_x_0.plot([], [], color='green', lw=3, ls='--')
     line3, = ax_x_0.plot([], [], lw=2)
@@ -47,6 +51,9 @@ def animate_dataset():
 
     line_weights, = ax_weights.plot([],[],color='black',lw=3)
 
+    bar_b_coeff, = ax_b_coeff.bar(1,1)
+    bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=45,color="white")
+
     len_traj = 200
     timesteps = list(range(0, len_traj))
 
@@ -54,6 +61,8 @@ def animate_dataset():
     path_ref_traj = os.path.join(path_dataset,"ref_traj_1.csv")
     ref_traj = np.genfromtxt(path_ref_traj, delimiter=',')
     print(ref_traj[:, 25].reshape(-1))
+
+    fig.tight_layout()
 
     # Load params from config
     path_config = os.path.join(path_dataset,"config.yaml")
@@ -103,7 +112,7 @@ def animate_dataset():
 
         # Plot distribution
         path_estim_pdf = os.path.join(path_dataset,"disturbance_estimation","disturbance_distribution_x_0","estim_pdf_k_"+str(k)+".npy")
-        estimated_pdf = np.load(path_estim_pdf)*1000
+        estimated_pdf = np.load(path_estim_pdf)*1150
         line_est_pdf.set_data(pdf_interval,estimated_pdf)
         line_true_pdf.set_data(pdf_interval,true_pdf)
         ax_distr.set_xlim(-0.5,0.5)
@@ -117,13 +126,20 @@ def animate_dataset():
         ax_weights.set_xlim(-200,0)
         ax_weights.set_ylim(0,1)
 
+        # Plot Bhattacharyya coefficient
+        path_b_coeff = os.path.join(path_dataset,"disturbance_estimation","bhattacharyya_coefficients","b_coeff_k_"+str(k)+".npy")
+        b_coeff_x_0 = np.load(path_b_coeff)[0]
+        bar_b_coeff.set_height(b_coeff_x_0)
+        bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
+
+
 
     anim = animation.FuncAnimation(
         fig, animate, frames=range(0, 200), interval=300)
 
-    # f = r"first_reverence_tracking.mp4"
+    # path_store_animation = os.path.join(path_dataset,"animation_first_test_dataset.mp4")
     # writervideo = animation.FFMpegWriter(fps=10)
-    # anim.save(f, writer=writervideo)
+    # anim.save(path_store_animation, writer=writervideo)
 
     plt.show()
 
