@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import shutil
 
 from lti_system import _lti_system
 from data_driven_mpc import _data_driven_mpc
@@ -39,6 +40,11 @@ def create_controller_modules(real_system):
         path_root_folder = os.getcwd()
         path = os.path.join(path_root_folder, "recorded_data", folder_name)
         os.mkdir(path)
+
+        # Copy config file to know exact configuration during recording of dataset
+        path_config_src = os.path.join(path_root_folder,"config","config.yaml")
+        path_config_dest = os.path.join(path,"config.yaml")
+        shutil.copy(path_config_src,path_config_dest)
 
     main_param = _load_parameters.load_main_params()
     lti_system_param = _load_parameters.load_lti_system_params()
