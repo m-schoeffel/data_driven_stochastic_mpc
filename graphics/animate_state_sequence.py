@@ -11,11 +11,17 @@ from config import _load_parameters
 
 def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storage):
 
+    plt.rc('font', size=20)
+
     cm = 1/2.54  # centimeters in inches
     my_figsize = (128*cm, 64*cm)
 
     fig = plt.figure(figsize=my_figsize)
     ax = plt.axes(xlim=(-4, 4), ylim=(-4, 4))
+
+    ax.set_xlabel("Timestep k")
+    ax.set_ylabel("Position x")
+    ax.set_title("Position x with constraints and reference state at timestep k")
 
     line1, = ax.plot([], [], color='blue', lw=3)
     line2, = ax.plot([], [], color='green', lw=3, ls='--')
