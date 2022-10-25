@@ -7,7 +7,7 @@ import numpy as np
 
 # The underlying distribution of the disturbances on states 2-4 is a gaussian distribution with mean 0 and standard deviation 0.1
 
-# The underlying distribution of the disturbances on changes at sample 250
+# The underlying distribution of the disturbances on x1 changes at sample 250
 # The distribution for the first 250 samples is a gaussian distribution with mean -0.15 and standard deviation 0.15
 # The distribution for the last 250 samples is a gaussian distribution with mean 0.1 and standard deviation 0.1
 
