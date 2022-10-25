@@ -38,13 +38,17 @@ class DataDrivenMPC:
             self.states_path = os.path.join(record_folder_path,"measured_states")
             os.mkdir(self.states_path)
 
-    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, k, ref_pred_hor=0):
+    def get_new_u(self, current_x, G_v, g_v, G_z, g_z, k, ref_pred_hor=0,exp_x=None):
 
         # Specify ref_pred_hor
         if type(ref_pred_hor) == int and ref_pred_hor == 0:
             self.ref_pred_hor = np.zeros([self.dim_x, self.predic_hori_size])
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
+
+
+        for i in range(0,self.predic_hori_size):
+            ref_pred_hor[:,i] = ref_pred_hor[:,i].reshape(-1)-exp_x.reshape(-1)
 
         self.len_g_z = g_z.shape[0]
 

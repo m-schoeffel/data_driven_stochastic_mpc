@@ -85,7 +85,13 @@ class ConstraintTightening:
 
         self.store_g_z(k)
 
-        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
+        # Calculate expected disturbance vector
+        dim_states = self.G_x.shape[1]
+        exp_x = np.zeros([dim_states,1])
+        for i in range(0,dim_states):
+            exp_x[i]=self.calc_average_dist(kde_of_states[i])
+
+        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy(),exp_x
 
     def tighten_constraints_on_multivariate_kde(self, multi_kde,k):
         """Tighten constraints based on one multivariate KDE"""
@@ -200,7 +206,14 @@ class ConstraintTightening:
 
         self.store_g_z(k)
 
-        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy()
+        # Calculate expected disturbance vector
+        dim_states = self.G_x.shape[1]
+        exp_x = np.zeros([dim_states,1])
+        for i in range(0,dim_states):
+            marginal_kde = self.det_marginal_distribution(multi_kde,i)
+            exp_x[i]=self.calc_average_dist(marginal_kde)
+
+        return self.G_v.copy(), self.g_v.copy(), self.G_z.copy(), self.g_z.copy(), exp_x
 
     def det_marginal_distribution(self, kde, dimensions):
         """"Return marginal distribution of kde for dimensions
@@ -240,3 +253,12 @@ class ConstraintTightening:
         if self.record_data:
             filename_g_z = os.path.join(self.constraints_path,"g_z_k_"+str(k))
             np.save(filename_g_z,self.g_z)
+
+    def calc_average_dist(self,kde):
+        x_eval_pdf = np.linspace(self.interv_min, self.interv_max, self.number_eval_points)
+
+        pdf = kde.evaluate(x_eval_pdf)*(self.interv_max-self.interv_min)/self.number_eval_points
+
+        exp_x = np.dot(x_eval_pdf,pdf)
+
+        return exp_x

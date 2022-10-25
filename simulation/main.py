@@ -45,14 +45,14 @@ def main():
 
         # Needed to calculate kde for each state individually
         # kde_of_states = disturbance_estimator.get_kde_independent_dist(i)
-        # [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_indep_kde(kde_of_states,i)
+        # [G_v, g_v, G_z, g_z,exp_x] = constraint_tightener.tighten_constraints_on_indep_kde(kde_of_states,i)
 
         multivariate_kde = disturbance_estimator.get_kde_multivariate_dist(i)
-        [G_v, g_v, G_z, g_z] = constraint_tightener.tighten_constraints_on_multivariate_kde(multivariate_kde,i)
+        [G_v, g_v, G_z, g_z,exp_x] = constraint_tightener.tighten_constraints_on_multivariate_kde(multivariate_kde,i)
 
-        ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size]
+        ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size].copy()
         [next_u, x_pred, prediction_horizon] = dd_mpc.get_new_u(
-            real_system.x, G_v, g_v, G_z, g_z, k=i, ref_pred_hor=ref_pred_hor)
+            real_system.x, G_v, g_v, G_z, g_z, k=i, ref_pred_hor=ref_pred_hor,exp_x=exp_x)
         real_system.next_step(next_u, add_disturbance=True, k=i)
 
         # Save data (states, tightened_constraints, etc.) for animation
