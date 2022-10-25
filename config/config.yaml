@@ -1,7 +1,7 @@
 # Decide if current run should be recorded
 data_storage:
   record_data: False
-  folder_name: "first_test_dataset"
+  folder_name: "gaussian_gaussian_only_x1"
 
 # Specify the system matrices and the disturbances of the lti system
 # It will be used to record the input state trajectory for the hankel matrix and to simulate the "real" system
@@ -33,7 +33,7 @@ lti_system:
 
 risk_param: 0.975
 
-number_of_measurements: 210
+number_of_measurements: 500
 
 reference_trajectory: "ref_traj_1"
 
