@@ -12,6 +12,12 @@ from constraint_tightening._constraint_tightening import ConstraintTightening
 
 def create_system():
     lti_system_param = _load_parameters.load_lti_system_params()
+    main_param = _load_parameters.load_main_params()
+
+    # Load disturbance_sequence
+    dist_seq_name = main_param["dist_seq"]
+    path_dist = os.path.join(os.getcwd(),"lti_system","disturbance_sequences",dist_seq_name,dist_seq_name+".npy")
+    dist_seq = np.load(path_dist)
 
     # Specify the type of disturbance for each state
     # gaussian/uniform/triangular/lognormal
@@ -25,7 +31,7 @@ def create_system():
     state_disturbances = _disturbance.Disturbance(TYPES_OF_DISTURBANCES)
 
     real_system = _lti_system.LTISystem(
-        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, disturbances=state_disturbances)
+        x=X_INITIAL_STATE, A=A_SYSTEM_MATRIX, B=B_INPUT_MATRIX, dist_seq=dist_seq)
 
     return real_system
 

@@ -37,6 +37,8 @@ number_of_measurements: 210
 
 reference_trajectory: "ref_traj_1"
 
+disturbance_sequence: "gaussian_gaussian_500"
+
 # States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
 number_of_inputs: 70
 
@@ -48,13 +50,13 @@ discounted_kde:
  density_number_of_past_samples_considered: 200
 
  # Specify number of samples kde should be evaluated on
- number_eval_points: 2001
+ number_eval_points: 4001
 
  # Specify interval kde should be evaluated on
  # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
- interv_min: -1.0
+ interv_min: -2.0
  
- interv_max: 1.0
+ interv_max: 2.0
 
 gaussian_process:
 
