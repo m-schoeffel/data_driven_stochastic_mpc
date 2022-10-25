@@ -19,10 +19,10 @@ def animate_dataset():
     my_figsize = (128*cm, 64*cm)
 
     fig = plt.figure(figsize=my_figsize)
-    ax_x_0 = plt.subplot2grid((3,4),(0,0),colspan=3,rowspan=3)
-    ax_distr = plt.subplot2grid((3,4),(0,3),colspan=1,rowspan=1)
-    ax_weights = plt.subplot2grid((3,4),(1,3),colspan=1,rowspan=1)
-    ax_b_coeff = plt.subplot2grid((3,4),(2,3),colspan=1,rowspan=1)
+    ax_x_0 = plt.subplot2grid((4,4),(0,0),colspan=4,rowspan=3)
+    ax_distr = plt.subplot2grid((4,4),(3,0),colspan=1,rowspan=1)
+    ax_weights = plt.subplot2grid((4,4),(3,1),colspan=1,rowspan=1)
+    ax_b_coeff = plt.subplot2grid((4,4),(3,2),colspan=1,rowspan=1)
     
 
     ax_x_0.set_xlabel("Timestep k")
@@ -130,10 +130,12 @@ def animate_dataset():
         bar_b_coeff.set_height(b_coeff_x_0)
         bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
 
+        # return line1, line2, line3, line4, ax_x_0, line_est_pdf, line_true_pdf, ax_distr, line_weights,bar_b_coeff,bar_b_coeff_text
+
 
 
     anim = animation.FuncAnimation(
-        fig, animate, frames=range(0, 200), interval=300)
+        fig, animate, frames=range(0, 200), interval=100)
 
     # path_store_animation = os.path.join(path_dataset,"animation_first_test_dataset.mp4")
     # writervideo = animation.FFMpegWriter(fps=10)
