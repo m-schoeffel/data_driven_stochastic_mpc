@@ -1,3 +1,4 @@
+import os
 import time
 import numpy as np
 
@@ -23,8 +24,8 @@ def main():
         disturbance_estimator, constraint_tightener] = _create_modules.create_controller_modules(real_system)
 
     # Load reference trajectory
-    ref_traj = np.genfromtxt(
-        "lti_system/reference_trajectories/"+"ref_traj_1.csv", delimiter=',')
+    path_ref_traj = os.path.join(os.getcwd(),"lti_system","reference_trajectories",main_param["ref_traj"],main_param["ref_traj"]+".csv")
+    ref_traj = np.genfromtxt(path_ref_traj, delimiter=',')
     print(ref_traj[:, 25].reshape(-1))
 
     # number_of_measurements = ref_traj.shape[1]

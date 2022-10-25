@@ -14,6 +14,7 @@ def load_main_params():
     main_param["number_of_measurements"] = param["number_of_measurements"]
     main_param["number_of_inputs"] = param["number_of_inputs"]
     main_param["dist_est"] = param["disturbance_estimation"]
+    main_param["ref_traj"] = param["reference_trajectory"]
 
     return main_param
 

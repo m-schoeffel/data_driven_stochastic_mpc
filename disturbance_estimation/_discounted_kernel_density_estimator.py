@@ -76,7 +76,7 @@ class DiscountedKDE:
 
             # Todo: Implement weights
             kde = stats.gaussian_kde(
-                state_deviations, bw_method=0.1, weights=self.weights)
+                state_deviations, bw_method=0.1, weights=self.weights[i,:])
 
             x_visuell = np.linspace(-5, 5, 3000)
             prob_distribution = kde.evaluate(x_visuell)
