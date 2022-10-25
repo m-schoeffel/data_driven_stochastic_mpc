@@ -39,6 +39,8 @@ def create_system():
 def create_controller_modules(real_system):
 
     [record_data, folder_name] = _load_parameters.load_data_storage_params()
+    main_param = _load_parameters.load_main_params()
+    lti_system_param = _load_parameters.load_lti_system_params()
 
     # Create folder to store data
     # Program exists with error if folder already exists (important to avoid overriding or modifying datasets)
@@ -52,8 +54,13 @@ def create_controller_modules(real_system):
         path_config_dest = os.path.join(path,"config.yaml")
         shutil.copy(path_config_src,path_config_dest)
 
-    main_param = _load_parameters.load_main_params()
-    lti_system_param = _load_parameters.load_lti_system_params()
+        # Copy reference trajectory
+        ref_traj_name = main_param["ref_traj"]
+        path_ref_traj_src = os.path.join(path_root_folder,"lti_system","reference_trajectories",ref_traj_name,ref_traj_name+".csv")
+        path_ref_traj_dest = os.path.join(path,ref_traj_name+".csv")
+        shutil.copy(path_ref_traj_src,path_ref_traj_dest)
+
+
 
     NUMBER_OF_MEASUREMENTS = main_param["number_of_measurements"]
     NUMBER_OF_INPUTS = main_param["number_of_inputs"]
