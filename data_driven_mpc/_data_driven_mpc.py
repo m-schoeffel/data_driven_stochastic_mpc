@@ -114,7 +114,7 @@ class DataDrivenMPC:
         # Create Alpha Constraints
 
         constr_input_state = LinearConstraint(
-            G_alpha, lb=-g_compl*np.inf, ub=g_compl)
+            G_alpha, lb=-np.ones(g_compl.shape)*np.inf, ub=g_compl)
 
         # constr_input_state,constr_x_0
         res = minimize(self.get_sequence_cost, alpha_0, args=(

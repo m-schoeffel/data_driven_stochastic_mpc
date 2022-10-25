@@ -35,9 +35,9 @@ def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storag
     # Todo: Make plottet constraints truly flexible
     constraints = _load_parameters.load_constraints()
 
-    G_x = np.array(constraints["G_x"])
+    G_x = np.atleast_2d(constraints["G_x"])
     g_x = np.array(constraints["g_x"])
-    x1_constr = np.ones(len_traj)*g_x[0]
+    x1_constr = np.ones(len_traj)*g_x[0]/G_x[0,0]
 
     def animate(k):
         # Plot system state x_1 at time k
@@ -47,7 +47,7 @@ def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storag
         line1.set_data(timesteps, x1_constr)
 
         # Plot tightened pseudo constraints
-        curr_tight_x1_constr = g_z_storage[k][0]
+        curr_tight_x1_constr = g_z_storage[k][0]/G_x[0,0]
         print(f"curr_tight_x1_constr:\n{curr_tight_x1_constr}")
         curr_tight_x1_constr_array = np.ones(len_traj)*curr_tight_x1_constr
         line2.set_data(timesteps, curr_tight_x1_constr_array)
