@@ -48,7 +48,7 @@ class DataDrivenMPC:
 
 
         for i in range(0,self.predic_hori_size):
-            ref_pred_hor[:,i] = ref_pred_hor[:,i].reshape(-1)-exp_x.reshape(-1)
+            self.ref_pred_hor[:,i] = self.ref_pred_hor[:,i].reshape(-1)-exp_x.reshape(-1)*(i+1)
 
         self.len_g_z = g_z.shape[0]
 
