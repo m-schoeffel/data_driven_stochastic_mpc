@@ -33,11 +33,11 @@ lti_system:
 
 risk_param: 0.975
 
-number_of_measurements: 2000
+number_of_measurements: 200
 
-reference_trajectory: "ref_traj_test_case"
+reference_trajectory: "ref_traj_1"
 
-disturbance_sequence: "gaussian_test_case"
+disturbance_sequence: "gaussian_gaussian_small_var"
 
 # States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
 number_of_inputs: 70

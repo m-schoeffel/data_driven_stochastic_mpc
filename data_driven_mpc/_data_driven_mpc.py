@@ -46,7 +46,8 @@ class DataDrivenMPC:
         else:
             self.ref_pred_hor = np.array(ref_pred_hor)
 
-
+        # Adjust reference trajectory horizon to account for expected value of disturbance
+        # Improves performance
         for i in range(0,self.predic_hori_size):
             self.ref_pred_hor[:,i] = self.ref_pred_hor[:,i].reshape(-1)-exp_x.reshape(-1)*(i+1)
 
@@ -58,6 +59,9 @@ class DataDrivenMPC:
         G_z_fs = self.determine_full_seq_constr_matrix(G_z)
         g_z_fs = self.determine_full_seq_constr_ub(g_z)
         G_compl = self.determine_complete_constraint_matrix(G_v_fs, G_z_fs)
+
+        # Adjust upperbound of state constraint to account for expected value of disturbance
+        g_z_fs = self.adjust_state_constraint_upper_bound(G_z,g_z_fs,exp_x)
 
         # Create Constraintmatrix, which is depending on alpha (decision variable in solver)
         G_alpha = G_compl @ self.h_matrix
@@ -195,3 +199,14 @@ class DataDrivenMPC:
         alpha = self.h_matrix_inv @ goal_vector
         trajectory = self.h_matrix @ alpha
         return trajectory
+
+    def adjust_state_constraint_upper_bound(self,G_z,g_z_fs,exp_x):
+        """This function adjusts the upper bound of the state constraints to account for the expected value of the disturbance
+            This step improves the tracking performance but can potentially lead to more frequent constraint violations while the underlying distribution of the disturbance changes"""
+        
+        num_constr = G_z.shape[0]
+        lin_com_dist = G_z @ exp_x
+        for i in range(1,self.predic_hori_size+1):
+            g_z_fs[i*num_constr:(i+1)*num_constr] -= lin_com_dist*1*i
+
+        return g_z_fs
