@@ -37,7 +37,7 @@ number_of_measurements: 200
 
 reference_trajectory: "ref_sinus_eval"
 
-disturbance_sequence: "gaussian_gaussian_small_var"
+disturbance_sequence: "only_on_velocity_eval_1"
 
 # States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
 number_of_inputs: 70
@@ -54,9 +54,9 @@ discounted_kde:
 
  # Specify interval kde should be evaluated on
  # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
- interv_min: -1.0
+ interv_min: -4.0
  
- interv_max: 1.0
+ interv_max: 4.0
 
 gaussian_process:
 
