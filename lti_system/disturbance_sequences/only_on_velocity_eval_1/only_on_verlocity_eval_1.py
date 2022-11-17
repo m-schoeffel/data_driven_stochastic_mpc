@@ -13,8 +13,8 @@ name_sequence = "only_on_velocity_eval_1"
 number_samples = 500
 
 
-x_3 = np.random.normal(loc=0, scale=0.4,size=number_samples)
-x_4 = np.random.normal(loc=0, scale=0.4,size=number_samples)
+x_3 = np.random.normal(loc=0, scale=1.5,size=number_samples)
+x_4 = np.random.normal(loc=0, scale=1.5,size=number_samples)
 
 x_1 = 0.1 * x_3
 x_2 = 0.1 * x_4

@@ -50,13 +50,13 @@ discounted_kde:
  density_number_of_past_samples_considered: 200
 
  # Specify number of samples kde should be evaluated on
- number_eval_points: 2001
+ number_eval_points: 4001
 
  # Specify interval kde should be evaluated on
  # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
- interv_min: -4.0
+ interv_min: -8.0
  
- interv_max: 4.0
+ interv_max: 8.0
 
 gaussian_process:
 
