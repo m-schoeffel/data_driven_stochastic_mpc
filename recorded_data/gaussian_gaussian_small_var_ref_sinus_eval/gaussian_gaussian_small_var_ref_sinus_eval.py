@@ -10,7 +10,7 @@ from matplotlib import animation
 # The animation is specific to the current dataset and has to be adapted to a new dataset
 
 name_dataset = "gaussian_gaussian_small_var_ref_sinus_eval"
-len_traj = 500
+len_traj = 450
 
 def animate_dataset():
     current_wd = os.getcwd()
