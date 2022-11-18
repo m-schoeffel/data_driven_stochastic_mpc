@@ -46,7 +46,7 @@ for num in range(2,max_num_samp+1):
     square_error_storage.append(mean_error)
 
 x_plot = list(range(1,1001))
-plt.plot(x_plot,square_error_storage)
+plt.plot(square_error_storage)
 plt.show()
 
 
