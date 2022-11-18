@@ -16,6 +16,7 @@ def load_main_params():
     main_param["dist_est"] = param["disturbance_estimation"]
     main_param["ref_traj"] = param["reference_trajectory"]
     main_param["dist_seq"] = param["disturbance_sequence"]
+    main_param["add_measurement_noise"] = param["add_measurement_noise"]
 
     return main_param
 
