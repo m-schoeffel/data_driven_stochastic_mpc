@@ -158,9 +158,9 @@ def animate_dataset():
     anim = animation.FuncAnimation(
         fig, animate, frames=range(0, len_traj), interval=100)
 
-    # path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
-    # writervideo = animation.FFMpegWriter(fps=10)
-    # anim.save(path_store_animation, writer=writervideo)
+    path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
+    writervideo = animation.FFMpegWriter(fps=10)
+    anim.save(path_store_animation, writer=writervideo)
 
     plt.show()
 
