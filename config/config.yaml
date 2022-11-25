@@ -37,7 +37,7 @@ number_of_measurements: 200
 
 reference_trajectory: "ref_traj_test_case"
 
-disturbance_sequence: "minimal_noise"
+disturbance_sequence: "gaussian_gaussian_small_var"
 
 add_measurement_noise: False
 
