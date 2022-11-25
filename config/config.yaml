@@ -7,8 +7,8 @@ data_storage:
 # It will be used to record the input state trajectory for the hankel matrix and to simulate the "real" system
 lti_system:
   a_system_matrix:
-  - [0.9,0,0.1,0]
-  - [0,0.9,0,0.1]
+  - [1,0,0.1,0]
+  - [0,1,0,0.1]
   - [0,0,1,0]
   - [0,0,0,1]
     
@@ -33,7 +33,7 @@ lti_system:
 
 risk_param: 0.975
 
-number_of_measurements: 300
+number_of_measurements: 200
 
 reference_trajectory: "ref_traj_test_case"
 
