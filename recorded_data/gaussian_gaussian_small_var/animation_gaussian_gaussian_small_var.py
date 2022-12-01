@@ -19,13 +19,13 @@ def animate_dataset():
     plt.rc('font', size=20)
 
     cm = 1/2.54  # centimeters in inches
-    my_figsize = (128*cm, 64*cm)
+    my_figsize = (128*cm, 50*cm)
 
     fig = plt.figure(figsize=my_figsize)
-    ax_x_0 = plt.subplot2grid((4,4),(0,0),colspan=4,rowspan=3)
-    ax_distr = plt.subplot2grid((4,4),(3,0),colspan=1,rowspan=1)
-    ax_weights = plt.subplot2grid((4,4),(3,1),colspan=1,rowspan=1)
-    ax_b_coeff = plt.subplot2grid((4,4),(3,2),colspan=1,rowspan=1)
+    ax_x_0 = plt.subplot2grid((3,3),(0,0),colspan=3,rowspan=2)
+    ax_distr = plt.subplot2grid((3,3),(2,0),colspan=1,rowspan=1)
+    ax_weights = plt.subplot2grid((3,3),(2,1),colspan=1,rowspan=1)
+    ax_b_coeff = plt.subplot2grid((3,3),(2,2),colspan=1,rowspan=1)
     
 
     ax_x_0.set_xlabel("Timestep k")
@@ -146,9 +146,9 @@ def animate_dataset():
     anim = animation.FuncAnimation(
         fig, animate, frames=range(0, len_traj), interval=100)
 
-    path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
-    writervideo = animation.FFMpegWriter(fps=10)
-    anim.save(path_store_animation, writer=writervideo)
+    # path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
+    # writervideo = animation.FFMpegWriter(fps=10)
+    # anim.save(path_store_animation, writer=writervideo)
 
     plt.show()
 
