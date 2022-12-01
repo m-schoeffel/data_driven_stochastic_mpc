@@ -16,48 +16,53 @@ def animate_dataset():
     current_wd = os.getcwd()
     path_dataset = os.path.join(current_wd,"recorded_data",name_dataset)
 
-    plt.rc('font', size=20)
+    plt.rc('font', size=8)
 
     cm = 1/2.54  # centimeters in inches
-    my_figsize = (128*cm, 64*cm)
+    my_figsize = (15*cm, 6*cm)
 
     fig = plt.figure(figsize=my_figsize)
-    ax_x_0 = plt.subplot2grid((4,4),(0,0),colspan=4,rowspan=3)
-    ax_distr = plt.subplot2grid((4,4),(3,0),colspan=1,rowspan=1)
-    ax_weights = plt.subplot2grid((4,4),(3,1),colspan=1,rowspan=1)
-    ax_b_coeff = plt.subplot2grid((4,4),(3,2),colspan=1,rowspan=1)
+
+    ax_x_0 = plt.subplot2grid((2,3),(0,0),colspan=3,rowspan=1)
+    ax_distr = plt.subplot2grid((2,3),(1,0),colspan=1,rowspan=1)
+    ax_weights = plt.subplot2grid((2,3),(1,1),colspan=1,rowspan=1)
+    ax_b_coeff = plt.subplot2grid((2,3),(1,2),colspan=1,rowspan=1)
     
 
     ax_x_0.set_xlabel("Timestep k")
     ax_x_0.set_ylabel("Position x")
-    ax_x_0.set_title("Position x with constraints and reference state at timestep k")
+    # ax_x_0.set_title("Position x with constraints and reference state at timestep k")
 
     ax_distr.set_xlabel("x")
     ax_distr.set_ylabel("Probability")
-    ax_distr.set_title("Estimated and true underlying probability")
+    # ax_distr.set_title("Estimated and true underlying probability")
 
     ax_weights.set_xlabel("Sample k-n")
     ax_weights.set_ylabel("Weight")
-    ax_weights.set_title("Weights of samples used for KDE")
+    # ax_weights.set_title("Weights of samples used for KDE")
 
-    ax_b_coeff.set_title("Bhattacharyya coefficient")
+    # ax_b_coeff.set_title("Bhattacharyya coefficient")
 
-    line1, = ax_x_0.plot([], [], color='blue', lw=3,label="Constraints")
-    line2, = ax_x_0.plot([], [], color='green', lw=3, ls='--',label="Tightened pseudo constraints")
-    line3, = ax_x_0.plot([], [], lw=2,label="Reference trajectory")
-    line4 = ax_x_0.scatter([], [], color='grey', lw=2,label="Nominal prediction horizon")
-    line5 = ax_x_0.scatter([], [], color='black', lw=2,label="Prediction horizon")
-    line6 = ax_x_0.scatter([], [], color='red', lw=2,label="Measured positions x")
+    line1, = ax_x_0.plot([], [], color='orange', lw=0.8,label="Constraints")
+    line2, = ax_x_0.plot([], [], color='green', lw=0.8, ls='--',label="Tightened pseudo constraints")
+    line3, = ax_x_0.plot([], [], lw=0.8,label="Reference trajectory")
+    line4 = ax_x_0.scatter([], [], color='grey', s=0.1,label="Nominal prediction horizon")
+    line5 = ax_x_0.scatter([], [], color='black', s=0.1,label="Prediction horizon")
+    line6 = ax_x_0.scatter([], [], color='red', s=0.1,label="Measured positions x")
 
-    ax_x_0.legend(loc="upper right")
+    ax_x_0.legend(loc="right")
 
-    line_est_pdf, = ax_distr.plot([],[],lw=3, ls='--')
-    line_true_pdf, = ax_distr.plot([],[],lw=3)
+    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="f1(x)")
+    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="f2(x)")
+    ax_distr.legend()
 
-    line_weights, = ax_weights.plot([],[],color='black',lw=3)
+    line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label="Weights")
+    ax_weights.legend()
 
-    bar_b_coeff, = ax_b_coeff.bar(1,1)
-    bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=45,color="white")
+    bar_b_coeff, = ax_b_coeff.bar(1,1,label="bc")
+    ax_b_coeff.xaxis.set_ticklabels([])
+    bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=8,color="black")
+    ax_b_coeff.legend()
 
     timesteps = list(range(0, len_traj))
 
@@ -93,7 +98,7 @@ def animate_dataset():
         measured_state = np.load(path_measured_state)
 
         # Plot system state x_1 at time k
-        ax_x_0.scatter(k, measured_state[0], color='red')
+        ax_x_0.scatter(k, measured_state[0], s=0.1,color='red')
 
 
         # Plot real constraint
@@ -110,7 +115,7 @@ def animate_dataset():
         line3.set_data(timesteps, ref_traj[0, 0:len_traj])
 
         ax_x_0.set_xlim(0, len_traj)
-        ax_x_0.set_ylim(-4, 4)
+        ax_x_0.set_ylim(-0.6, 2.6)
 
         # Plot distribution
         path_estim_pdf = os.path.join(path_dataset,"disturbance_estimation","disturbance_distribution_x_0","estim_pdf_k_"+str(k)+".npy")
@@ -125,7 +130,7 @@ def animate_dataset():
 
         line_true_pdf.set_data(pdf_interval,true_pdf)
         ax_distr.set_xlim(-0.5,0.5)
-        ax_distr.set_ylim(0,12)
+        ax_distr.set_ylim(0,23)
 
         # Plot weights
         path_weights = os.path.join(path_dataset,"disturbance_estimation","weights","weights_k_"+str(k)+".npy")
@@ -156,6 +161,14 @@ def animate_dataset():
         b_coeff_x_0 = np.load(path_b_coeff)[0]
         bar_b_coeff.set_height(b_coeff_x_0)
         bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
+
+        if k==50:
+            fig.savefig("eval_test_plot_1.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
+        if k==150:
+            fig.savefig("eval_test_plot_2.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
+        if k==449:
+            fig.savefig("eval_test_plot_3.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
+
 
         # return line1, line2, line3, line4, ax_x_0, line_est_pdf, line_true_pdf, ax_distr, line_weights,bar_b_coeff,bar_b_coeff_text
 
