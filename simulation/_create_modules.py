@@ -82,8 +82,10 @@ def create_controller_modules(real_system):
     # Record input-state sequence
     add_measurement_noise = main_param["add_measurement_noise"]
     for i in range(input_sequence.shape[1]):
-        state_sequence[:, i+1] = real_system.next_step(
-            input_sequence[:, i], add_disturbance=False,add_measurement_noise=add_measurement_noise)[:, 0]
+        if add_measurement_noise:
+            state_sequence[:, i+1] = real_system.next_step(input_sequence[:, i], add_disturbance=False)[:, 0]+np.random.normal(loc=0,scale=0.001,size=4).reshape(-1)
+        else:
+            state_sequence[:, i+1] = real_system.next_step(input_sequence[:, i], add_disturbance=False)[:, 0]
 
     PREDICTION_HORIZON = _load_parameters.load_prediction_horizon()
     cost_matrices = _load_parameters.load_cost_matrices()
