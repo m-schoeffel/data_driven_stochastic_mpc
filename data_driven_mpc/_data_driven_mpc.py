@@ -124,9 +124,13 @@ class DataDrivenMPC:
         constr_input_state = LinearConstraint(
             G_alpha, lb=-np.ones(g_compl.shape)*np.inf, ub=g_compl)
 
-        # constr_input_state,constr_x_0
+        # optimization, if trajectory is noise free
         res = minimize(self.get_sequence_cost, alpha_0, args=(
-        ), method='SLSQP', constraints=[constr_input_state, constr_x_0])
+        ), method='SLSQP',constraints=[constr_input_state, constr_x_0])
+
+        # # optimization, if trajectory is corrupted by measurement noise
+        # res = minimize(self.get_sequence_cost, alpha_0, args=(
+        # ), method='SLSQP',tol=0.01, constraints=[constr_input_state, constr_x_0])
 
         return res
 
