@@ -2,7 +2,7 @@
 import os
 import numpy as np
 
-name_traj = "ref_sinus_eval"
+name_traj = "ref_traj_sinus"
 length = 500
 
 # reference trajectory for 4 state system
