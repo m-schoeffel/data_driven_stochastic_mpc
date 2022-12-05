@@ -21,7 +21,7 @@ def animate_dataset():
     plt.rc('font', family='serif')
 
     cm = 1/2.54  # centimeters in inches
-    my_figsize = (15*cm, 6*cm)
+    my_figsize = (15*cm, 8*cm)
 
     fig = plt.figure(figsize=my_figsize)
 
@@ -31,19 +31,19 @@ def animate_dataset():
     ax_b_coeff = plt.subplot2grid((2,3),(1,2),colspan=1,rowspan=1)
     
 
-    ax_x_0.set_xlabel("\text{Timestep} $k$")
-    ax_x_0.set_ylabel("\text{Position} $x$")
+    ax_x_0.set_xlabel("Timestep $k$")
+    ax_x_0.set_ylabel("Position $x$")
     # ax_x_0.set_title("Position x with constraints and reference state at timestep k")
 
-    ax_distr.set_xlabel("$\text{Dist.} \Delta x$")
-    ax_distr.set_ylabel("$\text{Probability} f(x)$")
+    ax_distr.set_xlabel(r"Disturbance $\Delta x$")
+    ax_distr.set_ylabel(r"Probability $f(\Delta x)$")
     # ax_distr.set_title("Estimated and true underlying probability")
 
     ax_weights.set_xlabel(r"Index $i$")
-    ax_weights.set_ylabel("$\text{Weight} w_i$")
+    ax_weights.set_ylabel(r"Weight $w_i$")
     # ax_weights.set_title("Weights of samples used for KDE")
 
-    ax_b_coeff.set_xlabel("$Bhat. coef. b_c$")
+    ax_b_coeff.set_xlabel("Bhattacharyya coeff. $b_c$")
     # ax_b_coeff.set_title("Bhattacharyya coefficient")
 
     line1, = ax_x_0.plot([], [], color='orange', lw=0.8,label="Constraints")
@@ -55,8 +55,8 @@ def animate_dataset():
 
     ax_x_0.legend(loc="right")
 
-    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_{est}(x)$")
-    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_{true}(x)$")
+    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_\mathrm{est}(x)$")
+    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_\mathrm{true}(x)$")
     ax_distr.legend()
 
     line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label="$w_i$")
@@ -80,6 +80,11 @@ def animate_dataset():
 
     g_x = np.array(param["constraints"]["g_x"])
     x1_constr = np.ones(len_traj)*g_x[0]
+
+    path_plots = os.path.join(path_dataset, "eval_plots")
+    dir_exists = os.path.exists(path_plots)
+    if not dir_exists:
+        os.mkdir(path_plots)
 
     number_eval_points = param["discounted_kde"]["number_eval_points"]
     interv_min = param["discounted_kde"]["interv_min"]
@@ -165,12 +170,9 @@ def animate_dataset():
         bar_b_coeff.set_height(b_coeff_x_0)
         bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
 
-        if k==50:
-            fig.savefig("eval_test_plot_1.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
-        if k==150:
-            fig.savefig("eval_test_plot_2.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
-        if k==449:
-            fig.savefig("eval_test_plot_3.pdf", format="pdf", bbox_inches="tight",edgecolor="black")
+        if k==50 or k==100 or k==150 or k==250 or k==300 or k==400 or k==450 or k==499:
+            path_cur_plot = os.path.join(path_plots,name_dataset+"_k_"+str(k)+".pdf")
+            fig.savefig(path_cur_plot, format="pdf", bbox_inches="tight")
 
 
         # return line1, line2, line3, line4, ax_x_0, line_est_pdf, line_true_pdf, ax_distr, line_weights,bar_b_coeff,bar_b_coeff_text
@@ -178,7 +180,7 @@ def animate_dataset():
 
 
     anim = animation.FuncAnimation(
-        fig, animate, frames=range(0, len_traj), interval=100)
+        fig, animate, frames=range(0, len_traj), interval=100,repeat=False)
 
     # path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
     # writervideo = animation.FFMpegWriter(fps=10)
