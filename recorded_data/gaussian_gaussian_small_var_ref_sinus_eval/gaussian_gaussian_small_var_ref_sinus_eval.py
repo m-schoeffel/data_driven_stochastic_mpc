@@ -24,6 +24,7 @@ def animate_dataset():
     my_figsize = (15*cm, 8*cm)
 
     fig = plt.figure(figsize=my_figsize)
+    fig.tight_layout()
 
     ax_x_0 = plt.subplot2grid((2,3),(0,0),colspan=3,rowspan=1)
     ax_distr = plt.subplot2grid((2,3),(1,0),colspan=1,rowspan=1)
@@ -40,7 +41,7 @@ def animate_dataset():
     # ax_distr.set_title("Estimated and true underlying probability")
 
     ax_weights.set_xlabel(r"Index $i$")
-    ax_weights.set_ylabel(r"Weight $w_i$")
+    ax_weights.set_ylabel(r"Weight $w$")
     # ax_weights.set_title("Weights of samples used for KDE")
 
     ax_b_coeff.set_xlabel("Bhattacharyya coeff. $b_c$")
@@ -55,11 +56,11 @@ def animate_dataset():
 
     ax_x_0.legend(loc="right")
 
-    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_\mathrm{est}(x)$")
-    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_\mathrm{true}(x)$")
+    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_\mathrm{est}(\Delta x)$")
+    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_\mathrm{true}(\Delta x)$")
     ax_distr.legend()
 
-    line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label="$w_i$")
+    line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label=r"Weights $w_i$")
     ax_weights.legend()
 
     bar_b_coeff, = ax_b_coeff.bar(1,1,label="$b_c$")
@@ -128,7 +129,7 @@ def animate_dataset():
         # Plot distribution
         path_estim_pdf = os.path.join(path_dataset,"disturbance_estimation","disturbance_distribution_x_0","estim_pdf_k_"+str(k)+".npy")
         estimated_pdf = np.load(path_estim_pdf)
-        resize_estimated_pdf = estimated_pdf*1150
+        resize_estimated_pdf = estimated_pdf*number_eval_points/(interv_max-interv_min)
         line_est_pdf.set_data(pdf_interval,resize_estimated_pdf)
 
         if(k<250):
@@ -143,10 +144,12 @@ def animate_dataset():
         # Plot weights
         path_weights = os.path.join(path_dataset,"disturbance_estimation","weights","weights_k_"+str(k)+".npy")
         weights_x_0 = np.load(path_weights)[0,:]
+        weights_x_0 = weights_x_0/np.sum(weights_x_0) # Normalize weights
         idx_weights = list(range(-200,0))
         line_weights.set_data(idx_weights,weights_x_0)
         ax_weights.set_xlim(-200,0)
-        ax_weights.set_ylim(0,1)
+        ax_weights.set_ylim(0,weights_x_0[-1])
+        ax_weights.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
         # Plot nominal prediction horizon
         path_est_trajectory = os.path.join(path_dataset,"mpc","optimal_trajectories","trajectory_k_"+str(k)+".npy")
@@ -170,9 +173,9 @@ def animate_dataset():
         bar_b_coeff.set_height(b_coeff_x_0)
         bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
 
-        if k==50 or k==100 or k==150 or k==250 or k==300 or k==400 or k==450 or k==499:
+        if k==50 or k==100 or k==150 or k==200 or k==250 or k==300 or k==400 or k==450 or k==499:
             path_cur_plot = os.path.join(path_plots,name_dataset+"_k_"+str(k)+".pdf")
-            fig.savefig(path_cur_plot, format="pdf", bbox_inches="tight")
+            fig.savefig(path_cur_plot, format="pdf")#, bbox_inches="tight")
 
 
         # return line1, line2, line3, line4, ax_x_0, line_est_pdf, line_true_pdf, ax_distr, line_weights,bar_b_coeff,bar_b_coeff_text
