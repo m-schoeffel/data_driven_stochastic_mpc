@@ -4,6 +4,7 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
+import matplotlib.font_manager as font_manager
 
 # ------------------ Animate dataset ------------------
 
@@ -17,8 +18,11 @@ def animate_dataset():
     path_dataset = os.path.join(current_wd,"recorded_data",name_dataset)
 
     plt.rc('font', size=8)
-    plt.rc('text', usetex=True)
+    # plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
+
+    without_serif= font_manager.FontProperties(family='sans-serif',
+                                   style='normal', size=7.5)
 
     cm = 1/2.54  # centimeters in inches
     my_figsize = (15*cm, 8*cm)
@@ -31,20 +35,19 @@ def animate_dataset():
     ax_weights = plt.subplot2grid((2,3),(1,1),colspan=1,rowspan=1)
     ax_b_coeff = plt.subplot2grid((2,3),(1,2),colspan=1,rowspan=1)
     
-
-    ax_x_0.set_xlabel("Timestep $k$")
-    ax_x_0.set_ylabel("Position $x$")
+    ax_x_0.set_xlabel(r"Timestep $k$",usetex=True)
+    ax_x_0.set_ylabel(r"Position $x$",usetex=True)
     # ax_x_0.set_title("Position x with constraints and reference state at timestep k")
 
-    ax_distr.set_xlabel(r"Disturbance $\Delta x$")
-    ax_distr.set_ylabel(r"Probability $f(\Delta x)$")
+    ax_distr.set_xlabel(r"Disturbance $\Delta x$",usetex=True)
+    ax_distr.set_ylabel(r"Probability $f(\Delta x)$",usetex=True)
     # ax_distr.set_title("Estimated and true underlying probability")
 
-    ax_weights.set_xlabel(r"Index $i$")
-    ax_weights.set_ylabel(r"Weight $w$")
+    ax_weights.set_xlabel(r"Index $i$",usetex=True)
+    ax_weights.set_ylabel(r"Weight $w$",usetex=True)
     # ax_weights.set_title("Weights of samples used for KDE")
 
-    ax_b_coeff.set_xlabel("Bhattacharyya coeff. $b_c$")
+    ax_b_coeff.set_xlabel(r"Bhattacharyya coeff. $b_c$",usetex=True)
     # ax_b_coeff.set_title("Bhattacharyya coefficient")
 
     line1, = ax_x_0.plot([], [], color='orange', lw=0.8,label="Constraints")
@@ -54,19 +57,20 @@ def animate_dataset():
     line5 = ax_x_0.scatter([], [], color='black', s=0.2,label="Prediction horizon")
     line6 = ax_x_0.scatter([], [], color='red', s=0.1,label="Measured positions $x$")
 
-    ax_x_0.legend(loc="right")
 
-    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_\mathrm{est}(\Delta x)$")
-    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_\mathrm{true}(\Delta x)$")
-    ax_distr.legend()
+    ax_x_0.legend(loc="right",prop=without_serif)
+
+    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label=r"$f_\mathrm{est}(\Delta x)$")
+    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label=r"$f_\mathrm{true}(\Delta x)$")
+    ax_distr.legend(prop=without_serif)
 
     line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label=r"Weights $w_i$")
-    ax_weights.legend()
+    ax_weights.legend(prop=without_serif)
 
-    bar_b_coeff, = ax_b_coeff.bar(1,1,label="$b_c$")
+    bar_b_coeff, = ax_b_coeff.bar(1,1,label=r"$b_c$")
     ax_b_coeff.xaxis.set_ticklabels([])
     bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=8,color="black")
-    ax_b_coeff.legend()
+    ax_b_coeff.legend(prop=without_serif)
 
     timesteps = list(range(0, len_traj))
 
@@ -123,7 +127,7 @@ def animate_dataset():
         line3.set_data(timesteps, ref_traj[0, 0:len_traj])
 
         ax_x_0.set_xlim(0, len_traj)
-        ax_x_0.set_ylim(-0.6, 2.6)
+        ax_x_0.set_ylim(-0.3, 2.6)
 
         # Plot distribution
         path_estim_pdf = os.path.join(path_dataset,"disturbance_estimation","disturbance_distribution_x_0","estim_pdf_k_"+str(k)+".npy")
