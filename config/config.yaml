@@ -37,7 +37,7 @@ number_of_measurements: 200
 
 reference_trajectory: "ref_sinus_eval"
 
-disturbance_sequence: "eval_1"
+disturbance_sequence: "eval_2"
 
 add_measurement_noise: False
 

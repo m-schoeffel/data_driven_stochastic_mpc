@@ -9,12 +9,12 @@ import numpy as np
 # There is a gaussian noise on velocity (state x3,x4) with zero mean and variance
 # This noise is affecting the position
 
-name_sequence = "only_on_velocity_eval_1"
+name_sequence = "eval_4"
 number_samples = 500
 
 
-x_3 = np.random.normal(loc=0, scale=0.3,size=number_samples)
-x_4 = np.random.normal(loc=0, scale=0.3,size=number_samples)
+x_3 = np.random.normal(loc=-0.3, scale=0.02,size=number_samples)
+x_4 = np.random.normal(loc=-0.3, scale=0.02,size=number_samples)
 
 x_1 = 0.1 * x_3
 x_2 = 0.1 * x_4
