@@ -17,6 +17,8 @@ def animate_dataset():
     path_dataset = os.path.join(current_wd,"recorded_data",name_dataset)
 
     plt.rc('font', size=8)
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
 
     cm = 1/2.54  # centimeters in inches
     my_figsize = (15*cm, 6*cm)
@@ -29,37 +31,38 @@ def animate_dataset():
     ax_b_coeff = plt.subplot2grid((2,3),(1,2),colspan=1,rowspan=1)
     
 
-    ax_x_0.set_xlabel("Timestep k")
-    ax_x_0.set_ylabel("Position x")
+    ax_x_0.set_xlabel("\text{Timestep} $k$")
+    ax_x_0.set_ylabel("\text{Position} $x$")
     # ax_x_0.set_title("Position x with constraints and reference state at timestep k")
 
-    ax_distr.set_xlabel("x")
-    ax_distr.set_ylabel("Probability")
+    ax_distr.set_xlabel("$\text{Dist.} \Delta x$")
+    ax_distr.set_ylabel("$\text{Probability} f(x)$")
     # ax_distr.set_title("Estimated and true underlying probability")
 
-    ax_weights.set_xlabel("Sample k-n")
-    ax_weights.set_ylabel("Weight")
+    ax_weights.set_xlabel(r"Index $i$")
+    ax_weights.set_ylabel("$\text{Weight} w_i$")
     # ax_weights.set_title("Weights of samples used for KDE")
 
+    ax_b_coeff.set_xlabel("$Bhat. coef. b_c$")
     # ax_b_coeff.set_title("Bhattacharyya coefficient")
 
     line1, = ax_x_0.plot([], [], color='orange', lw=0.8,label="Constraints")
     line2, = ax_x_0.plot([], [], color='green', lw=0.8, ls='--',label="Tightened pseudo constraints")
     line3, = ax_x_0.plot([], [], lw=0.8,label="Reference trajectory")
     line4 = ax_x_0.scatter([], [], color='grey', s=0.1,label="Nominal prediction horizon")
-    line5 = ax_x_0.scatter([], [], color='black', s=0.1,label="Prediction horizon")
-    line6 = ax_x_0.scatter([], [], color='red', s=0.1,label="Measured positions x")
+    line5 = ax_x_0.scatter([], [], color='black', s=0.2,label="Prediction horizon")
+    line6 = ax_x_0.scatter([], [], color='red', s=0.1,label="Measured positions $x$")
 
     ax_x_0.legend(loc="right")
 
-    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="f1(x)")
-    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="f2(x)")
+    line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label="$f_{est}(x)$")
+    line_true_pdf, = ax_distr.plot([],[],lw=0.8,label="$f_{true}(x)$")
     ax_distr.legend()
 
-    line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label="Weights")
+    line_weights, = ax_weights.plot([],[],color='black',lw=0.8,label="$w_i$")
     ax_weights.legend()
 
-    bar_b_coeff, = ax_b_coeff.bar(1,1,label="bc")
+    bar_b_coeff, = ax_b_coeff.bar(1,1,label="$b_c$")
     ax_b_coeff.xaxis.set_ticklabels([])
     bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=8,color="black")
     ax_b_coeff.legend()
