@@ -2,7 +2,7 @@
 import os
 import numpy as np
 
-name_traj = "ref_traj_test_case"
+name_traj = "ref_traj_const"
 
 # reference trajectory for 4 state system
 # used to test if state constraint is held with probability specified in risk parameter
