@@ -2,13 +2,13 @@
 import os
 import numpy as np
 
-name_traj = "ref_traj_circle"
+name_traj = "ref_traj_oval"
 
 # reference trajectory for 4 state system
 
 # (sampling rate is generally assumed to be 10Hz)
 x_traj = np.array([np.sin(2*np.pi*x/50) for x in range(0,500)])
-y_traj = np.array([np.cos(2*np.pi*x/50) for x in range(0,500)])
+y_traj = np.array([1.3*np.cos(2*np.pi*x/50) for x in range(0,500)])
 
 v_x_y = np.zeros([2,500])
 
