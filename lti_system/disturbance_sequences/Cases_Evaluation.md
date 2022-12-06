@@ -10,7 +10,7 @@
 --> Mit Simulationsplots 0,50,200,250
 
 
-3. Sinus Referenz, Indirekte Disturbance N(0,1)
+3. Sinus Referenz, Indirekte Disturbance N(0,0.3)
 
 
 4. Konstante Referenz, Indirekte Disturbance N(1,0.02)

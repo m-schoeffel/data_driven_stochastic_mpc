@@ -13,8 +13,8 @@ name_sequence = "eval_3"
 number_samples = 500
 
 
-x_3 = np.random.normal(loc=0, scale=0.3,size=number_samples)
-x_4 = np.random.normal(loc=0, scale=0.3,size=number_samples)
+x_3 = np.random.normal(loc=0, scale=1,size=number_samples)
+x_4 = np.random.normal(loc=0, scale=1,size=number_samples)
 
 x_1 = 0.1 * x_3
 x_2 = 0.1 * x_4
