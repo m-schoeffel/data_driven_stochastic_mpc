@@ -45,6 +45,9 @@ class DiscountedKDE:
             self.dist_x0_path = os.path.join(record_folder_path,"disturbance_distribution_x_0")
             os.mkdir(self.dist_x0_path)
 
+            self.dist_x1_path = os.path.join(record_folder_path,"disturbance_distribution_x_1")
+            os.mkdir(self.dist_x1_path)
+
             self.b_coeff_path = os.path.join(record_folder_path,"bhattacharyya_coefficients")
             os.mkdir(self.b_coeff_path)
 
@@ -121,7 +124,7 @@ class DiscountedKDE:
 
             kde_of_states.append(kde)
 
-        self.store_dist_x0(k)
+        self.store_dist(k)
 
         return kde_of_states
 
@@ -139,7 +142,7 @@ class DiscountedKDE:
         kde = stats.gaussian_kde(
             delta_x_storage, weights=self.weights[0,:])
 
-        self.store_dist_x0(k)
+        self.store_dist(k)
 
         return kde
 
@@ -219,15 +222,22 @@ class DiscountedKDE:
             filename_weights = os.path.join(self.weights_path,"weights_k_"+str(k))
             np.save(filename_weights,np.array(self.weights))
 
-    def store_dist_x0(self,k):
+    def store_dist(self,k):
         if self.record_data:
             interval = np.linspace(self.interv_min,self.interv_max,self.number_eval_points)
 
             delta_x_storage = self.calculate_numpy_array_of_delta_x()
-            kde = stats.gaussian_kde(delta_x_storage[0,:],weights=self.weights[0,:])
 
+            kde_x0 = stats.gaussian_kde(delta_x_storage[0,:],weights=self.weights[0,:])
             # Evaluate pdf and normalize result
-            pdf = kde.evaluate(interval)*(self.interv_max-self.interv_min)/self.number_eval_points
+            pdf_x0 = kde_x0.evaluate(interval)*(self.interv_max-self.interv_min)/self.number_eval_points
+            
+            filename_estim_pdf_x0 = os.path.join(self.dist_x0_path,"estim_pdf_k_"+str(k))
+            np.save(filename_estim_pdf_x0,pdf_x0)
 
-            filename_estim_pdf = os.path.join(self.dist_x0_path,"estim_pdf_k_"+str(k))
-            np.save(filename_estim_pdf,pdf)
+            kde_x1 = stats.gaussian_kde(delta_x_storage[1,:],weights=self.weights[0,:])
+            # Evaluate pdf and normalize result
+            pdf_x1 = kde_x1.evaluate(interval)*(self.interv_max-self.interv_min)/self.number_eval_points
+            filename_estim_pdf_x1 = os.path.join(self.dist_x1_path,"estim_pdf_k_"+str(k))
+            np.save(filename_estim_pdf_x1,pdf_x1)
+

@@ -5,15 +5,12 @@ import numpy as np
 # The length of the sequence is 500 samples
 # The disturbance on each state is independent in time and not correlated with the disturbances on other states
 
-# This disturbance is used for the first evaluation case 
-# "Direct" disturbance on all states with mean zero and variance 0.2
-
 name_sequence = "eval_5"
 
-x_1 = np.random.normal(loc=0, scale=0.1,size=500)
-x_2 = np.random.normal(loc=0, scale=0.1,size=500)
-x_3 = np.random.normal(loc=0, scale=0.1,size=500)
-x_4 = np.random.normal(loc=0, scale=0.1,size=500)
+x_1 = np.random.normal(loc=0.1, scale=0.05,size=500)
+x_2 = np.random.normal(loc=0.15, scale=0.01,size=500)
+x_3 = np.random.normal(loc=0, scale=0.01,size=500)
+x_4 = np.random.normal(loc=0, scale=0.01,size=500)
 
 compl_dist = np.vstack((x_1,x_2,x_3,x_4))
 
