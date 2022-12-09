@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from scipy import stats
 from matplotlib import pyplot as plt
@@ -27,9 +28,9 @@ real_distr = 1/(std_dev*np.sqrt(2*np.pi))*np.exp(-0.5*np.power((x_eval-mean)/std
 # plt.show()
 
 max_num_samp = 1000
-num_runs = 100
+num_runs = 1000
 
-square_error_storage = list()
+square_error_storage = np.zeros([num_runs,max_num_samp])
 
 for num in range(2,max_num_samp+1):
     print(num)
@@ -42,13 +43,7 @@ for num in range(2,max_num_samp+1):
         prob_distribution = kde.evaluate(x_eval)
 
         error = np.sum(np.abs(prob_distribution-real_distr))
-        mean_error += np.power(error,2)/num_runs
-    square_error_storage.append(mean_error)
+        square_error_storage[run,num-1] = np.power(error,2)
 
-x_plot = list(range(1,1001))
-plt.plot(square_error_storage)
-plt.show()
-
-
-save_error = np.array(square_error_storage)
-np.save("mean_square_error",save_error)
+path_store_animation = os.path.join(os.getcwd(),"figures_thesis","eval_kde","eval_kde_gaussian_mean_"+str(mean)+"_std_"+str(std_dev)+"_runs_"+str(num_runs))
+np.save(path_store_animation,square_error_storage)

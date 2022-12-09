@@ -159,7 +159,7 @@ def animate_dataset():
         # Plot prediction horizon
         # Adjust nominal prediction horizon with value of expected disturbance
         exp_dist_x1 = np.dot(estimated_pdf,pdf_interval)
-        print(exp_dist_x1)
+        # print(exp_dist_x1)
         pred_hor_x1 = nominal_pred_hor_x1.copy()
         for i in range(1,11):
             pred_hor_x1[(i-1):i] += i*exp_dist_x1
