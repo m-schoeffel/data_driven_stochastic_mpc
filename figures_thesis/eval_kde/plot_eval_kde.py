@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 mean=0
 std_dev=1
-num_runs=10
+num_runs=1000
 num_max_samples=1000
 
 path_store_animation = os.path.join(os.getcwd(),"figures_thesis","eval_kde","eval_kde_gaussian_mean_"+str(mean)+"_std_"+str(std_dev)+"_runs_"+str(num_runs)+".npy")
