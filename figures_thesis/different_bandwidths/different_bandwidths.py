@@ -34,8 +34,11 @@ for datapoint in datapoints:
     distr_stor.append(cur_distr/len(datapoints))
 
 # Plot kernel functions
-for dist in distr_stor:
-    plt.plot(x_eval,dist,color="blue")
+for i,dist in enumerate(distr_stor):
+    if i is 0:
+        plt.plot(x_eval,dist,color="blue",label="Kernel functions")
+    else:
+        plt.plot(x_eval,dist,color="blue")
 
 plt.plot(color="blue",label="Kernel functions")
 
