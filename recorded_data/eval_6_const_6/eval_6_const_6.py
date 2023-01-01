@@ -61,7 +61,7 @@ def animate_dataset():
     line6 = ax_x_0.scatter([], [], color='red', s=0.1,label="Measured positions $x$")
 
 
-    ax_x_0.legend(loc="right",prop=without_serif)
+    # ax_x_0.legend(loc="right",prop=without_serif)
 
     line_est_pdf, = ax_distr.plot([],[],lw=0.8, ls='--',label=r"$f_\mathrm{est}(\Delta x)$")
     # line_true_pdf, = ax_distr.plot([],[],lw=0.8,label=r"$f_\mathrm{true}(\Delta x)$")
@@ -89,7 +89,7 @@ def animate_dataset():
     g_x = np.array(param["constraints"]["g_x"])
     x1_constr = np.ones(len_traj)*g_x[0]
 
-    path_plots = os.path.join(path_dataset, "eval_plots")
+    path_plots = os.path.join(path_dataset, "eval_plots_no_legend")
     dir_exists = os.path.exists(path_plots)
     if not dir_exists:
         os.mkdir(path_plots)
