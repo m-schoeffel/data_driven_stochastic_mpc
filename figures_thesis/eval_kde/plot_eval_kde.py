@@ -41,8 +41,8 @@ plt.fill_between(x, mean_se-std_dev_se, mean_se+std_dev_se,color="orange",alpha=
 plt.plot(x,mean_se-std_dev_se,color="orange",label="First standard deviation $\sigma$")
 plt.plot(x,mean_se+std_dev_se,color="orange")
 
-plt.xlabel("Number of samples $o$ used for KDE")
-plt.ylabel("Square error $\epsilon_{\mathrm{square}}$")
+plt.xlabel("Number of samples $o$ used for KDE",usetex=True)
+plt.ylabel("Square error $\epsilon_{\mathrm{square}}$",usetex=True)
 
 print(std_dev_se[0:10])
 
