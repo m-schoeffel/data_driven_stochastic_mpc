@@ -24,19 +24,12 @@ without_serif= font_manager.FontProperties(family='sans-serif',
                                    style='normal', size=7.5)
 
 cm = 1/2.54  # centimeters in inches
-my_figsize = (15*cm, 8*cm)
+my_figsize = (15*cm, 4*cm)
 
-fig = plt.figure(figsize=my_figsize)
-fig.tight_layout()
 
-plt_state_dev = plt.subplot2grid((2,1),(0,0),colspan=1,rowspan=1)
-plt_bc = plt.subplot2grid((2,1),(1,0),colspan=1,rowspan=1)
 
-plt_state_dev.set_ylabel("$r_{k}-x_{\mathrm{m},k}$")
-plt_state_dev.set_xlabel("Timestep $k$")
 
-plt_bc.set_ylabel("Bhatt. coeff. $b_c$")
-plt_bc.set_xlabel("Timestep $k$")
+
 
 # Load all measured x values and Bhattacharrya coefficients
 x_measured = np.zeros(len_traj)
@@ -54,11 +47,30 @@ ref_traj = np.genfromtxt(path_ref_traj, delimiter=',')[0,0:450]
 
 k = list(range(0,len_traj))
 
-plt_state_dev.plot(k,ref_traj-x_measured,lw=0.8)
-plt_bc.plot(k,b_coeff,lw=0.8)
-
+# Plot state deviations
+fig = plt.figure(1,figsize=my_figsize)
 fig.tight_layout()
-path_cur_plot = os.path.join(path_dataset,name_dataset+"_plot_deviations_b_c.pdf")
-fig.savefig(path_cur_plot, format="pdf", bbox_inches="tight")
+
+plt.ylabel("${x}_{\mathrm{m},k}-{x}_{\mathrm{ref},k}$",usetex=True)
+plt.xlabel("Timestep $k$",usetex=True)
+
+plt.plot(k,-(ref_traj-x_measured),lw=0.8)
+
+plt.tight_layout()
+path_cur_plot = os.path.join(path_dataset,name_dataset+"_plot_deviations.pdf")
+plt.savefig(path_cur_plot, format="pdf", bbox_inches="tight")
+
+# Plot Bhatt. coeff.
+fig = plt.figure(2,figsize=my_figsize)
+fig.tight_layout()
+
+plt.ylabel("Bhatt. coeff. $b_c$",usetex=True)
+plt.xlabel("Timestep $k$",usetex=True)
+
+plt.plot(k,b_coeff,lw=0.8)
+
+plt.tight_layout()
+path_cur_plot = os.path.join(path_dataset,name_dataset+"_b_c.pdf")
+plt.savefig(path_cur_plot, format="pdf", bbox_inches="tight")
 
 plt.show()
