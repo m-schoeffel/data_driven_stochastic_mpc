@@ -54,8 +54,8 @@ ref_traj = np.genfromtxt(path_ref_traj, delimiter=',')[0,0:450]
 
 k = list(range(0,len_traj))
 
-plt_state_dev.plot(k,ref_traj-x_measured)
-plt_bc.plot(k,b_coeff)
+plt_state_dev.plot(k,ref_traj-x_measured,lw=0.8)
+plt_bc.plot(k,b_coeff,lw=0.8)
 
 fig.tight_layout()
 path_cur_plot = os.path.join(path_dataset,name_dataset+"_plot_deviations_b_c.pdf")
