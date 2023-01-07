@@ -189,6 +189,10 @@ class DataDrivenMPC:
             state_ref = self.ref_pred_hor[:, i]
             state_diff = state_pred - state_ref
             cost += state_diff.transpose()@self.R@state_diff
+
+        # Add regularization of alpha in case of measurement noise
+        # cost += np.dot(alpha,alpha)*10000
+
         return cost
 
     def get_sum_states(self, u_sequence):

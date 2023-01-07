@@ -40,6 +40,8 @@ def main():
     g_z_storage = list()
     pred_hor_storage = list()
 
+    x_measured = real_system.x#+np.random.normal(loc=0,scale=0.1,size=[4,1])
+
     for i in range(0, number_of_measurements):
         start_time = time.time()
 
@@ -52,15 +54,17 @@ def main():
 
         ref_pred_hor = ref_traj[:, i:i+prediction_horizon_size].copy()
         [next_u, x_pred, prediction_horizon] = dd_mpc.get_new_u(
-            real_system.x, G_v, g_v, G_z, g_z, k=i, ref_pred_hor=ref_pred_hor,exp_x=exp_x)
+            x_measured, G_v, g_v, G_z, g_z, k=i, ref_pred_hor=ref_pred_hor,exp_x=exp_x)
         real_system.next_step(next_u, add_disturbance=True, k=i)
 
+        x_measured = real_system.x#+np.random.normal(loc=0,scale=0.1,size=[4,1])
+
         # Save data (states, tightened_constraints, etc.) for animation
-        state_storage[:, i] = real_system.x.reshape(-1)
+        state_storage[:, i] = x_measured.reshape(-1)
         g_z_storage.append(g_z.copy())
         pred_hor_storage.append(prediction_horizon.copy())
 
-        delta_x = real_system.x - x_pred
+        delta_x = x_measured - x_pred
         disturbance_estimator.add_delta_x(real_system.k, delta_x)
 
         print(f"goal state x: {ref_traj[0,i]}")

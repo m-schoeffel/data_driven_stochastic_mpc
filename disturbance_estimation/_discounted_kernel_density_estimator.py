@@ -77,9 +77,11 @@ class DiscountedKDE:
             # A disturbance distribution is plotted for every state
             state_deviations = delta_x_storage[i, :]
 
+            # print("The standard deviation along axis "+str(i)+" is: "+str(np.std(state_deviations)))
+
             # Todo: Implement weights
             kde = stats.gaussian_kde(
-                state_deviations, weights=self.weights[i,:])
+                state_deviations)
 
             x_visuell = np.linspace(-5, 5, 3000)
             prob_distribution = kde.evaluate(x_visuell)
