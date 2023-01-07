@@ -183,7 +183,7 @@ def animate_dataset():
     anim = animation.FuncAnimation(
         fig, animate, frames=range(0, 250), interval=100,repeat=False)
 
-    writervideo = animation.FFMpegWriter(fps=10)
+    writervideo = animation.FFMpegWriter(fps=5)
     
     path_store_animation_mp4 = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
     anim.save(path_store_animation_mp4, writer=writervideo,dpi=300)
