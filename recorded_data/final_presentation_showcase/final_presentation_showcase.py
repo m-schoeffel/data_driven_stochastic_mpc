@@ -62,14 +62,14 @@ def animate_dataset():
 
     line_est_pdf, = ax_distr.plot([],[],lw=5, ls='--',label=r"$f_\mathrm{est}(\Delta x)$")
     line_true_pdf, = ax_distr.plot([],[],lw=5,label=r"$f_\mathrm{true}(\Delta x)$")
-    ax_distr.legend(prop=without_serif)
+    ax_distr.legend(prop=without_serif,loc="upper left")
 
     line_weights, = ax_weights.plot([],[],color='black',lw=5,label=r"Weights $w_i$")
-    ax_weights.legend(prop=without_serif)
+    ax_weights.legend(prop=without_serif,loc="lower right")
 
     bar_b_coeff, = ax_b_coeff.bar(1,1,label=r"$b_c$")
     ax_b_coeff.xaxis.set_ticklabels([])
-    bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=8,color="black")
+    bar_b_coeff_text = ax_b_coeff.text(1,.5,'',va="center",ha="center",fontsize=80,color="black")
     ax_b_coeff.legend(prop=without_serif)
 
     timesteps = list(range(0, len_traj))
@@ -172,8 +172,8 @@ def animate_dataset():
         bar_b_coeff_text.set_text(str(round(b_coeff_x_0,3)))
 
         if k==0 or k==50 or k==100 or k==150 or k==200 or k==250 or k==300 or k==399 or k==400 or k==449 or k==499:
-            path_cur_plot = os.path.join(path_plots,name_dataset+"_k_"+str(k)+".pdf")
-            fig.savefig(path_cur_plot, format="pdf")#, bbox_inches="tight")
+            path_cur_plot = os.path.join(path_plots,name_dataset+"_k_"+str(k)+".png")
+            fig.savefig(path_cur_plot, format="png",dpi=1000)#, bbox_inches="tight")
 
 
         # return line1, line2, line3, line4, ax_x_0, line_est_pdf, line_true_pdf, ax_distr, line_weights,bar_b_coeff,bar_b_coeff_text
@@ -181,11 +181,16 @@ def animate_dataset():
 
 
     anim = animation.FuncAnimation(
-        fig, animate, frames=range(0, 230), interval=100,repeat=False)
+        fig, animate, frames=range(0, 250), interval=100,repeat=False)
 
-    # path_store_animation = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
-    # writervideo = animation.FFMpegWriter(fps=10)
-    # anim.save(path_store_animation, writer=writervideo)
+    writervideo = animation.FFMpegWriter(fps=10)
+    
+    path_store_animation_mp4 = os.path.join(path_dataset,"animation_"+name_dataset+".mp4")
+    anim.save(path_store_animation_mp4, writer=writervideo,dpi=300)
+
+    path_store_animation_mov = os.path.join(path_dataset,"animation_"+name_dataset+".mov")
+    anim.save(path_store_animation_mov, writer=writervideo,dpi=300)
+
 
     plt.show()
 
