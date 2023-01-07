@@ -58,13 +58,13 @@ for i, point in enumerate(data_points):
 # plt.title(
 #     r"\TeX\ is Number "r"$\displaystyle\sum_{n=1}^\infty\frac{-e^{i\pi}}{2^n}$!")
 
-plt.plot(x, np.sum(y_kernel_functions, 1), color="orange", lw=0.8,label="Estim. Distr. $f_{est}(\mathbf{d})$")
+plt.plot(x, np.sum(y_kernel_functions, 1), color="orange", lw=1.6,label="Estim. Distr. $f_{est}(\mathbf{d})$")
 
-plt.plot(x, y_kernel_functions[:,0], label="Kernel functions",linestyle='--',color="blue", lw=0.8)
-plt.plot(x, y_kernel_functions[:,1:],linestyle='--',color="blue", lw=0.8)
+plt.plot(x, y_kernel_functions[:,0], label="Kernel functions",linestyle='--',color="blue", lw=1.6)
+plt.plot(x, y_kernel_functions[:,1:],linestyle='--',color="blue", lw=1.6)
 
 plt.scatter(data_points, y_data_points, marker='x',
-            linewidths=2, color="green", label="Disturbances $\mathbf{d}_i$")
+            linewidths=3, color="green", label="Disturbances $\mathbf{d}_i$")
 
 plt.xlabel("$\mathbf{d}$",usetex=True)
 plt.ylabel("$f_{est}(\mathbf{d})$",usetex=True)
@@ -72,6 +72,7 @@ plt.ylabel("$f_{est}(\mathbf{d})$",usetex=True)
 plt.legend(loc='upper right')
 
 path_dataset = os.path.join(os.getcwd(),"figures_thesis","kde_examples","final_presentation_kde_example_h_"+str(h)+".png")
+path_dataset = os.path.join("/home/ubuntu/data_driven_stochastic_mpc/figures_thesis/kde_examples","final_presentation_kde_example_h_"+str(h)+"V2.png")
 fig.savefig(path_dataset, format="png", bbox_inches="tight", dpi=1000)
 
 # plt.show()
