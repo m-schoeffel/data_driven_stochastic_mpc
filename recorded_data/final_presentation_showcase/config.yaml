@@ -1,0 +1,99 @@
+# Decide if current run should be recorded
+data_storage:
+  record_data: True
+  folder_name: "final_presentation_showcase"
+
+# Specify the system matrices and the disturbances of the lti system
+# It will be used to record the input state trajectory for the hankel matrix and to simulate the "real" system
+lti_system:
+  a_system_matrix:
+  - [1,0,0.1,0]
+  - [0,1,0,0.1]
+  - [0,0,1,0]
+  - [0,0,0,1]
+    
+  b_input_matrix:
+  - [0,0]
+  - [0,0]
+  - [0.1,0]
+  - [0,0.1]
+
+  x_initial_state:
+  - [2]
+  - [2]
+  - [0]
+  - [0]
+
+  # Specify the type of disturbance for each state
+  types_of_disturbances: # gaussian/uniform/triangular/lognormal
+  - "gaussian"
+  - "gaussian"
+  - "uniform"
+  - "uniform"
+
+risk_param: 0.975
+
+number_of_measurements: 490
+
+reference_trajectory: "ref_traj_sinus"
+
+disturbance_sequence: "eval_2"
+
+add_measurement_noise: False
+
+# States the number of inputs for the trajectory, which is used as the trajectoy-based system representation
+number_of_inputs: 120
+
+disturbance_estimation: "discounted_kde" # gaussian_process/discounted_kde
+
+discounted_kde:
+ base_of_exponential_weights: 1.00
+
+ density_number_of_past_samples_considered: 200
+
+ # Specify number of samples kde should be evaluated on
+ number_eval_points: 2001
+
+ # Specify interval kde should be evaluated on
+ # interv_min and interv_max have to be chosen symmetrically to 0, e.g. abs(interv_min)==abs(interv_max)
+ interv_min: -2
+ 
+ interv_max: 2
+
+gaussian_process:
+
+ density_number_of_past_samples_considered: 10
+
+mpc_cost_matrices:
+  R:
+  - [100,0,0,0]
+  - [0,100,0,0]
+  - [0,0,0.01,0]
+  - [0,0,0,0.01]
+
+  Q:
+  - [0.5,0]
+  - [0,0.5]
+
+constraints:
+  G_u:
+  - [1,0]
+  - [0,1]
+
+  g_u:
+  - [20]
+  - [20]
+
+  G_x:
+  - [1,0,0,0]
+  - [0,1,0,0]
+  - [0,0,1,0]
+  - [0,0,0,1]
+
+  g_x:
+  - [2]
+  - [30]
+  - [30]
+  - [30]
+
+prediction_horizon: 10
