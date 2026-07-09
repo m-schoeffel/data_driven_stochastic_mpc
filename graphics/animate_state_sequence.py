@@ -9,7 +9,8 @@ from config import _load_parameters
 # The animation is specific to the current system and has to be adapted to a new system
 
 
-def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storage):
+def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storage,
+                            show=True, save_path=None):
 
     plt.rc('font', size=20)
 
@@ -65,8 +66,13 @@ def animate_state_sequence(state_storage, g_z_storage, ref_traj, pred_hor_storag
     anim = animation.FuncAnimation(
         fig, animate, frames=range(0, state_storage.shape[1]), interval=300)
 
-    # f = r"first_reverence_tracking.mp4"
-    # writervideo = animation.FFMpegWriter(fps=10)
-    # anim.save(f, writer=writervideo)
+    if save_path is not None:
+        writervideo = animation.FFMpegWriter(fps=10)
+        anim.save(save_path, writer=writervideo)
 
-    plt.show()
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+
+    return anim

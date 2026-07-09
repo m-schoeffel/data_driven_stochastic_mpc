@@ -26,7 +26,7 @@ class GaussianProcess:
         self.delta_x_array[:, self.numbr_measurements] = delta_x.reshape(-1)
         self.numbr_measurements += 1
 
-    def plot_distribution(self):
+    def plot_distribution(self, show=False, save_path=None):
         fig, ax = plt.subplots(self.number_of_states)
 
         fig.suptitle("Gaussian process of each state")
@@ -69,4 +69,13 @@ class GaussianProcess:
                 "Gaussian process regression on noise-free dataset")
 
         plot_real_density = False
+
+        if save_path is not None:
+            fig.savefig(save_path)
+
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
+
         return plot_real_density, fig, ax

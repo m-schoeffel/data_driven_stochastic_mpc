@@ -10,6 +10,12 @@ To run the system clone the repository and then run the following commands in th
 
 > run_ddsmpc
 
+### GUI
+
+Instead of hand-editing `config/config.yaml` and reading terminal output, you can use the Streamlit control panel to edit the configuration and launch runs from a browser. From the repo root:
+
+> streamlit run gui/app.py
+
 ## Background
 
 The implemented algorithm takes concepts from Stochastic Model Predictive Control (SMPC), trajectory-based representations of LTI-Systems and Kernel Density Estimation (KDE) to implement an adaptive SMPC scheme.

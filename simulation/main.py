@@ -8,7 +8,7 @@ from graphics import animate_state_sequence, plot_state_sequence
 from simulation import _create_modules
 
 
-def main():
+def main(show_plots=True, save_dir=None):
     main_param = _load_parameters.load_main_params()
     prediction_horizon_size = _load_parameters.load_prediction_horizon()
 
@@ -77,11 +77,27 @@ def main():
               (time.time() - start_time))
         print()
 
+    animation_save_path = os.path.join(
+        save_dir, "animation.mp4") if save_dir else None
+    distribution_save_path = os.path.join(
+        save_dir, "distribution.png") if save_dir else None
+
     animate_state_sequence.animate_state_sequence(
-        state_storage, g_z_storage, ref_traj, pred_hor_storage)
+        state_storage, g_z_storage, ref_traj, pred_hor_storage,
+        show=show_plots, save_path=animation_save_path)
     # plot_state_sequence.plot_state_sequence(state_storage,number_of_measurements)
-    disturbance_estimator.plot_distribution()
+    disturbance_estimator.plot_distribution(
+        show=show_plots, save_path=distribution_save_path)
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--no-show", action="store_true",
+                         help="Don't open blocking matplotlib windows.")
+    parser.add_argument("--save-dir", default=None,
+                         help="Directory to save the animation/distribution plot to.")
+    args = parser.parse_args()
+
+    main(show_plots=not args.no_show, save_dir=args.save_dir)

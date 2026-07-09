@@ -62,7 +62,7 @@ class DiscountedKDE:
         self.delta_x_deque.popleft()
         self.delta_x_deque.append(delta_x.reshape(-1))
 
-    def plot_distribution(self):
+    def plot_distribution(self, show=True, save_path=None):
         fig, ax = plt.subplots(self.number_of_states)
 
         fig.suptitle(
@@ -91,7 +91,15 @@ class DiscountedKDE:
 
         plot_real_density = True
 
-        plt.show()
+        if save_path is not None:
+            fig.savefig(save_path)
+
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
+
+        return fig
 
     def calculate_numpy_array_of_delta_x(self):
 
